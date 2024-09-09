@@ -1,0 +1,152 @@
+"use client";
+
+import React, { useState } from "react";
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuList,
+} from "@/components/ui/navigation-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
+
+import { buttonVariants } from "@/components/ui/button";
+import { Menu, BookA, SquarePen, Divide } from "lucide-react";
+import { ModeToggle } from "@/components/common/themes";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+interface RouteProps {
+  href: string;
+  label: string;
+}
+
+const routeList: RouteProps[] = [
+  {
+    href: "/inspirations",
+    label: "灵感书签",
+  },
+  {
+    href: "/architects",
+    label: "建筑大师",
+  },
+  {
+    href: "/art-appreciation",
+    label: "艺术鉴赏",
+  },
+  {
+    href: "/text-references",
+    label: "文本参考",
+  },
+  {
+    href: "/drawings",
+    label: "制图表达",
+  },
+  {
+    href: "/architecture-classes",
+    label: "建筑学堂",
+  },
+];
+
+export const Navbar = () => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const currPath = usePathname();
+
+  return (
+    <header className='sticky border-b-[1px] top-0 z-40 w-full bg-white dark:border-b-slate-700 dark:bg-background'>
+      <NavigationMenu className='mx-auto'>
+        <NavigationMenuList className='container h-14 px-4 w-screen flex justify-between '>
+          <NavigationMenuItem className='font-bold flex'>
+            <Link
+              rel='noreferrer noopener'
+              href='/'
+              className='ml-2 font-bold text-xl flex items-center'
+            >
+              <BookA />
+              ARM
+            </Link>
+          </NavigationMenuItem>
+
+          {/* mobile */}
+          <span className='flex md:hidden'>
+            <ModeToggle />
+
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+              <SheetTrigger className='px-2'>
+                <Menu
+                  className='flex md:hidden h-5 w-5'
+                  onClick={() => setIsOpen(true)}
+                ></Menu>
+              </SheetTrigger>
+
+              <SheetContent side={"left"}>
+                <SheetHeader>
+                  <SheetTitle className='font-bold text-xl'>ARM</SheetTitle>
+                </SheetHeader>
+                <nav className='flex flex-col justify-center items-center gap-2 mt-4'>
+                  {routeList.map(({ href, label }: RouteProps) => (
+                    <Link
+                      rel='noreferrer noopener'
+                      key={label}
+                      href={href}
+                      onClick={() => setIsOpen(false)}
+                      className={`bg-accent ${buttonVariants({
+                        variant: "ghost",
+                      })}`}
+                    >
+                      {label}
+                    </Link>
+                  ))}
+                  <Separator className='my-4' />
+                  <Link
+                    href='/auth/signin'
+                    className={`w-[110px] ${buttonVariants({
+                      variant: "ghost",
+                    })}`}
+                  >
+                    登录
+                  </Link>
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </span>
+
+          {/* desktop */}
+          <nav className='hidden md:flex gap-2'>
+            {routeList.map((route: RouteProps, i) => (
+              <Link
+                rel='noreferrer noopener'
+                href={route.href}
+                key={i}
+                className={`text-[17px] ${
+                  currPath === route.href ? "bg-accent" : ""
+                } ${buttonVariants({
+                  variant: "ghost",
+                })}`}
+              >
+                {route.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className='hidden md:flex gap-2'>
+            <Link
+              href='/auth/signin'
+              className={`${buttonVariants({
+                variant: "ghost",
+              })}`}
+            >
+              登录
+            </Link>
+            <ModeToggle />
+          </div>
+        </NavigationMenuList>
+      </NavigationMenu>
+    </header>
+  );
+};

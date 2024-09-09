@@ -38,18 +38,22 @@ function getItem(
 
 // TODO(Refactor): It could come from the backend for RBAC
 export const items: MenuItem[] = [
-  getItem("Dashboard", "/dashboard", <LayoutGrid size={20} />),
-  getItem("Positions", "/positions", <List size={20} />),
-  getItem("Questionnaires", "/questionnaires", <FileQuestion size={20} />),
-  getItem("Resumes", "/resumes", <FileBox size={20} />),
-  getItem("Reports", "/reports", <NotebookText size={20} />),
-  getItem("Interviews", "/interviews", <BookText size={20} />),
-  getItem("Offers", "/offers", <MailCheck size={20} />),
-  getItem("Emails", "/emails", <Mail size={20} />),
-  getItem("System", "/system", <Settings size={20} />, [
-    getItem("Users", "/system/users", <Users size={20} />),
-    getItem("Roles", "/system/roles", <Drama size={20} />),
-    getItem("Logs", "/system/logs", <Logs size={20} />),
-    getItem("Settings", "/system/settings", <Settings size={20} />),
+  getItem("Dashboard", "/admin/dashboard", <LayoutGrid size={20} />),
+  getItem("Positions", "/admin/positions", <List size={20} />),
+  getItem(
+    "Questionnaires",
+    "/admin/questionnaires",
+    <FileQuestion size={20} />
+  ),
+  getItem("Resumes", "/admin/resumes", <FileBox size={20} />),
+  getItem("Reports", "/admin/reports", <NotebookText size={20} />),
+  getItem("Interviews", "/admin/interviews", <BookText size={20} />),
+  getItem("Offers", "/admin/offers", <MailCheck size={20} />),
+  getItem("Emails", "/admin/emails", <Mail size={20} />),
+  getItem("System", "/admin/system", <Settings size={20} />, [
+    getItem("Users", "/admin/system/users", <Users size={20} />),
+    getItem("Roles", "/admin/system/roles", <Drama size={20} />),
+    getItem("Logs", "/admin/system/logs", <Logs size={20} />),
+    getItem("Settings", "/admin/system/settings", <Settings size={20} />),
   ]),
 ];
