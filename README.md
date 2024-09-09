@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Software Developement
 
-## Getting Started
+- SDLC
+- Agile(Scrum)
+- Kanban
+- Lean
 
-First, run the development server:
+## Agile
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+The common workflow
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- 1-2 weeks sprint
+- Sprint planning
+- Sprint review
+- Sprint retrospective
+- Sprint backlog
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Tools:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- Jira
+- Trello
+- GitHub
+- Confluence
+- Slack
+- Microsoft Teams(Zoom, Google Meet)
 
-## Learn More
+## AI Resume Matcher
 
-To learn more about Next.js, take a look at the following resources:
+### Requirement
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The main functionalities of the current project are divided into three areas:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- UI: Information collection and an applicant-based information list.
+- ChatGPT: Resume upload and job match analysis based on ChatGPT.
+- Calendly: Interview scheduling and email notifications.
 
-## Deploy on Vercel
+The workflow of the project is as follows:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+![workflow](./assets/ai-resume-matcher.png)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### The Schema Design
+
+![schema](./assets/schema.png)
+
+The attributes: TODO
