@@ -28,28 +28,28 @@ interface RouteProps {
 
 const routeList: RouteProps[] = [
   {
-    href: "/inspirations",
-    label: "灵感书签",
+    href: "/home",
+    label: "Home",
   },
   {
-    href: "/architects",
-    label: "建筑大师",
+    href: "/#howItWorks",
+    label: "How-to",
   },
   {
-    href: "/art-appreciation",
-    label: "艺术鉴赏",
+    href: "/#features",
+    label: "Features",
   },
   {
-    href: "/text-references",
-    label: "文本参考",
+    href: "/#testimonials",
+    label: "Testimonials",
   },
   {
-    href: "/drawings",
-    label: "制图表达",
+    href: "/#pricing",
+    label: "Pricing",
   },
   {
-    href: "/architecture-classes",
-    label: "建筑学堂",
+    href: "/#faq",
+    label: "FAQ",
   },
 ];
 
@@ -58,7 +58,7 @@ export const Navbar = () => {
   const currPath = usePathname();
 
   return (
-    <header className='sticky border-b-[1px] top-0 z-40 w-full bg-white dark:border-b-slate-700 dark:bg-background'>
+    <header className='border-b-[1px] top-0 z-40 w-full'>
       <NavigationMenu className='mx-auto'>
         <NavigationMenuList className='container h-14 px-4 w-screen flex justify-between '>
           <NavigationMenuItem className='font-bold flex'>
@@ -109,7 +109,7 @@ export const Navbar = () => {
                       variant: "ghost",
                     })}`}
                   >
-                    登录
+                    Sign In
                   </Link>
                 </nav>
               </SheetContent>
@@ -141,7 +141,7 @@ export const Navbar = () => {
                 variant: "ghost",
               })}`}
             >
-              登录
+              Sign In
             </Link>
             <ModeToggle />
           </div>
