@@ -26,6 +26,22 @@ Tools:
 
 ## AI Resume Matcher
 
+### Tech stacks
+
+- Next.js
+- React
+- Tailwind CSS
+- TypeScript
+- PostgreSQL
+- Prisma
+- NextAuth.js
+- Lucide Icons
+- Shadcn
+- Google OAuth
+- Calendly
+- ChatGPT
+- Ant Design
+
 ### Requirement
 
 The main functionalities of the current project are divided into three areas:
