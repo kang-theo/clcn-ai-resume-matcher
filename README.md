@@ -42,6 +42,31 @@ Tools:
 - ChatGPT
 - Ant Design
 
+### Guideline
+
+- Documentation
+  - Description
+  - Requirement
+  - Design
+  - Reference
+- Code Guideline
+  - Code Style
+  - Code Review
+  - Security Check
+- Testing
+  - Unit Test
+  - Integration Test
+  - E2E Test
+  - Performance Test
+  - Security Test
+- Deployment
+  - CI/CD
+  - Deployment Strategy
+    - Manual
+    - Automated
+  - Monitoring
+  - Backup
+
 ### Requirement
 
 The main functionalities of the current project are divided into three areas:
