@@ -3,6 +3,8 @@ import React from "react";
 import type { MenuProps } from "antd";
 import { Avatar, Button, Dropdown, Space } from "antd";
 import { CircleUserRound } from "lucide-react";
+import { signOut } from "@/lib/auth"
+import { useSession, SessionProvider } from 'next-auth/react';
 
 const items: MenuProps["items"] = [
   {
@@ -14,34 +16,46 @@ const items: MenuProps["items"] = [
     label: "Change Password",
   },
   {
-    key: "Logout",
-    label: "Logout",
+    key: "SignOut",
+    label: <a href="/auth/sign-in" onClick={() => signOut()}>Sign Out</a>,
   },
 ];
 
-const Profile: React.FC = () => (
-  // <Space
-  //   direction='vertical'
-  //   style={{ height: "56px" }}
-  //   className='flex justify-center items-center space-x-1'
-  // >
-  <div className='flex justify-center items-center'>
-    {/* <Space wrap> */}
-    <Dropdown menu={{ items }} placement='bottom'>
-      <Button size='large' type='text'>
-        <div className='flex justify-center items-center space-x-1'>
-          <CircleUserRound size={20} />
-          {/* <Avatar
+const Profile: React.FC = () => {
+  const { data: session, status } = useSession();
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  if (!session) {
+    return <div>Please sign in</div>;
+  }
+
+  return (
+    // <Space
+    //   direction='vertical'
+    //   style={{ height: "56px" }}
+    //   className='flex justify-center items-center space-x-1'
+    // >
+    <div className='flex justify-center items-center'>
+      {/* <Space wrap> */}
+      <Dropdown menu={{ items }} placement='bottom'>
+        <Button size='large' type='text'>
+          <div className='flex justify-center items-center space-x-1'>
+            <CircleUserRound size={20} />
+            {/* <Avatar
               src='https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg'
               alt='avatar'
             /> */}
-          <span>Henry</span>
-        </div>
-      </Button>
-    </Dropdown>
-    {/* </Space> */}
-    {/* </Space> */}
-  </div>
-);
+            <span>{session.user?.name || 'User'}</span>
+          </div>
+        </Button>
+      </Dropdown>
+      {/* </Space> */}
+      {/* </Space> */}
+    </div>
+  )
+};
 
 export default Profile;

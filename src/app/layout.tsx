@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { SessionProvider } from "next-auth/react";
 import "@/assets/styles/admin.css";
 
 // const inter = Inter({ subsets: ["latin"] });
@@ -22,15 +23,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en' suppressHydrationWarning>
-      <body
-        className={cn(
-          "bg-background text-foreground dark:bg-[hsl(var(--background))] app min-h-screen font-sans antialiased",
-          fontSans.variable
-        )}
-      >
-        {children}
-      </body>
-    </html>
+    <SessionProvider>
+      <html lang='en' suppressHydrationWarning>
+        <body
+          className={cn(
+            "bg-background text-foreground dark:bg-[hsl(var(--background))] app min-h-screen font-sans antialiased",
+            fontSans.variable
+          )}
+        >
+          {children}
+        </body>
+      </html>
+    </SessionProvider>
   );
 }

@@ -1,13 +1,7 @@
 import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
 
-// auth.js library
-export const {
-  handlers: { GET, POST },
-  auth,
-  signIn,
-  signOut,
-} = NextAuth({
+export const authOptions = {
   // Define the secret
   secret: process.env.NEXTAUTH_SECRET,
 
@@ -46,4 +40,12 @@ export const {
     // verifyRequest: '/auth/verify-request', // (used for check email message)
     // newUser: '/auth/new-user'              // New users will be directed here on first sign in (leave the property out if not of interest)
   },
-});
+};
+
+// auth.js library
+export const {
+  handlers: { GET, POST },
+  auth,
+  signIn,
+  signOut,
+} = NextAuth(authOptions);
