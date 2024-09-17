@@ -3,8 +3,10 @@ import React from "react";
 import type { MenuProps } from "antd";
 import { Avatar, Button, Dropdown, Space } from "antd";
 import { CircleUserRound } from "lucide-react";
-import { signOut } from "@/lib/auth"
+// import { signIn, signOut } from "@/lib/auth"
+import { signIn, signOut } from "next-auth/react";
 import { useSession, SessionProvider } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 
 const items: MenuProps["items"] = [
   {
@@ -17,7 +19,19 @@ const items: MenuProps["items"] = [
   },
   {
     key: "SignOut",
-    label: <a href="/auth/sign-in" onClick={() => signOut()}>Sign Out</a>,
+    label: (
+      <a
+        onClick={(e) => {
+          e.preventDefault();
+          signOut({
+            redirect: true,
+            callbackUrl: '/auth/sign-in',
+          });
+        }}
+      >
+        Sign Out
+      </a>
+    ),
   },
 ];
 
@@ -29,7 +43,7 @@ const Profile: React.FC = () => {
   }
 
   if (!session) {
-    return <div>Please sign in</div>;
+    redirect('/auth/error');
   }
 
   return (

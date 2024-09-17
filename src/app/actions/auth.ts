@@ -1,20 +1,13 @@
 "use server";
 
 import { signIn, signOut } from "@/lib/auth";
-import { redirect } from "next/navigation";
 
 export async function signInWithGithubAction(formData: FormData) {
-  const result = await signIn("github", {
-    redirect: false, // Disable automatic redirect
+  await signIn("github", {
+    // redirect: true,
+    // callbackUrl: "/admin/dashboard",
+    redirectTo: "/admin/dashboard",
   });
-
-  if (result?.error) {
-    console.error("Sign-in error:", result.error);
-    return;
-  }
-
-  const redirectUrl = "/admin/dashboard";
-  redirect(redirectUrl);
 
   // TODO: Redirect based on user type
   // const user = await getUserFromSession();
