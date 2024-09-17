@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { signInWithGithubAction } from "@/app/actions/auth";
+import { signInWithGithubAction, signInWithGoogleAction } from "@/app/actions/auth";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   type: "sign-in" | "sign-up";
@@ -17,7 +17,9 @@ interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [signing, setSigning] = useState(false);
+  const [googleSigning, setGoogleSigning] = useState(false);
   const githubSSORef = useRef(null);
+  const googleSSORef = useRef(null);
   const { type } = props;
 
   async function onSubmit(event: React.SyntheticEvent) {
@@ -30,6 +32,15 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     // formEl.submit();
     formEl.requestSubmit();
   }, []);
+
+  const handleGoogleSigning = useCallback((e: React.SyntheticEvent) => {
+    e.preventDefault();
+    setGoogleSigning(true);
+    const formEl: HTMLFormElement = googleSSORef.current!;
+    // formEl.submit();
+    formEl.requestSubmit();
+  }, []);
+
 
   return (
     <div className={cn("grid gap-6", className)} {...props}>
@@ -142,6 +153,21 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             <Icons.GitHub className='mr-2 h-4 w-4' />
           )}{" "}
           GitHub
+        </Button>
+      </form>
+      <form ref={googleSSORef} action={signInWithGoogleAction}>
+        <Button
+          className='w-full'
+          variant='outline'
+          disabled={googleSigning}
+          onClick={handleGoogleSigning}
+        >
+          {googleSigning ? (
+            <Icons.Spinner className='mr-2 h-4 w-4 animate-spin' />
+          ) : (
+            <Icons.Google className='mr-2 h-4 w-4' />
+          )}{" "}
+          Google
         </Button>
       </form>
     </div>

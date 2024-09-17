@@ -1,9 +1,11 @@
 "use server";
 
 import { signIn, signOut } from "@/lib/auth";
+import { Provider } from "@radix-ui/react-toast";
 
-export async function signInWithGithubAction(formData: FormData) {
-  await signIn("github", {
+// Generic function to handle both Google and GitHub sign-ins
+export async function signInWithProvider(provider: "github" | "google") {
+  await signIn(provider, {
     // redirect: true,
     // callbackUrl: "/admin/dashboard",
     redirectTo: "/admin/dashboard",
@@ -19,6 +21,17 @@ export async function signInWithGithubAction(formData: FormData) {
   // }
 }
 
+// action: Github sign in
+export async function signInWithGithubAction(formData: FormData) {
+  await signInWithProvider("github");
+}
+
+// action: Google sign in
+export async function signInWithGoogleAction(formData: FormData) {
+  await signInWithProvider("google");
+}
+
+// action: Sign out
 export async function signOutAction() {
   await signOut({
     redirectTo: "/auth/sign-in",
