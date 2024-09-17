@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "ARM",
-  description: "请使用我们丰富的设计参考图片，它可以激发你无限的灵感",
+  description: "Leverage the power of AI to help you find the right talent",
 };
 
 const info = {
@@ -56,7 +56,7 @@ export default function AuthLayout({
           <div className='relative z-20 mt-auto'>
             <blockquote className='space-y-2'>
               <p className='text-lg'>
-                &ldquo;请使用我们强大的，简洁的工具影制。使用影制高效创作您的剧本。&rdquo;
+                &ldquo;Leverage our powerful and intuitive tools&rdquo;
               </p>
               <footer className='text-sm'>Filmlog&reg;</footer>
             </blockquote>
@@ -66,21 +66,21 @@ export default function AuthLayout({
           <div className='mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]'>
             {children}
             <p className='px-4 text-center text-sm text-muted-foreground'>
-              登录代表你同意我们的{" "}
+              By logging in, you agree to our{" "}
               <Link
                 href='/terms'
                 className='underline underline-offset-4 hover:text-primary'
               >
-                服务条款
+                Terms of Service
               </Link>{" "}
-              和{" "}
+              and{" "}
               <Link
                 href='/privacy'
                 className='underline underline-offset-4 hover:text-primary'
               >
-                隐私政策
+                Privacy Policy
               </Link>
-              。
+              .
             </p>
           </div>
         </div>

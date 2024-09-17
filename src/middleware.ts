@@ -14,23 +14,11 @@ export function middleware(request: NextRequest) {
 }
 
 // Add authentication
-// import { auth } from "@/lib/auth";
-// import { NextRequest, NextResponse } from "next/server";
-// import type { NextApiRequest, NextApiResponse } from "next";
+import { auth } from "@/lib/auth";
 
-// export default function middleware(req: NextRequest, res: NextResponse) {
-//   const { pathname } = req.nextUrl;
+export default auth;
 
-//   // Ignore the root page (home page) and static files like /_next
-//   if (pathname === "/" || pathname.startsWith("/_next")) {
-//     return NextResponse.next();
-//   }
-
-//   // if Apply NextAuth middleware to other routes
-//   return auth(req as any);
-// }
-
-// export const config = {
-//   // matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
-//   matcher: ["/((?!api|_next/static|_next/image|favicon.ico|auth).*)", "/"],
-// };
+export const config = {
+  // Match all routes except below ones
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|auth).*)", "/"],
+};

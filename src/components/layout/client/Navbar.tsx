@@ -104,7 +104,7 @@ export const Navbar = () => {
                   ))}
                   <Separator className='my-4' />
                   <Link
-                    href='/auth/signin'
+                    href='/auth/sign-in'
                     className={`w-[110px] ${buttonVariants({
                       variant: "ghost",
                     })}`}
@@ -123,11 +123,10 @@ export const Navbar = () => {
                 rel='noreferrer noopener'
                 href={route.href}
                 key={i}
-                className={`text-[17px] ${
-                  currPath === route.href ? "bg-accent" : ""
-                } ${buttonVariants({
-                  variant: "ghost",
-                })}`}
+                className={`text-[17px] ${currPath === route.href ? "bg-accent" : ""
+                  } ${buttonVariants({
+                    variant: "ghost",
+                  })}`}
               >
                 {route.label}
               </Link>
@@ -136,7 +135,7 @@ export const Navbar = () => {
 
           <div className='hidden md:flex gap-2'>
             <Link
-              href='/auth/signin'
+              href='/auth/sign-in'
               className={`${buttonVariants({
                 variant: "ghost",
               })}`}
