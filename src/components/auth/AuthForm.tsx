@@ -9,38 +9,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { signInWithGithubAction, signInWithGoogleAction } from "@/app/actions/auth";
+import SignInButton from './SignInButton';
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   type: "sign-in" | "sign-up";
 }
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [signing, setSigning] = useState(false);
-  const [googleSigning, setGoogleSigning] = useState(false);
-  const githubSSORef = useRef(null);
-  const googleSSORef = useRef(null);
   const { type } = props;
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [githubSigning, setGithubSigning] = useState<boolean>(false);
+  const [googleSigning, setGoogleSigning] = useState<boolean>(false);
 
   async function onSubmit(event: React.SyntheticEvent) {
   }
-
-  const handleSigning = useCallback((e: React.SyntheticEvent) => {
-    e.preventDefault();
-    setSigning(true);
-    const formEl: HTMLFormElement = githubSSORef.current!;
-    // formEl.submit();
-    formEl.requestSubmit();
-  }, []);
-
-  const handleGoogleSigning = useCallback((e: React.SyntheticEvent) => {
-    e.preventDefault();
-    setGoogleSigning(true);
-    const formEl: HTMLFormElement = googleSSORef.current!;
-    // formEl.submit();
-    formEl.requestSubmit();
-  }, []);
-
 
   return (
     <div className={cn("grid gap-6", className)} {...props}>
@@ -140,36 +122,20 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           <span className='bg-background px-2 text-muted-foreground'>Or</span>
         </div>
       </div>
-      <form ref={githubSSORef} action={signInWithGithubAction}>
-        <Button
-          className='w-full'
-          variant='outline'
-          disabled={signing}
-          onClick={handleSigning}
-        >
-          {signing ? (
-            <Icons.Spinner className='mr-2 h-4 w-4 animate-spin' />
-          ) : (
-            <Icons.GitHub className='mr-2 h-4 w-4' />
-          )}{" "}
-          GitHub
-        </Button>
-      </form>
-      <form ref={googleSSORef} action={signInWithGoogleAction}>
-        <Button
-          className='w-full'
-          variant='outline'
-          disabled={googleSigning}
-          onClick={handleGoogleSigning}
-        >
-          {googleSigning ? (
-            <Icons.Spinner className='mr-2 h-4 w-4 animate-spin' />
-          ) : (
-            <Icons.Google className='mr-2 h-4 w-4' />
-          )}{" "}
-          Google
-        </Button>
-      </form>
+      <div>
+        <SignInButton
+          provider='github'
+          isSigning={githubSigning}
+          setIsSigning={setGithubSigning}
+          signInAction={signInWithGithubAction}
+        />
+        <SignInButton
+          provider='google'
+          isSigning={googleSigning}
+          setIsSigning={setGoogleSigning}
+          signInAction={signInWithGoogleAction}
+        />
+      </div>
     </div>
   );
 }
