@@ -11,7 +11,7 @@ export async function signInWithProvider(provider: "github" | "google") {
     redirectTo: "/admin/dashboard",
   });
 
-  // TODO: Redirect based on user type
+  // TODO: RBAC control - different roles can have different entries
   // const user = await getUserFromSession();
   // if (user) {
   //   const redirectUrl = user.isAdmin ? "/admin/dashboard" : "/dashboard";
