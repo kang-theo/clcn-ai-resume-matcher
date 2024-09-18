@@ -62,7 +62,7 @@ const Profile: React.FC = () => {
               src='https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg'
               alt='avatar'
             /> */}
-            <span>{session.user?.name || 'User'}</span>
+            <span>{session.user?.name || session.user?.username || 'User'}</span>
           </div>
         </Button>
       </Dropdown>

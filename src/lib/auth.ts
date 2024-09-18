@@ -67,12 +67,20 @@ export const authOptions = {
     // async redirect({ url, baseUrl }) {
     //   return baseUrl
     // },
-    // async session({ session, user, token }) {
-    //   return session
-    // },
-    // async jwt({ token, user, account, profile, isNewUser }) {
-    //   return token
-    // }
+    async session({ session, token }: { session: Session; token: JWT }) {
+      // Add the username to the session object
+      if (session.user && token) {
+        session.user.username = token.username as string;
+      }
+      return session;
+    },
+    async jwt({ token, user }: { token: JWT; user?: User }) {
+      // Add username to token if user object is available
+      if (user) {
+        token.username = user.username;
+      }
+      return token;
+    },
   },
   pages: {
     signIn: "/auth/sign-in",
