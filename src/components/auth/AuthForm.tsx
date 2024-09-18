@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { signInWithGithubAction, signInWithGoogleAction } from "@/app/actions/auth";
 import SignInButton from './SignInButton';
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   type: "sign-in" | "sign-up";
@@ -20,8 +22,58 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [githubSigning, setGithubSigning] = useState<boolean>(false);
   const [googleSigning, setGoogleSigning] = useState<boolean>(false);
+  const router = useRouter();
 
   async function onSubmit(event: React.SyntheticEvent) {
+    event.preventDefault();
+    setIsLoading(true);
+    const form = new FormData(event.target as HTMLFormElement);
+
+    // currently, next-auth.js has no signUp function
+    if (type === "sign-up") {
+      const passwordVal = form.get("password");
+      const passwordConfirmationVal = form.get("passwordConfirmation");
+      if (passwordVal !== passwordConfirmationVal) {
+        return null;
+      }
+
+      // send to api server for register
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        // send in JSON string
+        body: JSON.stringify({
+          // csrfToken: form.get("csrfToken"),
+          username: form.get("username"),
+          email: form.get("email"),
+          password: passwordVal,
+          passwordConfirmation: passwordConfirmationVal,
+        }),
+      });
+
+      const data: any = await res.json();
+      const metaData: any = data.meta;
+      if (metaData.code == "OK") {
+        router.push("/auth/sign-in");
+      }
+
+      setIsLoading(false);
+      return null;
+    }
+
+    // after register successfully
+    // next-auth.js provided signIn function; it sends credentials and next-auth.js will use prisma client to find in postgresql
+    await signIn("credentials", {
+      username: form.get("username"),
+      password: form.get("password"),
+      // TODO: redirect based on roles
+      callbackUrl: "/admin/dashboard",
+    }).catch((err) => {
+      setIsLoading(false);
+      console.error(err);
+    });
   }
 
   return (

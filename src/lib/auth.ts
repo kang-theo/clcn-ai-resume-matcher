@@ -1,6 +1,18 @@
 import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
+import Credentials from "@auth/core/providers/credentials";
+import bcrypt from "bcryptjs";
+import prisma from "@/lib/prisma";
+import { Session, User } from "next-auth";
+import { JWT } from "next-auth/jwt";
+
+import { z } from "zod";
+
+const loginUserSchema = z.object({
+  username: z.string().regex(/^[a-z0-9_-]{3,15}$/g, "Invalid username"),
+  password: z.string().min(5, "Password should be minimum 5 characters"),
+});
 
 export const authOptions = {
   // Define the secret
@@ -14,6 +26,30 @@ export const authOptions = {
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    }),
+    Credentials({
+      credentials: {
+        username: { type: "text", placeholder: "Please input your username" },
+        password: {
+          type: "password",
+          placeholder: "Please input your password",
+        },
+      },
+      // async authorize(credentials, req) {
+      async authorize(credentials) {
+        const { username, password } = loginUserSchema.parse(credentials);
+        // next-auth.ja signIn with prisma
+        const user = await prisma.user.findUnique({
+          where: { username },
+        });
+        if (!user) return null;
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordValid) return null;
+
+        return user;
+      },
     }),
   ],
   callbacks: {
