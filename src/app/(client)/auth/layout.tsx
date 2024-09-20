@@ -1,11 +1,8 @@
-import { Metadata } from "next";
+import { Meta } from '@/components/common/Meta';
 import Link from "next/link";
 import { Toaster } from "@/components/ui/toaster";
 
-export const metadata: Metadata = {
-  title: "ARM",
-  description: "Leverage the power of AI to help you find the right talent",
-};
+export const metadata = Meta();
 
 const info = {
   company: process.env.company,

@@ -34,6 +34,6 @@ export async function signInWithGoogleAction(formData: FormData) {
 // action: Sign out
 export async function signOutAction() {
   await signOut({
-    redirectTo: "/auth/sign-in",
+    redirectTo: "/auth/signin",
   });
 }

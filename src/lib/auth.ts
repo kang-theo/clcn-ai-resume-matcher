@@ -1,28 +1,22 @@
 import NextAuth from "next-auth";
-import GitHub from "next-auth/providers/github";
+// import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import Credentials from "@auth/core/providers/credentials";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import { Session, User } from "next-auth";
 import { JWT } from "next-auth/jwt";
-
-import { z } from "zod";
-
-const loginUserSchema = z.object({
-  username: z.string().regex(/^[a-z0-9_-]{3,15}$/g, "Invalid username"),
-  password: z.string().min(5, "Password should be minimum 5 characters"),
-});
+import { UserSchema as loginUserSchema } from "@/lib/schema";
 
 export const authOptions = {
   // Define the secret
   secret: process.env.NEXTAUTH_SECRET,
 
   providers: [
-    GitHub({
-      clientId: process.env.AUTH_GITHUB_ID,
-      clientSecret: process.env.AUTH_GITHUB_SECRET,
-    }),
+    // GitHub({
+    //   clientId: process.env.AUTH_GITHUB_ID,
+    //   clientSecret: process.env.AUTH_GITHUB_SECRET,
+    // }),
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
@@ -83,7 +77,7 @@ export const authOptions = {
     },
   },
   pages: {
-    signIn: "/auth/sign-in",
+    signIn: "/auth/signin",
     // signOut: '/auth/sign-out',
     error: "/auth/error", // Error code passed in query string as ?error=????
     // error: "/auth/error", // Error code passed in query string as ?error=????

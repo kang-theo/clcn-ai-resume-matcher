@@ -21,7 +21,14 @@ const SignInButton: React.FC<SignInButtonProps> = ({
     async (e: React.SyntheticEvent) => {
       e.preventDefault();
       setIsSigning(true);
-      await signInAction();
+
+      if (formSSORef.current) {
+        const formData = new FormData(formSSORef.current);
+        await signInAction(formData);
+      } else {
+        console.error('Form element is not available.');
+      }
+
       setIsSigning(false);
     },
     [setIsSigning, signInAction]

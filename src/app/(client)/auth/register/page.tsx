@@ -1,13 +1,9 @@
-import { Metadata } from "next";
+import { Meta } from '@/components/common/Meta';
 import React from "react";
 
 import { UserAuthForm } from "@/components/auth/AuthForm";
 
-export const metadata: Metadata = {
-  title: "AI resume matcher register",
-  description:
-    "Authentication forms tailwind, next.js etc.",
-};
+export const metadata = Meta();
 
 function Register() {
   return (
@@ -20,7 +16,7 @@ function Register() {
               Enter your username and password below
             </p>
           </div>
-          <UserAuthForm type='sign-up' />
+          <UserAuthForm type='signup' />
         </div>
       </div>
     </div>

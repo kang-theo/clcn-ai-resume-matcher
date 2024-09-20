@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import { useCustomToast } from "@/hooks/useCustomToast";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
-  type: "sign-in" | "sign-up";
+  type: "signin" | "signup";
 }
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
@@ -32,7 +32,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     const form = new FormData(event.target as HTMLFormElement);
 
     // currently, next-auth.js has no signUp function
-    if (type === "sign-up") {
+    if (type === "signup") {
       const passwordVal = form.get("password");
       const passwordConfirmationVal = form.get("passwordConfirmation");
       if (passwordVal !== passwordConfirmationVal) {
@@ -79,7 +79,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               description:
                 "Congratulations! You have successfully signed up. Please check your email to verify your account.",
             });
-            router.push("/auth/sign-in");
+            router.push("/auth/signin");
           }
         } else {
           // Handle HTTP error status (e.g., res.status is not 2xx)
@@ -149,7 +149,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     <div className={cn("grid gap-6", className)} {...props}>
       <form onSubmit={onSubmit}>
         <div className='grid gap-2'>
-          {type === "sign-up" && (
+          {type === "signup" && (
             <div className='grid gap-1'>
               <Label className='sr-only' htmlFor='email'>
                 Email
@@ -197,7 +197,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               disabled={isLoading}
             />
           </div>
-          {type === "sign-up" && (
+          {type === "signup" && (
             <div className='grid gap-1'>
               <Label className='sr-only' htmlFor='passwordConfirmation'>
                 Password Confirmation
@@ -218,9 +218,9 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             {isLoading && (
               <Icons.Spinner className='mr-2 h-4 w-4 animate-spin' />
             )}
-            {type === "sign-in" ? "Sign In" : "Sign Up"}
+            {type === "signin" ? "Sign In" : "Sign Up"}
           </Button>
-          {type === "sign-in" ? (
+          {type === "signin" ? (
             <p className='text-sm text-center'>
               Don&apos;t have an account?{" "}
               <Link href='/auth/register' className='font-semibold'>
@@ -230,7 +230,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           ) : (
             <p>
               Do you already have an account?{" "}
-              <Link href='/auth/sign-in'>Sign in</Link>
+              <Link href='/auth/signin'>Sign in</Link>
             </p>
           )}
         </div>
@@ -244,12 +244,12 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         </div>
       </div>
       <div>
-        <SignInButton
+        {/* <SignInButton
           provider='github'
           isSigning={githubSigning}
           setIsSigning={setGithubSigning}
           signInAction={signInWithGithubAction}
-        />
+        /> */}
         <SignInButton
           provider='google'
           isSigning={googleSigning}

@@ -8,7 +8,7 @@ const AuthError: FC = () => {
       <p className='text-sm text-muted-foreground'>
         It seems there was an issue with your login. Please try again. Go to
         <span className='ml-1 mr-1'>
-          <Link href="/auth/sign-in" className='underline underline-offset-4 hover:text-primary'>
+          <Link href="/auth/signin" className='underline underline-offset-4 hover:text-primary'>
             Sign In
           </Link>
         </span>

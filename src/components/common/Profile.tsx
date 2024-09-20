@@ -25,7 +25,7 @@ const items: MenuProps["items"] = [
           e.preventDefault();
           signOut({
             redirect: true,
-            callbackUrl: '/auth/sign-in',
+            callbackUrl: '/auth/signin',
           });
         }}
       >
