@@ -11,6 +11,11 @@ declare namespace API {
   }
 
   // define types from here...
+  type Role = {
+    id: string;
+    name: string;
+    created_at: string;
+  };
 }
 
 // Extend the `User` type from `next-auth` to include custom properties
