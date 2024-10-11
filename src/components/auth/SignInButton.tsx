@@ -1,7 +1,6 @@
 import React, { useRef, useCallback, useState } from 'react';
 import { Icons } from "@/components/common/Icons";
 import { Button } from "@/components/ui/button";
-import { handleError } from '@/lib/error-handler';
 
 interface SignInButtonProps {
   provider: 'github' | 'google';
@@ -23,18 +22,14 @@ const SignInButton: React.FC<SignInButtonProps> = ({
       e.preventDefault();
       setIsSigning(true);
 
-      try {
-        if (formSSORef.current) {
-          const formData = new FormData(formSSORef.current);
-          await signInAction(formData);
-        } else {
-          handleError('Form element is not available.');
-        }
-      } catch (error) {
-        handleError(error);
-      } finally {
-        setIsSigning(false);
+      if (formSSORef.current) {
+        const formData = new FormData(formSSORef.current);
+        await signInAction(formData);
+      } else {
+        console.error('Form element is not available.');
       }
+
+      setIsSigning(false);
     },
     [setIsSigning, signInAction]
   );

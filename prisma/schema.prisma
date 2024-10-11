@@ -56,12 +56,15 @@ model User {
   email_verified DateTime?
   image          String?
   linkedin       String?
+  address        String?
   accounts       Account[]
   sessions       Session[]
   roles          RolesOnUsers[]
   status         UserState      @default(Active)
   created_at     DateTime       @default(now())
   updated_at     DateTime       @default(now())
+  resumes        Resumes[]
+  applications   Applications[] // 一个人可以投递多个职位
 }
 
 model VerificationToken {
@@ -91,4 +94,116 @@ model RolesOnUsers {
   assigned_by String
 
   @@id([user_id, role_id])
+}
+
+model JobDescriptions {
+  id            String                           @id @default(cuid())
+  title         String                           @db.VarChar(100)
+  description   String                           @db.Text
+  department    String?
+  created_by    String
+  created_at    DateTime                         @default(now())
+  last_modifier String?
+  updated_at    DateTime                         @default(now())
+  questionaires QuestionairesOnJobDescriptions[]
+  applications  Applications[]
+}
+
+// 1.问卷没有标准答案，所以用Text存储，让AI/人工审核
+// 2. 后面可以细化QuestionaireItem: 选择题，判断题，问答题等等
+// 3. (optional)使用富文本编辑器，创建Description和填写问卷
+// 4. (optional)使用QuestionaireItem 组装Questionaires
+model Questionaires {
+  id                 String                           @id @default(cuid())
+  title              String                           @db.VarChar(100)
+  description        String                           @db.Text
+  created_by         String
+  created_at         DateTime                         @default(now())
+  last_modifier      String?
+  updated_at         DateTime                         @default(now())
+  jds                QuestionairesOnJobDescriptions[]
+  standard_scores    Int?
+  applications       Applications[]
+  questionaire_items QuestionaireItems[]
+}
+
+enum QuestionaireItemType {
+  text // flexible text
+  boolean // true/false
+  radio // single choice
+  checkbox // multiple choice
+}
+
+model QuestionaireItems {
+  id              String               @id @default(cuid())
+  questionaire    Questionaires        @relation(fields: [questionaire_id], references: [id])
+  questionaire_id String
+  description     String               @db.Text
+  type            QuestionaireItemType @default(radio) // 默认单选
+  answer          String?
+  created_by      String
+  created_at      DateTime             @default(now())
+  last_modifier   String?
+  updated_at      DateTime             @default(now())
+}
+
+// 一个JD可以有多个问卷(笔试题)，同时一个问卷(笔试题)也可以应用到多个不同的JD(例如不同的公司都在招前端，那么一个前端的
+// 面试题就可以被多家公司HR使用)
+model QuestionairesOnJobDescriptions {
+  job_description    JobDescriptions @relation(fields: [job_description_id], references: [id])
+  job_description_id String
+  questionaire       Questionaires   @relation(fields: [questionaire_id], references: [id])
+  questionaire_id    String
+  created_by         String // 谁使用的
+  created_at         DateTime        @default(now())
+  last_modifier      String?
+  updated_at         DateTime        @default(now())
+
+  @@id([job_description_id, questionaire_id])
+}
+
+model Resumes {
+  id           String         @id @default(uuid())
+  user_id      String
+  user         User           @relation(fields: [user_id], references: [id])
+  url          String // S3 Key
+  type         String // pdf, docx, doc
+  size         Int // 10MB
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @default(now())
+  applications Applications[]
+}
+
+enum ApplicationStatus {
+  // 待审核
+  pending
+  // 审核通过, 可以进入下一轮面试邀请 (AI/人)
+  approved
+  // 审核不通过，Thanks email (AI/人)
+  rejected
+}
+
+// 一个候选人申请了某一个职位，填写了职位的问卷，并附带了自己的简历
+// 1. 一个职位下面有多个申请者
+// 2. 一个问卷有多个人填写
+
+// 1. 使用AI，立刻可以反馈这次申请的综合评分
+// 2. 人工审核这次申请的
+model Applications {
+  id                  String            @id @default(uuid())
+  user                User              @relation(fields: [user_id], references: [id])
+  user_id             String
+  job_description     JobDescriptions   @relation(fields: [job_description_id], references: [id])
+  job_description_id  String
+  questionaire        Questionaires     @relation(fields: [questionaire_id], references: [id])
+  questionaire_id     String
+  questionare_answers Json? // 问卷的答案 {[questionaire_item_id]: [answer]}
+  resume_id           String
+  resume              Resumes           @relation(fields: [resume_id], references: [id])
+  scores              Int               @default(0)
+  status              ApplicationStatus @default(pending)
+  created_by          String
+  created_at          DateTime          @default(now())
+  last_modifier       String?
+  updated_at          DateTime          @default(now())
 }
