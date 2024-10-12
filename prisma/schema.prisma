@@ -96,10 +96,17 @@ model RolesOnUsers {
   @@id([user_id, role_id])
 }
 
+enum JobStatus {
+  Draft
+  Open
+  Closed
+}
+
 model JobDescriptions {
   id            String                           @id @default(cuid())
   title         String                           @db.VarChar(100)
   description   String                           @db.Text
+  status        JobStatus                        @default(Draft)
   department    String?
   created_by    String
   created_at    DateTime                         @default(now())
@@ -113,18 +120,22 @@ model JobDescriptions {
 // 2. 后面可以细化QuestionaireItem: 选择题，判断题，问答题等等
 // 3. (optional)使用富文本编辑器，创建Description和填写问卷
 // 4. (optional)使用QuestionaireItem 组装Questionaires
+// ----- 说明
+// 1. 一个调查问卷可以由多个调查项目构成
+// 2. 一个调查项目有多个选项可以选择，这些选项独立的，可以重复使用在多个调查项目中
+// 3. 一个调查项目也可以引用在多个调查问卷中
 model Questionaires {
-  id                 String                           @id @default(cuid())
-  title              String                           @db.VarChar(100)
-  description        String                           @db.Text
+  id                 String                            @id @default(cuid())
+  title              String                            @db.VarChar(100)
+  description        String                            @db.Text
   created_by         String
-  created_at         DateTime                         @default(now())
+  created_at         DateTime                          @default(now())
   last_modifier      String?
-  updated_at         DateTime                         @default(now())
+  updated_at         DateTime                          @default(now())
   jds                QuestionairesOnJobDescriptions[]
   standard_scores    Int?
   applications       Applications[]
-  questionaire_items QuestionaireItems[]
+  questionaire_items QuestionaireItemOnQuestionaires[]
 }
 
 enum QuestionaireItemType {
@@ -135,16 +146,53 @@ enum QuestionaireItemType {
 }
 
 model QuestionaireItems {
-  id              String               @id @default(cuid())
-  questionaire    Questionaires        @relation(fields: [questionaire_id], references: [id])
-  questionaire_id String
-  description     String               @db.Text
-  type            QuestionaireItemType @default(radio) // 默认单选
-  answer          String?
-  created_by      String
-  created_at      DateTime             @default(now())
-  last_modifier   String?
-  updated_at      DateTime             @default(now())
+  id            String                                       @id @default(cuid())
+  description   String                                       @db.Text
+  type          QuestionaireItemType                         @default(radio) // 默认单选
+  answer        String?
+  created_by    String
+  created_at    DateTime                                     @default(now())
+  last_modifier String?
+  updated_at    DateTime                                     @default(now())
+  questionaires QuestionaireItemOnQuestionaires[]
+  options       QuestionaireItemOptionsOnQuestionaireItems[]
+}
+
+model QuestionaireItemOptions {
+  id                 String                                       @id @default(cuid())
+  name               String
+  // score(int or other values)
+  value              String
+  created_by         String
+  created_at         DateTime                                     @default(now())
+  last_modifier      String?
+  updated_at         DateTime                                     @default(now())
+  questionaire_items QuestionaireItemOptionsOnQuestionaireItems[]
+}
+
+model QuestionaireItemOptionsOnQuestionaireItems {
+  option    QuestionaireItemOptions @relation(fields: [option_id], references: [id])
+  option_id String
+  item      QuestionaireItems       @relation(fields: [item_id], references: [id])
+  item_id   String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  operator   String
+
+  @@unique([option_id, item_id])
+}
+
+model QuestionaireItemOnQuestionaires {
+  questionaire         Questionaires     @relation(fields: [questionaire_id], references: [id])
+  questionaire_id      String
+  questionaire_item    QuestionaireItems @relation(fields: [questionaire_item_id], references: [id])
+  questionaire_item_id String
+  created_at           DateTime          @default(now())
+  updated_at           DateTime          @default(now())
+  operator             String
+
+  @@unique([questionaire_id, questionaire_item_id])
 }
 
 // 一个JD可以有多个问卷(笔试题)，同时一个问卷(笔试题)也可以应用到多个不同的JD(例如不同的公司都在招前端，那么一个前端的
