@@ -1,0 +1,266 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table Account {
+  id String [pk]
+  user_id String [not null]
+  type String [not null]
+  provider String [not null]
+  providerAccountId String [not null]
+  refresh_token String
+  access_token String
+  expires_at Int
+  token_type String
+  scope String
+  id_token String
+  session_state String
+  user User [not null]
+
+  indexes {
+    (provider, providerAccountId) [unique]
+  }
+}
+
+Table Session {
+  id String [pk]
+  sessionToken String [unique, not null]
+  user_id String [not null]
+  expires DateTime [not null]
+  user User [not null]
+}
+
+Table User {
+  id String [pk]
+  phone String [unique]
+  name String
+  username String [unique, not null]
+  password String [not null]
+  email String [unique, not null]
+  email_verified DateTime
+  image String
+  linkedin String
+  address String
+  accounts Account [not null]
+  sessions Session [not null]
+  roles RolesOnUsers [not null]
+  status UserState [not null, default: 'Active']
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [default: `now()`, not null]
+  resumes Resumes [not null]
+  applications Applications [not null]
+}
+
+Table VerificationToken {
+  identifier String [not null]
+  token String [unique, not null]
+  expires DateTime [not null]
+
+  indexes {
+    (identifier, token) [unique]
+  }
+}
+
+Table Role {
+  id String [pk]
+  name String [not null]
+  created_by String [not null]
+  created_at DateTime [default: `now()`, not null]
+  last_modifier String
+  updated_at DateTime [default: `now()`, not null]
+  users RolesOnUsers [not null]
+}
+
+Table RolesOnUsers {
+  user User [not null]
+  user_id String [not null]
+  role Role [not null]
+  role_id String [not null]
+  assigned_at DateTime [default: `now()`, not null]
+  assigned_by String [not null]
+
+  indexes {
+    (user_id, role_id) [pk]
+  }
+}
+
+Table JobDescriptions {
+  id String [pk]
+  title String [not null]
+  description String [not null]
+  status JobStatus [not null, default: 'Draft']
+  department String
+  created_by String [not null]
+  created_at DateTime [default: `now()`, not null]
+  last_modifier String
+  updated_at DateTime [default: `now()`, not null]
+  questionaires QuestionairesOnJobDescriptions [not null]
+  applications Applications [not null]
+}
+
+Table Questionaires {
+  id String [pk]
+  title String [not null]
+  description String [not null]
+  created_by String [not null]
+  created_at DateTime [default: `now()`, not null]
+  last_modifier String
+  updated_at DateTime [default: `now()`, not null]
+  jds QuestionairesOnJobDescriptions [not null]
+  standard_scores Int
+  applications Applications [not null]
+  questionaire_items QuestionaireItemOnQuestionaires [not null]
+}
+
+Table QuestionaireItems {
+  id String [pk]
+  description String [not null]
+  type QuestionaireItemType [not null, default: 'radio']
+  answer String
+  created_by String [not null]
+  created_at DateTime [default: `now()`, not null]
+  last_modifier String
+  updated_at DateTime [default: `now()`, not null]
+  questionaires QuestionaireItemOnQuestionaires [not null]
+  options QuestionaireItemOptionsOnQuestionaireItems [not null]
+}
+
+Table QuestionaireItemOptions {
+  id String [pk]
+  name String [not null]
+  value String [not null]
+  created_by String [not null]
+  created_at DateTime [default: `now()`, not null]
+  last_modifier String
+  updated_at DateTime [default: `now()`, not null]
+  questionaire_items QuestionaireItemOptionsOnQuestionaireItems [not null]
+}
+
+Table QuestionaireItemOptionsOnQuestionaireItems {
+  option QuestionaireItemOptions [not null]
+  option_id String [not null]
+  item QuestionaireItems [not null]
+  item_id String [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [default: `now()`, not null]
+  operator String [not null]
+
+  indexes {
+    (option_id, item_id) [unique]
+  }
+}
+
+Table QuestionaireItemOnQuestionaires {
+  questionaire Questionaires [not null]
+  questionaire_id String [not null]
+  questionaire_item QuestionaireItems [not null]
+  questionaire_item_id String [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [default: `now()`, not null]
+  operator String [not null]
+
+  indexes {
+    (questionaire_id, questionaire_item_id) [unique]
+  }
+}
+
+Table QuestionairesOnJobDescriptions {
+  job_description JobDescriptions [not null]
+  job_description_id String [not null]
+  questionaire Questionaires [not null]
+  questionaire_id String [not null]
+  created_by String [not null]
+  created_at DateTime [default: `now()`, not null]
+  last_modifier String
+  updated_at DateTime [default: `now()`, not null]
+
+  indexes {
+    (job_description_id, questionaire_id) [pk]
+  }
+}
+
+Table Resumes {
+  id String [pk]
+  user_id String [not null]
+  user User [not null]
+  url String [not null]
+  type String [not null]
+  size Int [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [default: `now()`, not null]
+  applications Applications [not null]
+}
+
+Table Applications {
+  id String [pk]
+  user User [not null]
+  user_id String [not null]
+  job_description JobDescriptions [not null]
+  job_description_id String [not null]
+  questionaire Questionaires [not null]
+  questionaire_id String [not null]
+  questionare_answers Json
+  resume_id String [not null]
+  resume Resumes [not null]
+  scores Int [not null, default: 0]
+  status ApplicationStatus [not null, default: 'pending']
+  created_by String [not null]
+  created_at DateTime [default: `now()`, not null]
+  last_modifier String
+  updated_at DateTime [default: `now()`, not null]
+}
+
+Enum UserState {
+  Active
+  Inactive
+  Deleted
+}
+
+Enum JobStatus {
+  Draft
+  Open
+  Closed
+}
+
+Enum QuestionaireItemType {
+  text
+  boolean
+  radio
+  checkbox
+}
+
+Enum ApplicationStatus {
+  pending
+  approved
+  rejected
+}
+
+Ref: Account.user_id > User.id [delete: Cascade]
+
+Ref: Session.user_id > User.id [delete: Cascade]
+
+Ref: RolesOnUsers.user_id > User.id
+
+Ref: RolesOnUsers.role_id > Role.id
+
+Ref: QuestionaireItemOptionsOnQuestionaireItems.option_id > QuestionaireItemOptions.id
+
+Ref: QuestionaireItemOptionsOnQuestionaireItems.item_id > QuestionaireItems.id
+
+Ref: QuestionaireItemOnQuestionaires.questionaire_id > Questionaires.id
+
+Ref: QuestionaireItemOnQuestionaires.questionaire_item_id > QuestionaireItems.id
+
+Ref: QuestionairesOnJobDescriptions.job_description_id > JobDescriptions.id
+
+Ref: QuestionairesOnJobDescriptions.questionaire_id > Questionaires.id
+
+Ref: Resumes.user_id > User.id
+
+Ref: Applications.user_id > User.id
+
+Ref: Applications.job_description_id > JobDescriptions.id
+
+Ref: Applications.questionaire_id > Questionaires.id
+
+Ref: Applications.resume_id > Resumes.id
