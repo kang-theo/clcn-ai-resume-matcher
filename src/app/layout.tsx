@@ -3,6 +3,8 @@ import { Inter as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { SessionProvider } from "next-auth/react";
 import "@/assets/styles/admin.css";
+import GlobalError from "./global-error";
+import { ErrorProvider } from "@/context/ErrorContext";
 
 // const inter = Inter({ subsets: ["latin"] });
 const fontSans = FontSans({
@@ -22,17 +24,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <SessionProvider>
-      <html lang='en' suppressHydrationWarning>
-        <body
-          className={cn(
-            "bg-background text-foreground dark:bg-[hsl(var(--background))] app min-h-screen font-sans antialiased",
-            fontSans.variable
-          )}
-        >
-          {children}
-        </body>
-      </html>
-    </SessionProvider>
+    <ErrorProvider>
+      <SessionProvider>
+        <html lang='en' suppressHydrationWarning>
+          <body
+            className={cn(
+              "bg-background text-foreground dark:bg-[hsl(var(--background))] app min-h-screen font-sans antialiased",
+              fontSans.variable
+            )}
+          >
+            {children}
+          </body>
+        </html>
+      </SessionProvider>
+    </ErrorProvider>
   );
 }
+
+export const config = {
+  unstable_runtimeJS: true,
+  errorBoundary: GlobalError, // Use GlobalError as the global error boundary
+};

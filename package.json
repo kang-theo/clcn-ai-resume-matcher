@@ -6,7 +6,8 @@
     "dev": "PORT=3333 next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "jest"
   },
   "dependencies": {
     "@ant-design/icons": "^5.4.0",
@@ -43,16 +44,22 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/react": "^16.0.1",
     "@types/bcryptjs": "^2.4.6",
+    "@types/jest": "^29.5.13",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.2.7",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8",
     "prisma": "^5.19.1",
     "prisma-dbml-generator": "^0.12.0",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.6.3"
   }
 }
