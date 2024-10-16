@@ -1,16 +1,12 @@
-// npm install @prisma/client @auth/prisma-adapter zod bcrypt
-// npm install prisma @types/bcryptjs --save-dev
-// npx prisma init
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { UserSchema as registerUserSchema } from "@/lib/schema";
 import prisma from "@/lib/prisma";
 
 export const POST = async (req: NextRequest) => {
   try {
     const payload = await req.json();
-    // validate the payload with defined schema
-    const { email, username, password } = registerUserSchema.parse(payload);
+    const { email, username, password } = payload;
+
     const user = await prisma.user.findMany({
       where: {
         OR: [
@@ -33,7 +29,7 @@ export const POST = async (req: NextRequest) => {
       return NextResponse.json(
         {
           meta: {
-            code: 400,
+            code: "USER_EXISTS",
             message: "User already exists",
           },
         },
@@ -54,27 +50,41 @@ export const POST = async (req: NextRequest) => {
 
     if (newUser) {
       return NextResponse.json(
-        { meta: { code: "OK" } },
+        {
+          meta: {
+            code: "OK",
+            message: "Created a new user successfully",
+          },
+        },
         {
           status: 201,
         }
       );
     } else {
-      return NextResponse.json({
-        meta: { code: 500, message: "Failed to create user in database" },
-      });
+      return NextResponse.json(
+        {
+          meta: {
+            code: "SERVER_ERROR",
+            message: "Failed to create user in database",
+          },
+        },
+        {
+          status: 500,
+        }
+      );
     }
   } catch (err: any) {
+    console.error("Error parsing request:", err.errors);
     return NextResponse.json(
       {
         meta: {
-          code: err.response.status || "Bad Request",
+          code: err?.response?.status || "Bad Request",
           message:
             err?.message || "Failed to create account, please contact support",
         },
       },
       {
-        status: err.response.status || 400,
+        status: err?.response?.status || 400,
       }
     );
   }

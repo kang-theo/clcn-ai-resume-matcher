@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import { Session, User } from "next-auth";
 import { JWT } from "next-auth/jwt";
-import { UserSchema as loginUserSchema } from "@/lib/schema";
+import { userSchema } from "@/lib/schema";
 
 export const authOptions = {
   // Define the secret
@@ -31,7 +31,7 @@ export const authOptions = {
       },
       // async authorize(credentials, req) {
       async authorize(credentials) {
-        const { username, password } = loginUserSchema.parse(credentials);
+        const { username, password } = userSchema.parse(credentials);
         // next-auth.ja signIn with prisma
         const user = await prisma.user.findUnique({
           where: { username },

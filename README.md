@@ -104,8 +104,10 @@ The main functionalities of the current project are divided into three areas:
 The workflow of the project is as follows:
 
 ![workflow](./assets/ai-resume-matcher.png)
-![use case](./assets/use_case.png)
+![Use case](./assets/use_case.png)
 
 ### The Schema Design
 
-![entity relationship](./assets/er-diagram.png)
+![schema](./assets/schema.png)
+
+The attributes: TODO

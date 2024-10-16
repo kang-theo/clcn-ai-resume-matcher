@@ -8,26 +8,124 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { signInWithGithubAction, signInWithGoogleAction } from "@/app/actions/auth";
+import { signInWithGoogleAction } from "@/app/actions/auth";
 import SignInButton from './SignInButton';
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useCustomToast } from "@/hooks/useCustomToast";
+import { userSchema, UserForm } from "@/lib/schema";
+import { z } from "zod";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   type: "signin" | "signup";
 }
 
+interface FormErrors {
+  email?: string;
+  username?: string;
+  password?: string;
+  passwordConfirmation?: string;
+  general?: string;
+}
+
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const { type } = props;
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [githubSigning, setGithubSigning] = useState<boolean>(false);
+  // const [githubSigning, setGithubSigning] = useState<boolean>(false);
   const [googleSigning, setGoogleSigning] = useState<boolean>(false);
   const router = useRouter();
   const { showToast } = useCustomToast();
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    passwordConfirmation: "",
+  });
+  // const [touched, setTouched] = useState<Record<string, boolean>>({}); // Track touched fields
+
+  // Handle input change (real-time validation)
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name]: value });
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "", // Clear error on change
+    }));
+  };
+
+  const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+
+    // // Mark the field as touched
+    // setTouched((prevTouched) => ({
+    //   ...prevTouched,
+    //   [name]: true,
+    // }));
+
+    // Skip validation if the field is empty
+    if (!value) {
+      return;
+    }
+
+    try {
+      switch (name) {
+        case 'email':
+          userSchema.shape.email.parse(value); // validate email only
+          break;
+        case 'username':
+          userSchema.shape.username.parse(value); // validate username only
+          break;
+        case 'password':
+          userSchema.shape.password.parse(value); // validate password only
+          break;
+        case "passwordConfirmation":
+          if (value !== formData.password) {
+            throw new z.ZodError([
+              {
+                code: "custom",
+                path: ["passwordConfirmation"],
+                message: "Passwords do not match",
+              },
+            ]);
+          }
+          break;
+        default:
+          throw new Error('Unknown field');
+      }
+
+      // If validation passes, clear the error for that field
+      setErrors((prevErrors) => {
+        const { [name]: removedError, ...rest } = prevErrors;
+        return rest;
+      });
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const errorMessage = err.errors[0]?.message;
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: errorMessage,
+        }));
+      }
+    }
+  };
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
+
+    try {
+      // Validate the whole form
+      userSchema.parse(formData);
+      console.log("Form submitted successfully:", formData);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const newErrors: FormErrors = {};
+        err.errors.forEach((error) => {
+          newErrors[error.path[0] as keyof FormErrors] = error.message;
+        });
+        setErrors(newErrors); // Update error info
+      }
+    }
     setIsLoading(true);
     const form = new FormData(event.target as HTMLFormElement);
 
@@ -36,71 +134,74 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       const passwordVal = form.get("password");
       const passwordConfirmationVal = form.get("passwordConfirmation");
       if (passwordVal !== passwordConfirmationVal) {
-        showToast({
-          title: "Password mismatch",
-          description: "Please check your input and try again.",
-        });
+        // setErrors({ password: "Passwords do not match." });
         setIsLoading(false);
-        return null;
+        return;
       }
 
-      // send to api server for register
-      const res = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        // send in JSON string
-        body: JSON.stringify({
-          // csrfToken: form.get("csrfToken"),
-          username: form.get("username"),
-          email: form.get("email"),
-          password: passwordVal,
-          passwordConfirmation: passwordConfirmationVal,
-        }),
-      });
-
       try {
-        const data: any = await res.json();
-        if (res.ok) {
-          const metaData = data.meta;
+        // send to api server for register
+        const res = await fetch("/api/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          // send in JSON string
+          body: JSON.stringify({
+            // csrfToken: form.get("csrfToken"),
+            username: form.get("username"),
+            email: form.get("email"),
+            password: passwordVal,
+            passwordConfirmation: passwordConfirmationVal,
+          }),
+        });
 
-          if (metaData.code !== "OK") {
-            // Handle the error, e.g., show an error message to the user
-            showToast({
-              title: "Server side error",
-              description:
-                metaData.message ||
-                "An unexpected error occurred on the server. Please try again later or contact support for assistance.",
-            });
-          } else {
-            showToast({
-              title: "Sign up successful",
-              description:
-                "Congratulations! You have successfully signed up. Please check your email to verify your account.",
-            });
-            router.push("/auth/signin");
-          }
-        } else {
-          // Handle HTTP error status (e.g., res.status is not 2xx)
-          // Corner case, edge case
-          // 埋点 (event tracking)，Using RPC(Remote Procedure Call) 提交日志到服务器
-          // console.error(`HTTP Error: ${res.statusText}`);
+        const data: any = await res.json();
+        const metaData = data.meta;
+
+        // Handle HTTP error status (e.g., res.status is not 2xx)
+        // Corner case, edge case
+        // 埋点 (event tracking)，Using RPC(Remote Procedure Call) 提交日志到服务器
+        // console.error(`HTTP Error: ${res.statusText}`);
+        if (!res.ok) {
           showToast({
             title: "Request Error",
-            description:
-              "Please try again later or contact support for assistance.",
+            description: "Please try again later or contact support for assistance.",
           });
+          return; // Early return on HTTP error
         }
+
+        // Handle server-side errors
+        if (metaData.code !== "OK") {
+          showToast({
+            title: "Server Side Error",
+            description:
+              metaData.message ||
+              "An unexpected error occurred on the server. Please try again later or contact support for assistance.",
+          });
+          return;
+        }
+
+        // Sign-up success handling
+        showToast({
+          title: "Sign Up Successful",
+          description:
+            "Congratulations! You have successfully signed up. Please check your email to verify your account.",
+        });
+        router.push("/auth/signin");
+
       } catch (error) {
-        console.error(error);
-        // Handle JSON parsing error
-        console.error("Error parsing JSON:", error);
+        // Handle network or other unexpected errors
+        console.error("Error during registration:", error);
+        showToast({
+          title: "Unexpected Error",
+          description: "An unexpected error occurred. Please try again.",
+        });
       } finally {
         // Always set loading to false, whether there was an error or not
         setIsLoading(false);
-        return null;
       }
+      return;
     }
 
     // after register successfully
@@ -116,8 +217,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       // for example: {"error":"CredentialsSignin","status":200,"ok":true,"url":null}
       if (result && result.error) {
         showToast({
-          title: "Failed to sign in",
-          description: result.error || "Please check your input and try again.",
+          title: "Failed To Sign In",
+          description: `Please check your ${result.error} and try again.`,
         });
       } else {
         // Todo: RDBC
@@ -130,17 +231,19 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         // Redirect or perform other actions
       }
       setIsLoading(false);
-      // console.log("Authentication successful");
     } catch (err) {
       if (err instanceof Error) {
         showToast({
-          title: "Failed to sign in",
+          title: "Failed To Sign In",
           description: err.message || "Please check your input and try again.",
         });
       } else {
         console.error("An unexpected error occurred.", err);
+        showToast({
+          title: "Unexpected Error Occurred",
+          description: "Unexpected error occurred.",
+        });
       }
-
       setIsLoading(false);
     }
   }
@@ -163,7 +266,11 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 autoComplete='email'
                 autoCorrect='off'
                 disabled={isLoading}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
               />
+              {/* Show errors */}
+              {errors.email && <p className='text-red-400'>{errors.email}</p>}
             </div>
           )}
 
@@ -180,8 +287,12 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               autoComplete='input'
               autoCorrect='off'
               disabled={isLoading}
+              onChange={handleInputChange}
+              onBlur={handleBlur}
             />
+            {errors.username && <p className='text-red-400'>{errors.username}</p>}
           </div>
+
           <div className='grid gap-1'>
             <Label className='sr-only' htmlFor='password'>
               Password
@@ -189,31 +300,39 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             <Input
               id='password'
               name='password'
-              placeholder='password'
+              placeholder='Password'
               type='password'
               autoCapitalize='none'
               autoComplete='password'
               autoCorrect='off'
               disabled={isLoading}
+              onChange={handleInputChange}
+              onBlur={handleBlur}
             />
+            {errors.password && <p className='text-red-400'>{errors.password}</p>}
           </div>
+
           {type === "signup" && (
             <div className='grid gap-1'>
               <Label className='sr-only' htmlFor='passwordConfirmation'>
                 Password Confirmation
               </Label>
               <Input
-                name='passwordConfirmation'
                 id='passwordConfirmation'
+                name='passwordConfirmation'
                 placeholder='Confirm password'
                 type='password'
                 autoCapitalize='none'
                 autoComplete='password'
                 autoCorrect='off'
                 disabled={isLoading}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
               />
             </div>
           )}
+          {errors.passwordConfirmation && <p className='text-red-400'>{errors.passwordConfirmation}</p>}
+
           <Button disabled={isLoading}>
             {isLoading && (
               <Icons.Spinner className='mr-2 h-4 w-4 animate-spin' />
@@ -234,7 +353,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             </p>
           )}
         </div>
-      </form>
+      </form >
       <div className='relative'>
         <div className='absolute inset-0 flex items-center'>
           <span className='w-full border-t' />
@@ -257,6 +376,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           signInAction={signInWithGoogleAction}
         />
       </div>
-    </div>
+    </div >
   );
 }
