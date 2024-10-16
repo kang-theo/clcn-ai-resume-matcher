@@ -8,6 +8,11 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// prisma to dbml with prisma-dbml-generator, dbml to er diagram with dbdiagram.io
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
@@ -62,7 +67,7 @@ model User {
   roles          RolesOnUsers[]
   status         UserState      @default(Active)
   created_at     DateTime       @default(now())
-  updated_at     DateTime       @default(now())
+  updated_at     DateTime       @updatedAt
   resumes        Resumes[]
   applications   Applications[] // 一个人可以投递多个职位
 }
@@ -81,7 +86,7 @@ model Role {
   created_by    String
   created_at    DateTime       @default(now())
   last_modifier String?
-  updated_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
   users         RolesOnUsers[]
 }
 
@@ -111,7 +116,7 @@ model JobDescriptions {
   created_by    String
   created_at    DateTime                         @default(now())
   last_modifier String?
-  updated_at    DateTime                         @default(now())
+  updated_at    DateTime                         @updatedAt
   questionaires QuestionairesOnJobDescriptions[]
   applications  Applications[]
 }
@@ -131,7 +136,7 @@ model Questionaires {
   created_by         String
   created_at         DateTime                          @default(now())
   last_modifier      String?
-  updated_at         DateTime                          @default(now())
+  updated_at         DateTime                          @updatedAt
   jds                QuestionairesOnJobDescriptions[]
   standard_scores    Int?
   applications       Applications[]
@@ -153,7 +158,7 @@ model QuestionaireItems {
   created_by    String
   created_at    DateTime                                     @default(now())
   last_modifier String?
-  updated_at    DateTime                                     @default(now())
+  updated_at    DateTime                                     @updatedAt
   questionaires QuestionaireItemOnQuestionaires[]
   options       QuestionaireItemOptionsOnQuestionaireItems[]
 }
@@ -166,7 +171,7 @@ model QuestionaireItemOptions {
   created_by         String
   created_at         DateTime                                     @default(now())
   last_modifier      String?
-  updated_at         DateTime                                     @default(now())
+  updated_at         DateTime                                     @updatedAt
   questionaire_items QuestionaireItemOptionsOnQuestionaireItems[]
 }
 
@@ -177,7 +182,7 @@ model QuestionaireItemOptionsOnQuestionaireItems {
   item_id   String
 
   created_at DateTime @default(now())
-  updated_at DateTime @default(now())
+  updated_at DateTime @updatedAt
   operator   String
 
   @@unique([option_id, item_id])
@@ -189,7 +194,7 @@ model QuestionaireItemOnQuestionaires {
   questionaire_item    QuestionaireItems @relation(fields: [questionaire_item_id], references: [id])
   questionaire_item_id String
   created_at           DateTime          @default(now())
-  updated_at           DateTime          @default(now())
+  updated_at           DateTime          @updatedAt
   operator             String
 
   @@unique([questionaire_id, questionaire_item_id])
@@ -205,7 +210,7 @@ model QuestionairesOnJobDescriptions {
   created_by         String // 谁使用的
   created_at         DateTime        @default(now())
   last_modifier      String?
-  updated_at         DateTime        @default(now())
+  updated_at         DateTime        @updatedAt
 
   @@id([job_description_id, questionaire_id])
 }
@@ -218,7 +223,7 @@ model Resumes {
   type         String // pdf, docx, doc
   size         Int // 10MB
   created_at   DateTime       @default(now())
-  updated_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
   applications Applications[]
 }
 
@@ -253,5 +258,5 @@ model Applications {
   created_by          String
   created_at          DateTime          @default(now())
   last_modifier       String?
-  updated_at          DateTime          @default(now())
+  updated_at          DateTime          @updatedAt
 }
