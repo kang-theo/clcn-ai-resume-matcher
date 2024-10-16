@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import { userSchema, UserForm } from "@/lib/schema";
 import { z } from "zod";
+import ErrorMessage from "@/components/common/ErrorMessage";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   type: "signin" | "signup";
@@ -42,7 +43,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     password: "",
     passwordConfirmation: "",
   });
-  // const [touched, setTouched] = useState<Record<string, boolean>>({}); // Track touched fields
 
   // Handle input change (real-time validation)
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,12 +56,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-
-    // // Mark the field as touched
-    // setTouched((prevTouched) => ({
-    //   ...prevTouched,
-    //   [name]: true,
-    // }));
 
     // Skip validation if the field is empty
     if (!value) {
@@ -108,6 +102,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         }));
       }
     }
+  };
+
+  const getBorderClass = (error?: string) => {
+    return `border ${error ? 'border-red-500' : 'border-gray-300'} rounded-md p-2 focus-visible:ring-transparent`;
   };
 
   async function onSubmit(event: React.SyntheticEvent) {
@@ -268,9 +266,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 disabled={isLoading}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
+                className={getBorderClass(errors.email)}
               />
               {/* Show errors */}
-              {errors.email && <p className='text-red-400'>{errors.email}</p>}
+              <ErrorMessage error={errors.email} />
             </div>
           )}
 
@@ -289,8 +288,9 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               disabled={isLoading}
               onChange={handleInputChange}
               onBlur={handleBlur}
+              className={getBorderClass(errors.username)}
             />
-            {errors.username && <p className='text-red-400'>{errors.username}</p>}
+            <ErrorMessage error={errors.username} />
           </div>
 
           <div className='grid gap-1'>
@@ -308,8 +308,9 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               disabled={isLoading}
               onChange={handleInputChange}
               onBlur={handleBlur}
+              className={getBorderClass(errors.password)}
             />
-            {errors.password && <p className='text-red-400'>{errors.password}</p>}
+            <ErrorMessage error={errors.password} />
           </div>
 
           {type === "signup" && (
@@ -328,10 +329,11 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 disabled={isLoading}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
+                className={getBorderClass(errors.passwordConfirmation)}
               />
             </div>
           )}
-          {errors.passwordConfirmation && <p className='text-red-400'>{errors.passwordConfirmation}</p>}
+          <ErrorMessage error={errors.passwordConfirmation} />
 
           <Button disabled={isLoading}>
             {isLoading && (
