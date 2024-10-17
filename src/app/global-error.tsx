@@ -27,7 +27,6 @@ const GlobalError: React.FC<GlobalErrorProps> = ({ error: propError, reset: prop
 
   const renderErrorMessage = () => {
     if (!error) return null;
-    console.log("1---" + error.message)
 
     if (error.message.includes("Network Error")) {
       return (

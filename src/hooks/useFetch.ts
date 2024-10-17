@@ -3,34 +3,49 @@ import { useError } from "@/context/ErrorContext";
 
 const useFetch = (url: string) => {
   const { setError, setEndpoint } = useError(); // Get context methods
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [abortController, setAbortController] =
+    useState<AbortController | null>(null); // AbortController state
 
   useEffect(() => {
+    const controller = new AbortController();
+    setAbortController(controller); // Store the controller in state
+
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const response = await fetch(url);
+        const response = await fetch(url, { signal: controller.signal }); // Pass the signal to fetch
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`);
         }
         const result = await response.json();
         setData(result);
-      } catch (error: unknown) {
+      } catch (error) {
         if (error instanceof Error) {
-          setError(error);
+          // Manually abort when user leaves a page or presses cancel button while a request is ongoing
+          if (error.name === "AbortError") {
+            console.log("Fetch aborted");
+          } else {
+            setError(error); // Set error in context
+            setEndpoint(url); // Set endpoint in context for retry
+          }
         } else {
-          setError(new Error("An unknown error occurred")); // Fallback error
+          console.error("Unexpected error", error);
         }
-        setEndpoint(url); // Set endpoint in context for retry
       } finally {
-        setLoading(false); // Loading is complete
+        setLoading(false); // Set loading to false
       }
     };
 
     fetchData();
+
+    return () => {
+      controller.abort(); // Cleanup: abort fetch on component unmount, or dependencies changed
+    };
   }, [url, setError, setEndpoint]);
 
-  return { data, loading, error: null }; // Returning error as null because it is managed in context
+  return { data, loading, abortController }; // Return abortController if needed
 };
 
 export default useFetch;
