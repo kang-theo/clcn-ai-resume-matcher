@@ -27,3 +27,11 @@ export const userSchema = z.object({
 
 // Types for validation
 export type UserForm = z.infer<typeof userSchema>;
+
+export const newQuestionaireSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  created_by: z.string(),
+  standard_scores: z.number().optional(),
+  questionaire_item_ids: z.array(z.string()),
+});
