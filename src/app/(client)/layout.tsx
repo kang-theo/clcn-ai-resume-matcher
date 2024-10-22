@@ -3,7 +3,6 @@ import { ThemeProvider } from "@/components/providers/themes";
 import { Inter as FontSans } from "next/font/google";
 import "@/assets/styles/global.css";
 import { ScrollToTop } from "@/components/layout/client/ScrollToTop";
-import { Navbar } from "@/components/layout/client/Navbar";
 
 export const metadata = Meta();
 
@@ -24,7 +23,6 @@ export default function ClientLayout({
       enableSystem
       disableTransitionOnChange
     >
-      <Navbar />
       {children}
       <ScrollToTop />
     </ThemeProvider>

@@ -1,5 +1,4 @@
-'use client'
-
+"use client";
 import React, { createContext, useContext, useState } from "react";
 
 // Define the context type
@@ -27,7 +26,9 @@ export const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <ErrorContext.Provider value={{ error, setError, reset, endpoint, setEndpoint }}>
+    <ErrorContext.Provider
+      value={{ error, setError, reset, endpoint, setEndpoint }}
+    >
       {children}
     </ErrorContext.Provider>
   );

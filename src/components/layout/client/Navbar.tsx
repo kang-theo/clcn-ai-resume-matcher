@@ -57,11 +57,6 @@ export const Navbar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const currPath = usePathname();
 
-  const isAuthPath = currPath.startsWith('/auth');
-  if (isAuthPath) {
-    return null;
-  }
-
   return (
     <header className='border-b-[1px] top-0 z-40 w-full'>
       <NavigationMenu className='mx-auto'>
