@@ -40,7 +40,20 @@ function getItem(
 export const items: MenuItem[] = [
   getItem("Dashboard", "/admin/dashboard", <LayoutGrid size={20} />),
   getItem("Jobs", "/admin/jobs", <List size={20} />),
-  getItem("Questionnaires", "/admin/questionaires", <FileQuestion size={20} />),
+  getItem(
+    "Questionnaires",
+    "/admin/questionaires",
+    <FileQuestion size={20} />,
+    [
+      getItem("All", "/admin/questionaires", <List size={20} />),
+      getItem("Items", "/admin/questionaires/items", <List size={20} />),
+      getItem(
+        "Options",
+        "/admin/questionaires/item-options",
+        <List size={20} />
+      ),
+    ]
+  ),
   getItem("Resumes", "/admin/resumes", <FileBox size={20} />),
   getItem("Applications", "/admin/applications", <List size={20} />),
   getItem("Reports", "/admin/reports", <NotebookText size={20} />),
