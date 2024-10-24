@@ -1,10 +1,11 @@
-import { Meta } from '@/components/common/Meta';
+import { Meta } from "@/components/common/Meta";
 import { Inter as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { SessionProvider } from "next-auth/react";
 import "@/assets/styles/admin.css";
 import GlobalError from "./global-error";
 import { ErrorProvider } from "@/context/ErrorContext";
+import { Toaster } from "react-hot-toast";
 
 // const inter = Inter({ subsets: ["latin"] });
 const fontSans = FontSans({
@@ -34,6 +35,7 @@ export default function RootLayout({
             )}
           >
             {children}
+            <Toaster />
           </body>
         </html>
       </SessionProvider>

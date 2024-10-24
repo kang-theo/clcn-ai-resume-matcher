@@ -1,51 +1,51 @@
 import { useEffect, useState } from "react";
+import axios, { CancelTokenSource } from "axios";
 import { useError } from "@/context/ErrorContext";
 
 const useFetch = (url: string) => {
   const { setError, setEndpoint } = useError(); // Get context methods
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [abortController, setAbortController] =
-    useState<AbortController | null>(null); // AbortController state
+  const [cancelTokenSource, setCancelTokenSource] =
+    useState<CancelTokenSource | null>(null); // CancelToken source state
 
   useEffect(() => {
-    const controller = new AbortController();
-    setAbortController(controller); // Store the controller in state
+    const source = axios.CancelToken.source(); // Create a new CancelToken source
+    setCancelTokenSource(source);
 
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await fetch(url, { signal: controller.signal }); // Pass the signal to fetch
-        if (!response.ok) {
-          throw new Error(`Error: ${response.statusText}`);
-        }
-        const result = await response.json();
-        setData(result);
+        const response = await axios.get(url, {
+          cancelToken: source.token, // Pass the cancel token to axios
+        });
+        setData(response.data);
       } catch (error) {
         if (error instanceof Error) {
           // Manually abort when user leaves a page or presses cancel button while a request is ongoing
-          if (error.name === "AbortError") {
+          if (axios.isCancel(error)) {
             console.log("Fetch aborted");
           } else {
-            setError(error); // Set error in context
-            setEndpoint(url); // Set endpoint in context for retry
+            // Set error and endpoint for retry in context
+            setError(error);
+            setEndpoint(url);
           }
         } else {
           console.error("Unexpected error", error);
         }
       } finally {
-        setLoading(false); // Set loading to false
+        setLoading(false);
       }
     };
 
     fetchData();
 
     return () => {
-      controller.abort(); // Cleanup: abort fetch on component unmount, or dependencies changed
+      source.cancel(); // Cleanup: cancel the request on component unmount or dependencies change
     };
   }, [url, setError, setEndpoint]);
 
-  return { data, loading, abortController }; // Return abortController if needed
+  return { data, loading, cancelTokenSource };
 };
 
 export default useFetch;
