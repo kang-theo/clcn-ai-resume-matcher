@@ -56,7 +56,6 @@ export const items: MenuItem[] = [
   ),
   getItem("Resumes", "/admin/resumes", <FileBox size={20} />),
   getItem("Applications", "/admin/applications", <List size={20} />),
-  getItem("Reports", "/admin/reports", <NotebookText size={20} />),
   getItem("Interviews", "/admin/interviews", <BookText size={20} />),
   getItem("Offers", "/admin/offers", <MailCheck size={20} />),
   getItem("Emails", "/admin/emails", <Mail size={20} />),

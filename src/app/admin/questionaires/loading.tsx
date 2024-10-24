@@ -4,7 +4,7 @@ export default function Loading() {
   return (
     <>
       <Breadcrumb
-        items={[{ title: "Dashboard" }]}
+        items={[{ title: "Dashboard" }, { title: "Questionaires" }]}
         style={{ margin: "8px 0" }}
       ></Breadcrumb>
       <div className='space-y-2'>
