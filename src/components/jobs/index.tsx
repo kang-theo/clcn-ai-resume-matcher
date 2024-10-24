@@ -366,7 +366,7 @@ function JobList({
   return (
     <div>
       <Breadcrumb
-        items={[{ title: "Dashboard" }, { title: "System" }, { title: "Jobs" }]}
+        items={[{ title: "Dashboard" }, { title: "Jobs" }]}
         style={{ margin: "8px 0" }}
       ></Breadcrumb>
 
