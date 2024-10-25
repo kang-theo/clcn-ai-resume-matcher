@@ -1,6 +1,3 @@
-import NextAuth from "next-auth";
-import { DefaultUser } from "next-auth";
-
 declare namespace API {
   interface AxiosError extends Error {
     config: AxiosRequestConfig;
@@ -15,6 +12,15 @@ declare namespace API {
     id: string;
     name: string;
     created_at: string;
+  };
+
+  type Job = {
+    id: string;
+    title: string;
+    description: string;
+    skills: string;
+    status: "Draft" | "Open" | "Closed";
+    created_by: string;
   };
 
   type QuestionaireItem = {
@@ -51,17 +57,4 @@ declare namespace API {
   > & {
     questionaire_item_ids?: string[];
   };
-}
-
-// Extend the `User` type from `next-auth` to include custom properties
-declare module "next-auth" {
-  interface User extends DefaultUser {
-    username?: string;
-  }
-
-  interface Session {
-    user: User & {
-      username?: string; // Custom property
-    };
-  }
 }

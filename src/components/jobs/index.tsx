@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { GetProp, MenuProps, TableProps } from "antd";
 import {
   Button,
@@ -14,6 +14,7 @@ import {
   Breadcrumb,
   Tag,
   message,
+  Space,
 } from "antd";
 import axios from "axios";
 import {
@@ -25,7 +26,7 @@ import {
 } from "lucide-react";
 import { formatDatetime } from "@/lib/utils";
 import { IFilter, SearchPanel } from "@/components/common/SearchPanel";
-// import JobForm from "./JobForm";
+import JobForm, { JobFormHandlers } from "./JobForm";
 
 type ColumnsType<T> = TableProps<T>["columns"];
 type TablePaginationConfig = Exclude<
@@ -131,6 +132,9 @@ function JobList({
   const [spinning, setSpinning] = useState<boolean>(false);
   const [jobFormVisible, setJobFormVisible] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+
+  const [operating, setOperating] = useState(false);
+  const jobFormRef = useRef<JobFormHandlers>(null);
 
   const fetchData = () => {
     setLoading(true);
@@ -258,13 +262,15 @@ function JobList({
     {
       title: "Title",
       dataIndex: "title",
-      width: 180,
+      width: 280,
       ellipsis: true,
       sorter: true,
     },
     {
       title: "Description",
       dataIndex: "description",
+      width: 200,
+      ellipsis: true,
     },
     {
       title: "Created By",
@@ -276,13 +282,13 @@ function JobList({
     {
       title: "Created At",
       dataIndex: "created_at",
-      width: 160,
+      width: 130,
       sorter: true,
       render: formatDatetime,
     },
     {
       title: "Action",
-      width: 120,
+      width: 60,
       render: (_, record) => {
         return (
           <div className='flex items-center'>
@@ -460,7 +466,7 @@ function JobList({
             </div>
           </Spin>
           <Drawer
-            width={480}
+            width={800}
             closable
             destroyOnClose
             title={selectedItem ? "Edit Job" : "Add Job"}
@@ -470,13 +476,42 @@ function JobList({
               setJobFormVisible(false);
               setselectedItem(null);
             }}
-            styles={{ body: { padding: 0 } }}
+            // styles={{ body: { padding: 0 } }}
+            extra={
+              <Space>
+                <Button onClick={() => jobFormRef?.current?.reset()}>
+                  Reset
+                </Button>
+                <Button
+                  type='primary'
+                  loading={operating}
+                  onClick={() => {
+                    setOperating(true);
+                    jobFormRef?.current?.executeOperation();
+                  }}
+                >
+                  {selectedItem ? "Update job" : "Create"}
+                </Button>
+              </Space>
+            }
           >
-            {/* <JobForm
-              headless
+            <JobForm
+              ref={jobFormRef}
+              url={url}
+              onComplete={() => {
+                setOperating(false);
+                fetchData();
+                setJobFormVisible(false);
+                api["success"]({
+                  message: "Created job successfully",
+                });
+              }}
+              onError={() => {
+                setOperating(false);
+              }}
+              method={selectedItem ? "put" : "post"}
               jobId={selectedItem?.id}
-              onComplete={() => fetchData()}
-            /> */}
+            />
           </Drawer>
         </Card>
         {contextHolder}

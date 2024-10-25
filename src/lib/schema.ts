@@ -35,3 +35,10 @@ export const newQuestionaireSchema = z.object({
   standard_scores: z.number().optional(),
   questionaire_item_ids: z.array(z.string()),
 });
+
+export const newJobSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  status: z.string().optional(),
+  created_by: z.string(),
+});

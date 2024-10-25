@@ -108,17 +108,40 @@ enum JobStatus {
 }
 
 model JobDescriptions {
-  id            String                           @id @default(cuid())
-  title         String                           @db.VarChar(100)
-  description   String                           @db.Text
-  status        JobStatus                        @default(Draft)
-  department    String?
-  created_by    String
-  created_at    DateTime                         @default(now())
-  last_modifier String?
-  updated_at    DateTime                         @updatedAt
-  questionaires QuestionairesOnJobDescriptions[]
-  applications  Applications[]
+  id                    String                           @id @default(cuid())
+  title                 String                           @db.VarChar(100)
+  company               String?
+  position              String?
+  skills                String
+  work_scope            String?
+  description           String                           @db.Text
+  status                JobStatus                        @default(Draft)
+  contact               String?
+  department            String?
+  created_by            String
+  created_at            DateTime                         @default(now())
+  last_modifier         String?
+  updated_at            DateTime                         @updatedAt
+  questionaires         QuestionairesOnJobDescriptions[]
+  applications          Applications[]
+  TagsOnJobDescriptions TagsOnJobDescriptions[]
+}
+
+model Tags {
+  id                    String                  @id @default(cuid())
+  name                  String                  @db.VarChar(50)
+  TagsOnJobDescriptions TagsOnJobDescriptions[]
+}
+
+model TagsOnJobDescriptions {
+  job_id     String
+  job        JobDescriptions @relation(fields: [job_id], references: [id])
+  tag_id     String
+  tag        Tags            @relation(fields: [tag_id], references: [id])
+  created_at DateTime        @default(now())
+  updated_at DateTime        @updatedAt
+
+  @@unique([job_id, tag_id])
 }
 
 // 1.问卷没有标准答案，所以用Text存储，让AI/人工审核

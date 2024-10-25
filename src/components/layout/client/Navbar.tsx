@@ -32,8 +32,8 @@ const routeList: RouteProps[] = [
     label: "Home",
   },
   {
-    href: "/#howItWorks",
-    label: "How-to",
+    href: "/jobs",
+    label: "Jobs",
   },
   {
     href: "/#features",
@@ -57,7 +57,7 @@ export const Navbar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const currPath = usePathname();
 
-  const isAuthPath = currPath.startsWith('/auth');
+  const isAuthPath = currPath.startsWith("/auth");
   if (isAuthPath) {
     return null;
   }
@@ -128,10 +128,11 @@ export const Navbar = () => {
                 rel='noreferrer noopener'
                 href={route.href}
                 key={i}
-                className={`text-[17px] ${currPath === route.href ? "bg-accent" : ""
-                  } ${buttonVariants({
-                    variant: "ghost",
-                  })}`}
+                className={`text-[17px] ${
+                  currPath === route.href ? "bg-accent" : ""
+                } ${buttonVariants({
+                  variant: "ghost",
+                })}`}
               >
                 {route.label}
               </Link>
