@@ -87,8 +87,13 @@ Table RolesOnUsers {
 Table JobDescriptions {
   id String [pk]
   title String [not null]
+  company String
+  position String
+  skills String [not null]
+  work_scope String
   description String [not null]
   status JobStatus [not null, default: 'Draft']
+  contact String
   department String
   created_by String [not null]
   created_at DateTime [default: `now()`, not null]
@@ -96,6 +101,26 @@ Table JobDescriptions {
   updated_at DateTime [not null]
   questionaires QuestionairesOnJobDescriptions [not null]
   applications Applications [not null]
+  TagsOnJobDescriptions TagsOnJobDescriptions [not null]
+}
+
+Table Tags {
+  id String [pk]
+  name String [not null]
+  TagsOnJobDescriptions TagsOnJobDescriptions [not null]
+}
+
+Table TagsOnJobDescriptions {
+  job_id String [not null]
+  job JobDescriptions [not null]
+  tag_id String [not null]
+  tag Tags [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+
+  indexes {
+    (job_id, tag_id) [unique]
+  }
 }
 
 Table Questionaires {
@@ -242,6 +267,10 @@ Ref: Session.user_id > User.id [delete: Cascade]
 Ref: RolesOnUsers.user_id > User.id
 
 Ref: RolesOnUsers.role_id > Role.id
+
+Ref: TagsOnJobDescriptions.job_id > JobDescriptions.id
+
+Ref: TagsOnJobDescriptions.tag_id > Tags.id
 
 Ref: QuestionaireItemOptionsOnQuestionaireItems.option_id > QuestionaireItemOptions.id
 
