@@ -25,6 +25,18 @@ export const userSchema = z.object({
   password: passwordSchema,
 });
 
+export const loginUserSchema = z.object({
+  username: z.string(),
+  email: z
+    .string()
+    .regex(
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+      "Invalid email"
+    )
+    .optional(),
+  password: z.string().min(6, "Password should be minimum 6 characters"),
+});
+
 // Types for validation
 export type UserForm = z.infer<typeof userSchema>;
 
