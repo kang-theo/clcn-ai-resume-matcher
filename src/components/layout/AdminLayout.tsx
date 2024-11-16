@@ -3,7 +3,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import type { MenuProps } from "antd";
 import { Divider, Layout, Menu, theme, ConfigProvider } from "antd";
 import Profile from "../common/Profile";
-import Languages from "../common/Languages";
+// import Languages from "../common/Languages";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import ToggleTheme from "../common/ToggleTheme";

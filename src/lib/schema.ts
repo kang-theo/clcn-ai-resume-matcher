@@ -42,3 +42,7 @@ export const newJobSchema = z.object({
   status: z.string().optional(),
   created_by: z.string(),
 });
+
+export const deleteItemsSchema = z.object({
+  ids: z.array(z.string()),
+});

@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     whereClause = convertSearchParamsToWhereClause(searchParams);
 
   try {
-    const result = await listAllRoles({
+    const result: API.ModelRes = await listAllRoles({
       page: parseInt(page, 10),
       pageSize: parseInt(pageSize, 10),
       search: whereClause,
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
         { status: 500 }
       );
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json(
       { meta: { code: "E500", message: err.message } },
       { status: 500 }
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
   try {
     const payload = await req.json();
     // const session: Session | null = await auth();
-    const result = await createRole({
+    const result: API.ModelRes = await createRole({
       ...payload,
       created_by: "Admin", //session?.user.username,
     });
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json(
       { meta: { code: "E500", message: err.message } },
       { status: 500 }
@@ -74,7 +74,7 @@ export async function DELETE(req: NextRequest) {
   const payload = await req.json();
 
   try {
-    const result = await deleteRoles(payload.ids);
+    const result: API.ModelRes = await deleteRoles(payload.ids);
 
     if (result.meta.code === "OK") {
       return NextResponse.json({
@@ -83,7 +83,7 @@ export async function DELETE(req: NextRequest) {
     } else {
       return NextResponse.json(result);
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json(
       { meta: { code: "E500", message: err.message } },
       { status: 500 }

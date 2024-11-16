@@ -8,7 +8,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const result = await getUser(params.id);
+    const result: API.ModelRes = await getUser(params.id);
 
     if (result.meta.code === "OK") {
       return NextResponse.json({
@@ -21,7 +21,7 @@ export async function GET(
         { status: 500 }
       );
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json(
       { meta: { code: "E500", message: err.message } },
       { status: 500 }
@@ -37,7 +37,7 @@ export async function PUT(
     // {selectedIds: []}
     const session: Session | null = await auth();
     const payload = await request.json();
-    const result = await updateUser(
+    const result: API.ModelRes = await updateUser(
       params.id,
       payload,
       (session?.user.username || session?.user.email)!
@@ -54,7 +54,7 @@ export async function PUT(
         { status: 500 }
       );
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json(
       { meta: { code: "E500", message: err.message } },
       { status: 500 }

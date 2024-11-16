@@ -52,12 +52,12 @@ enum UserState {
 }
 
 model User {
-  id             String         @id @default(cuid())
-  phone          String?        @unique
+  id             String          @id @default(cuid())
+  phone          String?         @unique
   name           String?
-  username       String         @unique
+  username       String          @unique
   password       String
-  email          String         @unique
+  email          String          @unique
   email_verified DateTime?
   image          String?
   linkedin       String?
@@ -65,11 +65,12 @@ model User {
   accounts       Account[]
   sessions       Session[]
   roles          RolesOnUsers[]
-  status         UserState      @default(Active)
-  created_at     DateTime       @default(now())
-  updated_at     DateTime       @updatedAt
+  status         UserState       @default(Active)
+  created_at     DateTime        @default(now())
+  updated_at     DateTime        @updatedAt
   resumes        Resumes[]
   applications   Applications[] // 一个人可以投递多个职位
+  OnlineResumes  OnlineResumes[]
 }
 
 model VerificationToken {
@@ -250,6 +251,17 @@ model Resumes {
   applications Applications[]
 }
 
+model OnlineResumes {
+  id           String         @id @default(uuid())
+  user_id      String
+  user         User           @relation(fields: [user_id], references: [id])
+  // flexible
+  content      Json
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
+  applications Applications[]
+}
+
 enum ApplicationStatus {
   // 待审核
   pending
@@ -282,4 +294,6 @@ model Applications {
   created_at          DateTime          @default(now())
   last_modifier       String?
   updated_at          DateTime          @updatedAt
+  OnlineResumes       OnlineResumes?    @relation(fields: [onlineResumesId], references: [id])
+  onlineResumesId     String?
 }

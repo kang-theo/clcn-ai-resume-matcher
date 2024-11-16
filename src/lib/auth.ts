@@ -47,11 +47,11 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async authorized({ request, auth }) {
-      return !!auth?.user;
-      // return auth?.user?.isAdmin === true; // Only admin user can be authorized
-      // return true;
-    },
+    // async authorized({ auth }) {
+    //   return !!auth?.user;
+    //   // return auth?.user?.isAdmin === true; // Only admin user can be authorized
+    //   // return true;
+    // },
     // authorized: async ({ request: NextRequest, auth: Session | null}) => {
     //   return true;
     // }

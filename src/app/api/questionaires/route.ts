@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     whereClause = convertSearchParamsToWhereClause(searchParams);
 
   try {
-    const result = await listAllQuestionaires({
+    const result: API.ModelRes = await listAllQuestionaires({
       page: parseInt(page, 10),
       pageSize: parseInt(pageSize, 10),
       search: whereClause,
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
         { status: 500 }
       );
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json(
       { meta: { code: "E500", message: err.message } },
       { status: 500 }
@@ -48,43 +48,43 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function POST(req: NextRequest) {
-  try {
-    const payload = await req.json();
-    const validation = newQuestionaireSchema.safeParse(payload);
+// export async function POST(req: NextRequest) {
+//   try {
+//     const payload = await req.json();
+//     const validation = newQuestionaireSchema.safeParse(payload);
 
-    if (!validation.success) {
-      return NextResponse.json(
-        { meta: { code: "E400", message: validation.error.errors } },
-        { status: 400 }
-      );
-    }
+//     if (!validation.success) {
+//       return NextResponse.json(
+//         { meta: { code: "E400", message: validation.error.errors } },
+//         { status: 400 }
+//       );
+//     }
 
-    const result = await createQuestionaire(payload);
-    if (result.meta.code === "OK") {
-      return NextResponse.json({
-        meta: { code: "OK" },
-        result: result.data,
-      });
-    } else {
-      return NextResponse.json(
-        { meta: { code: "E500", message: result.meta.message } },
-        { status: 500 }
-      );
-    }
-  } catch (err) {
-    return NextResponse.json(
-      { meta: { code: "E500", message: err.message } },
-      { status: 500 }
-    );
-  }
-}
+//     const result = await createQuestionaire(payload);
+//     if (result.meta.code === "OK") {
+//       return NextResponse.json({
+//         meta: { code: "OK" },
+//         result: result.data,
+//       });
+//     } else {
+//       return NextResponse.json(
+//         { meta: { code: "E500", message: result.meta.message } },
+//         { status: 500 }
+//       );
+//     }
+//   } catch (err: any) {
+//     return NextResponse.json(
+//       { meta: { code: "E500", message: err.message } },
+//       { status: 500 }
+//     );
+//   }
+// }
 
 export async function DELETE(req: NextRequest) {
   const payload = await req.json();
 
   try {
-    const result = await deleteQuestionaires(payload.ids);
+    const result: API.ModelRes = await deleteQuestionaires(payload.ids);
 
     if (result.meta.code === "OK") {
       return NextResponse.json({
@@ -93,7 +93,7 @@ export async function DELETE(req: NextRequest) {
     } else {
       return NextResponse.json(result);
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json(
       { meta: { code: "E500", message: err.message } },
       { status: 500 }

@@ -17,13 +17,7 @@ import {
   Space,
 } from "antd";
 import axios from "axios";
-import {
-  EllipsisVertical,
-  Info,
-  RefreshCw,
-  TriangleAlert,
-  Job,
-} from "lucide-react";
+import { EllipsisVertical, Info, RefreshCw, TriangleAlert } from "lucide-react";
 import { formatDatetime } from "@/lib/utils";
 import { IFilter, SearchPanel } from "@/components/common/SearchPanel";
 import JobForm, { JobFormHandlers } from "./JobForm";
@@ -323,7 +317,7 @@ function JobList({
     },
   ];
 
-  const handleTableChange: TableProps["onChange"] = (
+  const handleTableChange: TableProps<API.Job>["onChange"] = (
     pagination,
     filters,
     sorter: any

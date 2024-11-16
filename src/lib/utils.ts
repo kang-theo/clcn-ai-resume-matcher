@@ -20,7 +20,7 @@ export function cn(...inputs: ClassValue[]) {
  * @param err
  * @returns {IApiRes}
  */
-export function catchORMError(defaultMsg: string, err?: unknown): IApiRes {
+export function catchORMError(defaultMsg: string, err?: unknown) {
   // type narrowing
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
     return {
@@ -121,7 +121,7 @@ export function formatDatetime(datetimeStr: string) {
   return dayjs.utc(datetimeStr).local().format(format);
 }
 
-export function catchClientRequestError(error) {
+export function catchClientRequestError(error: any) {
   if (error.code === "ECONNABORTED") {
     // Timeout
     return {

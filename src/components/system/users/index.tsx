@@ -329,7 +329,7 @@ function UserList({
     },
   ];
 
-  const handleTableChange: TableProps["onChange"] = (
+  const handleTableChange: TableProps<API.User>["onChange"] = (
     pagination,
     filters,
     sorter: any

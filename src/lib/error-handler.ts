@@ -1,4 +1,4 @@
-import { useCustomToast } from "@/hooks/useCustomToast";
+import { toast } from "react-hot-toast";
 
 // Return a user-friendly message
 function getErrorMessage(error: any): string {
@@ -29,15 +29,11 @@ function getErrorMessage(error: any): string {
 }
 
 export function handleError(error: any) {
-  const { showToast } = useCustomToast();
   const message = getErrorMessage(error);
 
   // Global error handling logic, eg:
   // - pop-up error notification
   // - log
   // - send error to monitor system
-  showToast({
-    title: "Error",
-    description: message,
-  });
+  toast(message, { position: "top-right" });
 }

@@ -7,11 +7,36 @@ declare namespace API {
     stack?: string;
   }
 
+  type ModelRes = {
+    meta: {
+      code: string | number;
+      message?: string;
+    };
+    data?: any;
+  };
+
   // define types from here...
   type Role = {
     id: string;
     name: string;
     created_at: string;
+  };
+
+  type User = {
+    id: string;
+    username: string;
+    email: string;
+    linkedin?: string;
+    status: string;
+    roles: Role[];
+    created_at: string;
+  };
+
+  type UserPayload = {
+    username: string;
+    email: string;
+    password: string;
+    roles?: string[];
   };
 
   type Job = {
@@ -53,8 +78,18 @@ declare namespace API {
 
   type UpdateQuestionarePayload = Omit<
     Questionaire,
-    "created_at" | "updated_at"
+    "created_at" | "updated_at" | "questionaire_items"
   > & {
     questionaire_item_ids?: string[];
   };
 }
+
+type OnlineResume = {
+  fullName: string;
+  email: string;
+  phone: string;
+  summary: any;
+  experience: any;
+  education: any;
+  skills: any;
+};

@@ -48,7 +48,8 @@ const defaultFilters: IFilter[][] = [
   [
     {
       type: "Input",
-      label: "name",
+      label: "Name",
+      name: "name",
     },
   ],
 ];
@@ -237,7 +238,7 @@ function RoleList({
     },
   ];
 
-  const handleTableChange: TableProps["onChange"] = (
+  const handleTableChange: TableProps<API.Role>["onChange"] = (
     pagination,
     filters,
     sorter: any

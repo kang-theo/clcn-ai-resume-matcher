@@ -49,6 +49,7 @@ Table User {
   updated_at DateTime [not null]
   resumes Resumes [not null]
   applications Applications [not null]
+  OnlineResumes OnlineResumes [not null]
 }
 
 Table VerificationToken {
@@ -216,6 +217,16 @@ Table Resumes {
   applications Applications [not null]
 }
 
+Table OnlineResumes {
+  id String [pk]
+  user_id String [not null]
+  user User [not null]
+  content Json [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  applications Applications [not null]
+}
+
 Table Applications {
   id String [pk]
   user User [not null]
@@ -233,6 +244,8 @@ Table Applications {
   created_at DateTime [default: `now()`, not null]
   last_modifier String
   updated_at DateTime [not null]
+  OnlineResumes OnlineResumes
+  onlineResumesId String
 }
 
 Enum UserState {
@@ -286,6 +299,8 @@ Ref: QuestionairesOnJobDescriptions.questionaire_id > Questionaires.id
 
 Ref: Resumes.user_id > User.id
 
+Ref: OnlineResumes.user_id > User.id
+
 Ref: Applications.user_id > User.id
 
 Ref: Applications.job_description_id > JobDescriptions.id
@@ -293,3 +308,5 @@ Ref: Applications.job_description_id > JobDescriptions.id
 Ref: Applications.questionaire_id > Questionaires.id
 
 Ref: Applications.resume_id > Resumes.id
+
+Ref: Applications.onlineResumesId > OnlineResumes.id

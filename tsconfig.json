@@ -14,7 +14,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx", // Use this for Next.js with React 17+
+    "jsx": "preserve", // Use this for Next.js with React 17+
     // "jsx": "react-jsx", // Use this for Next.js with React 17+
     "incremental": true,
     "plugins": [

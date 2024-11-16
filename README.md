@@ -1,3 +1,7 @@
+react, nextjs, shadcn, tailwind, AI, postgres/mysql/supabase, AWS
+
+- https://github.com/zenoamaro/react-quill
+
 # Software Developement
 
 - SDLC

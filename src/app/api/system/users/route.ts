@@ -6,7 +6,7 @@ import { auth } from "@/lib/auth";
 import { Session } from "next-auth";
 import { createUser, listAllUsers, deleteUsers } from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
-import { newUserSchema } from "@/lib/schema";
+import { userSchema } from "@/lib/schema";
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams,
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     whereClause = convertSearchParamsToWhereClause(searchParams);
 
   try {
-    const result = await listAllUsers({
+    const result: API.ModelRes = await listAllUsers({
       page: parseInt(page, 10),
       pageSize: parseInt(pageSize, 10),
       search: whereClause,
@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
         { status: 500 }
       );
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json(
       { meta: { code: "E500", message: err.message } },
       { status: 500 }
@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const payload = await req.json();
-    const validation = newUserSchema.safeParse(payload);
+    const validation = userSchema.safeParse(payload);
 
     if (!validation.success) {
       return NextResponse.json(
@@ -57,7 +57,10 @@ export async function POST(req: NextRequest) {
     }
 
     const session: Session | null = await auth();
-    const result = await createUser(payload, session?.user.username!);
+    const result: API.ModelRes = await createUser(
+      payload,
+      session?.user.username!
+    );
     if (result.meta.code === "OK") {
       return NextResponse.json({
         meta: { code: "OK" },
@@ -69,7 +72,7 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json(
       { meta: { code: "E500", message: err.message } },
       { status: 500 }
@@ -81,7 +84,7 @@ export async function DELETE(req: NextRequest) {
   const payload = await req.json();
 
   try {
-    const result = await deleteUsers(payload.ids);
+    const result: API.ModelRes = await deleteUsers(payload.ids);
 
     if (result.meta.code === "OK") {
       return NextResponse.json({
@@ -90,7 +93,7 @@ export async function DELETE(req: NextRequest) {
     } else {
       return NextResponse.json(result);
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json(
       { meta: { code: "E500", message: err.message } },
       { status: 500 }

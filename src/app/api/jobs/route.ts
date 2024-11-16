@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     whereClause = convertSearchParamsToWhereClause(searchParams);
 
   try {
-    const result = await listAllJobs({
+    const result: API.ModelRes = await listAllJobs({
       page: parseInt(page, 10),
       pageSize: parseInt(pageSize, 10),
       search: whereClause,
@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
         { status: 500 }
       );
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json(
       { meta: { code: "E500", message: err.message } },
       { status: 500 }
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await createJob({
+    const result: API.ModelRes = await createJob({
       ...payload,
       created_by: session?.user.username!,
     });
@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json(
       { meta: { code: "E500", message: err.message } },
       { status: 500 }
@@ -97,7 +97,7 @@ export async function DELETE(req: NextRequest) {
     } else {
       return NextResponse.json(result);
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json(
       { meta: { code: "E500", message: err.message } },
       { status: 500 }

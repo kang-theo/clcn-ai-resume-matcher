@@ -71,7 +71,7 @@ export async function createUser(payload: API.UserPayload, operator: string) {
       data: {
         ...payload,
         roles: {
-          create: payload.roles.map((role_id) => ({
+          create: payload.roles?.map((role_id) => ({
             role_id,
             assigned_by: operator,
           })),
@@ -199,7 +199,20 @@ export async function updateUser(
       where: {
         id: userId,
       },
-      data: payload,
+      data: {
+        roles: {
+          set: payload.roles?.map((roleId) => ({
+            user_id_role_id: { user_id: userId, role_id: roleId }, // Use the compound unique input
+          })),
+        },
+      },
+      include: {
+        roles: {
+          include: {
+            role: true,
+          },
+        },
+      },
     });
 
     if (role) {

@@ -9,13 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { signInWithGoogleAction } from "@/app/actions/auth";
-import SignInButton from './SignInButton';
+import SignInButton from "./SignInButton";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import { userSchema, UserForm } from "@/lib/schema";
 import { z } from "zod";
 import ErrorMessage from "@/components/common/ErrorMessage";
+import toast from "react-hot-toast";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   type: "signin" | "signup";
@@ -64,13 +65,13 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
     try {
       switch (name) {
-        case 'email':
+        case "email":
           userSchema.shape.email.parse(value); // validate email only
           break;
-        case 'username':
+        case "username":
           userSchema.shape.username.parse(value); // validate username only
           break;
-        case 'password':
+        case "password":
           userSchema.shape.password.parse(value); // validate password only
           break;
         case "passwordConfirmation":
@@ -85,7 +86,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           }
           break;
         default:
-          throw new Error('Unknown field');
+          throw new Error("Unknown field");
       }
 
       // If validation passes, clear the error for that field
@@ -105,7 +106,9 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   };
 
   const getBorderClass = (error?: string) => {
-    return `border ${error ? 'border-red-500' : 'border-gray-300'} rounded-md p-2 focus-visible:ring-transparent`;
+    return `border ${
+      error ? "border-red-500" : "border-gray-300"
+    } rounded-md p-2 focus-visible:ring-transparent`;
   };
 
   async function onSubmit(event: React.SyntheticEvent) {
@@ -164,7 +167,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         if (!res.ok) {
           showToast({
             title: "Request Error",
-            description: "Please try again later or contact support for assistance.",
+            description:
+              "Please try again later or contact support for assistance.",
           });
           return; // Early return on HTTP error
         }
@@ -181,13 +185,11 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         }
 
         // Sign-up success handling
-        showToast({
-          title: "Sign Up Successful",
-          description:
-            "Congratulations! You have successfully signed up. Please check your email to verify your account.",
-        });
+        toast.success(
+          "Congratulations! You have successfully signed up. Please check your email to verify your account.",
+          { position: "top-right" }
+        );
         router.push("/auth/signin");
-
       } catch (error) {
         // Handle network or other unexpected errors
         console.error("Error during registration:", error);
@@ -355,7 +357,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             </p>
           )}
         </div>
-      </form >
+      </form>
       <div className='relative'>
         <div className='absolute inset-0 flex items-center'>
           <span className='w-full border-t' />
@@ -378,6 +380,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           signInAction={signInWithGoogleAction}
         />
       </div>
-    </div >
+    </div>
   );
 }

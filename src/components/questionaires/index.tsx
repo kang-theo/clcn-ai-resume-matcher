@@ -16,13 +16,7 @@ import {
   message,
 } from "antd";
 import axios from "axios";
-import {
-  EllipsisVertical,
-  Info,
-  RefreshCw,
-  TriangleAlert,
-  Questionaire,
-} from "lucide-react";
+import { EllipsisVertical, Info, RefreshCw, TriangleAlert } from "lucide-react";
 import { formatDatetime } from "@/lib/utils";
 import { IFilter, SearchPanel } from "@/components/common/SearchPanel";
 // import QuestionaireForm from "./QuestionaireForm";
@@ -283,7 +277,7 @@ function QuestionaireList({
     },
   ];
 
-  const handleTableChange: TableProps["onChange"] = (
+  const handleTableChange: TableProps<API.Questionaire>["onChange"] = (
     pagination,
     filters,
     sorter: any
