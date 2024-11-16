@@ -132,7 +132,12 @@ export function UserForm({ headless = false, onComplete, userId }: IProps) {
               <Form.Item
                 name={"password"}
                 label='Password'
-                rules={[{ required: true, message: "Please input password" }]}
+                rules={[
+                  {
+                    required: userId ? false : true,
+                    message: "Please input password",
+                  },
+                ]}
               >
                 <Input.Password disabled={userId ? true : false} />
               </Form.Item>
@@ -140,7 +145,10 @@ export function UserForm({ headless = false, onComplete, userId }: IProps) {
                 name={"password_confirmation"}
                 label='Password Confirmation'
                 rules={[
-                  { required: true, message: "Please repeat above password" },
+                  {
+                    required: userId ? false : true,
+                    message: "Please repeat above password",
+                  },
                 ]}
               >
                 <Input.Password disabled={userId ? true : false} />
