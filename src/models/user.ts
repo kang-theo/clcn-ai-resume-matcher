@@ -1,6 +1,34 @@
 import { catchORMError } from "@/lib/utils";
 import prisma from "@/lib/prisma";
 import { ITableParams } from "@/lib/interfaces";
+import bcrypt from "bcryptjs";
+
+export async function authenticateUser(credentials: {
+  username: string;
+  email?: string;
+  password: string;
+}) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { username: credentials.username as string },
+    });
+
+    if (!user) return null;
+
+    const isPasswordValid = await bcrypt.compare(
+      credentials.password as string,
+      user.password
+    );
+
+    if (!isPasswordValid) return null;
+
+    return user;
+  } catch (err) {
+    return null;
+  } finally {
+    await prisma.$disconnect();
+  }
+}
 
 export async function listAllUsers({
   page,
