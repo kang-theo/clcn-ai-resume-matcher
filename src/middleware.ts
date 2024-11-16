@@ -1,24 +1,63 @@
 // Clear cache
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
+import { NextRequest, NextResponse } from "next/server";
+const { NEXTAUTH_SECRET = "", NEXTAUTH_SALT = "authjs.session-token" } =
+  process.env;
 
-export function middleware(request: NextRequest) {
+export default async function middleware(req: NextRequest) {
+  // const url = req.nextUrl.clone();
+  const { pathname } = req.nextUrl;
+
+  const token = await getToken({
+    req,
+    secret: NEXTAUTH_SECRET,
+    salt: NEXTAUTH_SALT,
+  });
+
+  // Ignore the root page (home page) and static files like /_next
+  if (pathname === "/" || pathname.startsWith("/_next")) {
+    return NextResponse.next();
+  }
+
+  // Option A: Apply NextAuth middleware to other routes
+  // return auth(req as any);
+  // Option B:
+
+  console.log({ token });
+
+  if (!token) {
+    if (pathname.startsWith("/api")) {
+      return NextResponse.json(
+        {
+          meta: {
+            code: "401",
+            message: "Unauthorized",
+          },
+        },
+        { status: 401 }
+      );
+    } else {
+      return NextResponse.redirect(new URL("/auth/signin", req.url));
+    }
+
+    // url.pathname = "/auth/signin"; // Adjust as needed
+    // return NextResponse.redirect(url);
+  }
+  // Continue to the requested page
   const response = NextResponse.next();
 
-  // Apply no-store Cache-Control header to specific API routes
-  if (request.nextUrl.pathname.startsWith("/api")) {
-    response.headers.set("Cache-Control", "no-store");
+  // Check if the response has a 403 status code
+  if (response.status === 403) {
+    return NextResponse.redirect(new URL("/auth/signin", req.url));
   }
 
   return response;
 }
 
-// Add authentication
-import { auth } from "@/lib/auth";
-
-export default auth;
-
 export const config = {
-  // Match all routes except below ones
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|auth).*)", "/"],
+  // matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    "/((?!api/auth|_next/static|_next/image|favicon.ico|auth|terms|privacy).*)",
+    "/admin/:path*",
+  ],
 };
