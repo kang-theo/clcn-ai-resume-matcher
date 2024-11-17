@@ -10,10 +10,22 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import axios from "axios";
-import { Edit, FileText, Briefcase } from "lucide-react";
+import { Edit, FileText, Briefcase, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Icons } from "@/components/common/Icons";
 
 // This type represents the structure of a resume
 type Resume = {
@@ -31,6 +43,14 @@ type Resume = {
 export default function OnlineResumesList() {
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [loading, setLoading] = useState(false);
+  const [confirmDialogVisible, setConfirmDialogVisible] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState<{
+    title?: string;
+    message: string;
+    handler: () => void;
+    onCancel?: () => void;
+  } | null>(null);
+  const [requesting, setRequesting] = useState(false);
 
   useEffect(() => {
     getResumes();
@@ -49,6 +69,31 @@ export default function OnlineResumesList() {
     } catch (error: any) {
       setLoading(false);
       toast.error(error.response.data.message || "Failed to get resumes");
+    }
+  };
+
+  const handleDeleteResume = (rid: string) => {
+    setConfirmDialog({
+      title: "Delete Resume",
+      message:
+        "Are you sure you want to delete this resume? The operation will delete related data.",
+      handler: () => deleteResume(rid),
+    });
+    setConfirmDialogVisible(true);
+  };
+
+  const deleteResume = async (rid: string) => {
+    setRequesting(true);
+    try {
+      const { data } = await axios.delete(`/api/online-resumes/${rid}`);
+      if (data.meta.code === "OK") {
+        toast.success("Resume deleted successfully");
+        getResumes();
+      } else {
+        toast.error(data.meta.message || "Failed to delete resume");
+      }
+    } catch (error: any) {
+      toast.error(error.response.data.message || "Failed to delete resume");
     }
   };
 
@@ -89,6 +134,40 @@ export default function OnlineResumesList() {
                   <Edit className='mr-2 h-4 w-4' /> Edit
                 </Button>
               </Link>
+              <Button
+                className='text-red-500'
+                variant='outline'
+                onClick={() => handleDeleteResume(resume.id)}
+              >
+                <Trash2 /> Delete
+              </Button>
+              <AlertDialog
+                open={confirmDialogVisible}
+                onOpenChange={setConfirmDialogVisible}
+              >
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      {confirmDialog?.title ?? "Are you absolutely sure?"}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {confirmDialog?.message}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel onClick={confirmDialog?.onCancel}>
+                      Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction onClick={confirmDialog?.handler}>
+                      {requesting ? (
+                        <Icons.Spinner className='mr-2 h-4 w-4 animate-spin' />
+                      ) : (
+                        "Continue"
+                      )}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </CardFooter>
           </Card>
         ))}

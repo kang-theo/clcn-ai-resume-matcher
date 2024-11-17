@@ -158,9 +158,27 @@ export async function updateResume({
   }
 }
 
-export async function deleteOnlineResumes({ ids }: { ids: string[] }) {
+export async function deleteResume(id: string) {
   try {
-    // TODO
+    const resume = await prisma.onlineResumes.delete({
+      where: {
+        id,
+      },
+    });
+
+    if (resume) {
+      return {
+        meta: {
+          code: "OK",
+        },
+      };
+    } else {
+      return {
+        meta: {
+          code: "400",
+        },
+      };
+    }
   } catch (err) {
     return catchORMError("Failed to delete online resumes", err);
   } finally {

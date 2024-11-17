@@ -6,7 +6,7 @@ import {
 } from "@/lib/utils";
 import { auth } from "@/lib/auth";
 import { Session } from "next-auth";
-import { getResume, updateResume } from "@/models/online-resume";
+import { getResume, updateResume, deleteResume } from "@/models/online-resume";
 
 /*
   Bleow option is when you want no caching at all, there are more options
@@ -63,6 +63,29 @@ export async function PUT(
       );
     }
   } catch (err: any) {
+    return NextResponse.json(
+      { meta: { code: "E500", message: err.message } },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request, { params }: { params: { id: string } }) {
+  try {
+    const result: API.ModelRes = await deleteResume(params.id);
+
+    if (result.meta.code === "OK") {
+      return NextResponse.json({
+        meta: { code: "OK" },
+      });
+    } else {
+      return NextResponse.json(
+        { meta: { code: "E500", message: result.meta.message } },
+        { status: 500 }
+      );
+    }
+  } catch (err: any) {
+    console.log(err);
     return NextResponse.json(
       { meta: { code: "E500", message: err.message } },
       { status: 500 }
