@@ -22,6 +22,7 @@ import React, {
   useState,
 } from "react";
 import UserList from "../system/users";
+import ResumeEditor from "../common/Editor";
 // import { DataType } from ".";
 // import type { GetProp, UploadProps } from "antd";
 
@@ -178,7 +179,39 @@ export const JobForm = forwardRef<JobFormHandlers, IProps>((props, ref) => {
               { required: true, message: "Please input job description" },
             ]}
           >
-            <Input.TextArea rows={20} />
+            {/* <Input.TextArea rows={20} /> */}
+            <ResumeEditor
+              title='Job Description'
+              fetching={false}
+              url={""}
+              value={""}
+              saveType='json'
+              onSave={(content: string) => console.log({ content })}
+              // onComplete={() => noteModal.destroy()}
+              onChange={(content: any) =>
+                form.setFieldsValue({ description: content })
+              }
+            />
+          </Form.Item>
+          <Form.Item
+            name={"skills"}
+            label='Skills'
+            rules={[
+              { required: true, message: "Please input job required skills" },
+            ]}
+          >
+            <ResumeEditor
+              title='Job Skills'
+              fetching={false}
+              url={""}
+              value={""}
+              saveType='json'
+              onSave={(content: string) => console.log({ content })}
+              // onComplete={() => noteModal.destroy()}
+              onChange={(content: any) =>
+                form.setFieldsValue({ skills: content })
+              }
+            />
           </Form.Item>
         </Form>
       </Spin>

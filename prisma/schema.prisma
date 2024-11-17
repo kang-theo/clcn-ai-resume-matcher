@@ -113,7 +113,7 @@ model JobDescriptions {
   title                 String                           @db.VarChar(100)
   company               String?
   position              String?
-  skills                String
+  skills                String                           @db.Text
   work_scope            String?
   description           String                           @db.Text
   status                JobStatus                        @default(Draft)
