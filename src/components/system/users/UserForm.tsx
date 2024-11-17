@@ -35,7 +35,7 @@ export function UserForm({ headless = false, onComplete, userId }: IProps) {
     if (userId) {
       setLoading(true);
       axios
-        .get(`/api/system/users/${userId}`)
+        .get(`/api/admin/system/users/${userId}`)
         .then(({ data }) => {
           if (data.meta.code === "OK") {
             setSelectedUser(data.result);
@@ -69,12 +69,12 @@ export function UserForm({ headless = false, onComplete, userId }: IProps) {
         }
 
         if (!userId) {
-          return axios.post("/api/system/users", {
+          return axios.post("/api/admin/system/users", {
             ...values,
             password_confirmation: undefined,
           });
         } else {
-          return axios.put(`/api/system/users/${userId}`, values);
+          return axios.put(`/api/admin/system/users/${userId}`, values);
         }
       })
       .then(({ data }) => {

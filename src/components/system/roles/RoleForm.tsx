@@ -35,9 +35,9 @@ export function RoleForm({ headless = false, onComplete, roleId }: IProps) {
       .validateFields()
       .then((values) => {
         if (!roleId) {
-          return axios.post("/api/system/roles", values);
+          return axios.post("/api/admin/system/roles", values);
         } else {
-          return axios.put(`/api/system/roles/${roleId}`, values);
+          return axios.put(`/api/admin/system/roles/${roleId}`, values);
         }
       })
       .then(({ data }) => {

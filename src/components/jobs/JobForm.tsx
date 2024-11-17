@@ -98,7 +98,10 @@ export const JobForm = forwardRef<JobFormHandlers, IProps>((props, ref) => {
         .then((values) => {
           return axios({
             method,
-            url: method === "post" ? "/api/jobs" : `/api/jobs/${jobId}`,
+            url:
+              method === "post"
+                ? "/api/admin/jobs"
+                : `/api/admin/jobs/${jobId}`,
             data: values,
           });
         })
@@ -227,7 +230,7 @@ export const JobForm = forwardRef<JobFormHandlers, IProps>((props, ref) => {
       >
         <QuestionareList
           title=''
-          url='/api/system/users'
+          url='/api/admin/system/users'
           mode='mini'
           onComplete={(questionare: {
             id: string;

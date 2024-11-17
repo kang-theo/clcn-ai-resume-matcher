@@ -15,9 +15,9 @@ function useRoles({
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        let url = "/api/system/roles";
+        let url = "/api/admin/system/roles";
         if (roleId) {
-          url = `/api/system/roles/${roleId}`;
+          url = `/api/admin/system/roles/${roleId}`;
         }
 
         const { data } = await axios(url);
