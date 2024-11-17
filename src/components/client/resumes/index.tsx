@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import axios from "axios";
 import { Edit, FileText, Briefcase } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -78,9 +79,11 @@ export default function OnlineResumesList() {
               <p>Experience: {resume.content?.experience}</p>
             </CardContent>
             <CardFooter className='mt-auto'>
-              <Button variant='outline' className='mr-2'>
-                <Edit className='mr-2 h-4 w-4' /> Edit
-              </Button>
+              <Link href={`/settings/resumes/${resume.id}`}>
+                <Button variant='outline' className='mr-2'>
+                  <Edit className='mr-2 h-4 w-4' /> Edit
+                </Button>
+              </Link>
             </CardFooter>
           </Card>
         ))}

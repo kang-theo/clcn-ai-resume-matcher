@@ -91,15 +91,66 @@ export async function createOnlineResume({
   }
 }
 
-export async function updateOnlineResume({
-  user_id,
+export async function getResume(id: string) {
+  try {
+    const resume = await prisma.onlineResumes.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (resume) {
+      return {
+        meta: {
+          code: "OK",
+        },
+        data: resume,
+      };
+    } else {
+      return {
+        meta: {
+          code: "400",
+        },
+      };
+    }
+  } catch (err) {
+    return catchORMError("Failed to get online resume", err);
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+export async function updateResume({
+  id,
   content,
 }: {
-  user_id: string;
+  id: string;
   content: Record<string, any>;
 }) {
   try {
-    // TODO
+    const onlineResume = await prisma.onlineResumes.update({
+      where: {
+        id,
+      },
+      data: {
+        content,
+      },
+    });
+
+    if (onlineResume) {
+      return {
+        meta: {
+          code: "OK",
+        },
+        data: onlineResume,
+      };
+    } else {
+      return {
+        meta: {
+          code: "400",
+        },
+      };
+    }
   } catch (err) {
     return catchORMError("Failed to update online resume", err);
   } finally {

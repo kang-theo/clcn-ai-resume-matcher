@@ -1,4 +1,4 @@
-import NewResume from "@/components/client/resumes/New";
+import NewResume from "@/components/client/resumes/Resume";
 import React from "react";
 
 function NewProductPage() {
