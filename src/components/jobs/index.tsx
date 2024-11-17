@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import type { GetProp, MenuProps, TableProps } from "antd";
+import DOMPurify from "dompurify";
 import {
   Button,
   Card,
@@ -265,6 +266,11 @@ function JobList({
       dataIndex: "description",
       width: 200,
       ellipsis: true,
+      render: (text) => (
+        <div
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(text) }}
+        ></div>
+      ),
     },
     {
       title: "Created By",
