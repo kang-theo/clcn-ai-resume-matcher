@@ -1,7 +1,12 @@
+import MyResumes from "@/components/client/resumes";
 import React from "react";
 
 function ResumesPage() {
-  return <div>All my resumes</div>;
+  return (
+    <div>
+      <MyResumes />
+    </div>
+  );
 }
 
 export default ResumesPage;
