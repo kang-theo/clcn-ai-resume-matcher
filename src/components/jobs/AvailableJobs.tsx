@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Search, Calendar } from "lucide-react";
+import { Search, Calendar, Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -76,7 +76,7 @@ export default function AvailableJobs() {
             key={job.id}
             className='relative flex cursor-pointer border-b border-zinc-100 bg-white p-5 hover:bg-zinc-50 max-md:flex-col max-md:space-y-4 md:p-8 rounded-lg shadow'
           >
-            <div className='flex items-start'>
+            <div className='w-full flex items-start'>
               <Avatar className='h-10 w-10 mr-3'>
                 {/* <img src={job.avatar} alt={job.company} /> */}
                 <AvatarImage
@@ -86,7 +86,7 @@ export default function AvailableJobs() {
                 <AvatarFallback>JD</AvatarFallback>
               </Avatar>
               <div className='flex-grow'>
-                <div className='flex justify-between items-start'>
+                <div className='flex justify-between items-center'>
                   <div>
                     <h3 className='font-semibold text-lg'>{job.title}</h3>
                     <p className='text-sm text-gray-500'>{job.poster}</p>
@@ -96,12 +96,20 @@ export default function AvailableJobs() {
                     <p>{job.date} 发布</p>
                   </div>
                 </div>
-                <div className='mt-2 flex flex-wrap gap-2'>
-                  {job.tags.map((tag, index) => (
-                    <Badge key={index} variant='secondary'>
-                      {tag}
-                    </Badge>
-                  ))}
+                <div className='mt-2 flex justify-between items-center flex-wrap gap-2'>
+                  <div>
+                    {job.tags.map((tag, index) => (
+                      <Badge key={index} variant='secondary'>
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                  <div>
+                    <Button variant={"outline"}>
+                      {" "}
+                      <Send /> Apply
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
