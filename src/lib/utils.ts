@@ -117,7 +117,7 @@ export function formatDatetime(datetimeStr: string) {
 
   // -------------dayjs solution ----------------------
   // system already depend on dayjs in antd
-  const format: string = "YYYY-MM-DD HH:mm:ss";
+  const format: string = "MM/DD YYYY HH:mm";
   return dayjs.utc(datetimeStr).local().format(format);
 }
 
@@ -169,4 +169,25 @@ export function convertSearchParamsToWhereClause(
   }, {} as Record<string, any>);
 
   return whereClause;
+}
+
+export function calculateTimeDifference(updatedTime: string): string {
+  const updatedDate = new Date(updatedTime);
+  const currentDate = new Date();
+
+  // Calculate the difference in milliseconds
+  const diffInMilliseconds = currentDate.getTime() - updatedDate.getTime();
+
+  // Convert milliseconds to hours and days
+  const millisecondsPerHour = 1000 * 60 * 60;
+  const millisecondsPerDay = millisecondsPerHour * 24;
+
+  const totalHoursAgo = Math.floor(diffInMilliseconds / millisecondsPerHour);
+  const daysAgo = Math.floor(diffInMilliseconds / millisecondsPerDay);
+
+  if (totalHoursAgo >= 24) {
+    return `Updated ${daysAgo} days ago.`;
+  } else {
+    return `Updated ${totalHoursAgo} hours ago.`;
+  }
 }
