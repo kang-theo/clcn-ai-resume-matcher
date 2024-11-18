@@ -111,3 +111,29 @@ export async function deleteJobs(ids: string[]) {
     await prisma.$disconnect();
   }
 }
+
+export async function getJob(id: string) {
+  try {
+    const job = await prisma.jobDescriptions.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (job) {
+      return {
+        meta: {
+          code: "OK",
+        },
+        data: job,
+      };
+    }
+    return {
+      meta: {
+        code: "ERROR",
+      },
+    };
+  } catch (err) {
+    return catchORMError("Failed to get job description", err);
+  }
+}

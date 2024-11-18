@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Search, Calendar, Send } from "lucide-react";
+import { Search, Calendar, Send, Eye } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -8,48 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import axios from "axios";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
-const jobListings = [
-  {
-    id: 1,
-    company: "V2EX",
-    avatar: "/placeholder.svg?height=40&width=40",
-    poster: "DoubleKingflyxq",
-    title: "全职iOS 开发 IM项目",
-    tags: ["全职", "14-18k", "5 年", "大专"],
-    time: "2 小时前",
-    date: "10/23 14:23",
-  },
-  {
-    id: 2,
-    company: "V2EX",
-    avatar: "/placeholder.svg?height=40&width=40",
-    poster: "otorainotarain",
-    title: "全职Ruby On Rails 全栈工程师招聘",
-    tags: [
-      "全职",
-      "线下",
-      "深圳·南山前海",
-      "15k ~ 20k",
-      "2 年",
-      "英文（读写）",
-    ],
-    time: "2 小时前",
-    date: "10/23 14:09",
-  },
-  {
-    id: 3,
-    company: "电鸭",
-    avatar: "/placeholder.svg?height=40&width=40",
-    poster: "cl",
-    title: "[远程] 招聘 Rust 开发和 React 开发（支持实习）",
-    tags: ["远程", "其他", "开发", "企业直招"],
-    time: "2 小时前",
-    date: "10/23 14:04",
-  },
-];
-
-interface IJob {
+export interface IJob {
   id: string;
   title: string;
   description: string;
@@ -141,10 +102,11 @@ export default function AvailableJobs() {
                     ))}
                   </div>
                   <div>
-                    <Button variant={"outline"}>
-                      {" "}
-                      <Send /> Apply
-                    </Button>
+                    <Link href={`/jobs/${job.id}`}>
+                      <Button variant={"outline"}>
+                        <Eye /> Show
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </div>
