@@ -155,7 +155,7 @@ const generateOptions = ({
 
 const Analytics: React.FC<IProps> = ({
   title = "Analytics",
-  url = "/api/analytics",
+  url = "/api/admin/analytics",
   unit = "",
   colors = [
     { start: "#fffee6", end: "#1890ff" },

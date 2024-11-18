@@ -9,9 +9,7 @@ import { Session } from "next-auth";
 import {
   createOnlineResume,
   listAllOnlineResumes,
-  deleteOnlineResumes,
 } from "@/models/online-resume";
-import { deleteItemsSchema } from "@/lib/schema";
 
 /*
   Bleow option is when you want no caching at all, there are more options

@@ -1,11 +1,13 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, Calendar, Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const jobListings = [
   {
@@ -47,8 +49,42 @@ const jobListings = [
   },
 ];
 
+interface IJob {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  created_by: string;
+  times_ago: string;
+  tags?: string[];
+}
+
 export default function AvailableJobs() {
   const [activeTab, setActiveTab] = useState("latest");
+  const [loading, setLoading] = useState(false);
+  const [jobs, setJobs] = useState<IJob[]>([]);
+
+  useEffect(() => {
+    getJobs();
+  }, []);
+
+  const getJobs = async () => {
+    setLoading(true);
+    try {
+      const { data } = await axios.get("/api/jobs");
+      if (data.meta.code === "OK") {
+        setJobs(data.result.records);
+      } else {
+        toast.error(data.meta.message || "Failed to get jobs");
+      }
+      setLoading(false);
+    } catch (error: any) {
+      setLoading(false);
+      toast.error(error.response.data.message || "Failed to get jobs");
+    }
+  };
 
   return (
     <div className='max-w-5xl mx-auto p-4 mt-4 space-y-4'>
@@ -71,7 +107,7 @@ export default function AvailableJobs() {
       </Tabs>
 
       <div className='space-y-4'>
-        {jobListings.map((job) => (
+        {jobs.map((job) => (
           <div
             key={job.id}
             className='relative flex cursor-pointer border-b border-zinc-100 bg-white p-5 hover:bg-zinc-50 max-md:flex-col max-md:space-y-4 md:p-8 rounded-lg shadow'
@@ -89,16 +125,16 @@ export default function AvailableJobs() {
                 <div className='flex justify-between items-center'>
                   <div>
                     <h3 className='font-semibold text-lg'>{job.title}</h3>
-                    <p className='text-sm text-gray-500'>{job.poster}</p>
+                    <p className='text-sm text-gray-500'>{job.created_by}</p>
                   </div>
-                  <div className='text-sm text-gray-500'>
-                    <p>{job.time}</p>
-                    <p>{job.date} 发布</p>
+                  <div className='text-sm text-gray-500 text-right'>
+                    <p>{job.times_ago}</p>
+                    <p>{job.created_at} Published</p>
                   </div>
                 </div>
                 <div className='mt-2 flex justify-between items-center flex-wrap gap-2'>
                   <div>
-                    {job.tags.map((tag, index) => (
+                    {job.tags?.map((tag, index) => (
                       <Badge key={index} variant='secondary'>
                         {tag}
                       </Badge>

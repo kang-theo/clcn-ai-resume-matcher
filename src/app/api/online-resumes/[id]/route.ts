@@ -1,9 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  catchError,
-  convertSortParams,
-  convertSearchParamsToWhereClause,
-} from "@/lib/utils";
 import { auth } from "@/lib/auth";
 import { Session } from "next-auth";
 import { getResume, updateResume, deleteResume } from "@/models/online-resume";

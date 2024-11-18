@@ -1,15 +1,21 @@
-import {
-  convertSearchParamsToWhereClause,
-  convertSortParams,
-} from "@/lib/utils";
-import { auth } from "@/lib/auth";
-import { Session } from "next-auth";
-import { createJob, listAllJobs, deleteJobs } from "@/models/job";
 import { NextRequest, NextResponse } from "next/server";
-import { newJobSchema } from "@/lib/schema";
+import {
+  convertSortParams,
+  convertSearchParamsToWhereClause,
+  calculateTimeDifference,
+  formatDatetime,
+} from "@/lib/utils";
+import { listAllJobs } from "@/models/job";
 
-export async function GET(req: NextRequest) {
-  const searchParams = req.nextUrl.searchParams,
+/*
+  Bleow option is when you want no caching at all, there are more options
+  on the doc depending on your needs. 
+*/
+export const dynamic = "force-dynamic";
+
+// Get all my online resumes
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams,
     page = searchParams.get("page") || "1",
     pageSize = searchParams.get("pageSize") || "10",
     sortField = searchParams.get("sortField") || "created_at",
@@ -20,6 +26,7 @@ export async function GET(req: NextRequest) {
     const result: API.ModelRes = await listAllJobs({
       page: parseInt(page, 10),
       pageSize: parseInt(pageSize, 10),
+      // TODO: list all published jobs
       search: whereClause,
       sortField,
       sortOrder,
@@ -28,74 +35,20 @@ export async function GET(req: NextRequest) {
     if (result.meta.code === "OK") {
       return NextResponse.json({
         meta: { code: "OK" },
-        result: result.data,
+        result: {
+          ...result.data,
+          records: result.data.records.map((job: any) => ({
+            ...job,
+            times_ago: calculateTimeDifference(job.updated_at),
+            created_at: formatDatetime(job.created_at),
+          })),
+        },
       });
     } else {
       return NextResponse.json(
         { meta: { code: "E500", message: result.meta.message } },
         { status: 500 }
       );
-    }
-  } catch (err: any) {
-    return NextResponse.json(
-      { meta: { code: "E500", message: err.message } },
-      { status: 500 }
-    );
-  }
-}
-
-export async function POST(req: NextRequest) {
-  try {
-    const payload = await req.json();
-    const session: Session | null = await auth();
-
-    const validation = newJobSchema.safeParse({
-      ...payload,
-      created_by: session?.user.username!,
-    });
-
-    if (!validation.success) {
-      return NextResponse.json(
-        { meta: { code: "E400", message: validation.error.errors } },
-        { status: 400 }
-      );
-    }
-
-    const result: API.ModelRes = await createJob({
-      ...payload,
-      created_by: session?.user.username!,
-    });
-    if (result.meta.code === "OK") {
-      return NextResponse.json({
-        meta: { code: "OK" },
-        result: result.data,
-      });
-    } else {
-      return NextResponse.json(
-        { meta: { code: "E500", message: result.meta.message } },
-        { status: 500 }
-      );
-    }
-  } catch (err: any) {
-    return NextResponse.json(
-      { meta: { code: "E500", message: err.message } },
-      { status: 500 }
-    );
-  }
-}
-
-export async function DELETE(req: NextRequest) {
-  const payload = await req.json();
-
-  try {
-    const result = await deleteJobs(payload.ids);
-
-    if (result.meta.code === "OK") {
-      return NextResponse.json({
-        meta: { code: "OK" },
-      });
-    } else {
-      return NextResponse.json(result);
     }
   } catch (err: any) {
     return NextResponse.json(
