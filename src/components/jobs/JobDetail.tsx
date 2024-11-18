@@ -16,6 +16,7 @@ import { IJob } from "./AvailableJobs";
 import toast from "react-hot-toast";
 import CommonSkeleton from "@/components/common/Skeleton";
 import DOMPurify from "dompurify";
+import { Icons } from "../common/Icons";
 
 interface IProps {
   id: string;
@@ -24,6 +25,9 @@ interface IProps {
 export default function JobDetail({ id }: IProps) {
   const [loading, setLoading] = useState(false);
   const [job, setJob] = useState<IJob | null>(null);
+  const [requesting, setRequesting] = useState(false);
+  const [analysisRes, setAnalysisRes] = useState<string>("");
+
   useEffect(() => {
     getJob();
   }, []);
@@ -41,6 +45,24 @@ export default function JobDetail({ id }: IProps) {
     } catch (error: any) {
       setLoading(false);
       toast.error(error.response.data.message || "Failed to get job");
+    }
+  };
+
+  const handleAnalyze = async () => {
+    try {
+      setRequesting(true);
+      setAnalysisRes("");
+      const { data } = await axios.post(`/api/jobs/${id}/analyze`);
+      if (data.meta.code === "OK") {
+        setAnalysisRes(data.result.analysisText);
+        toast.success("Job analyzed successfully");
+      } else {
+        toast.error(data.meta.message || "Failed to analyze job");
+      }
+    } catch (error: any) {
+      toast.error(error.response.data.message || "Failed to analyze job");
+    } finally {
+      setRequesting(false);
     }
   };
 
@@ -62,14 +84,26 @@ export default function JobDetail({ id }: IProps) {
           </Button>
         </div>
         <div className='flex items-center gap-2'>
-          <Button variant={"outline"}>
-            <ChartNoAxesCombined className='h-4 w-4' /> Analyze
+          <Button variant={"outline"} onClick={handleAnalyze}>
+            {requesting ? (
+              <Icons.Spinner className='mr-2 h-4 w-4 animate-spin' />
+            ) : (
+              <>
+                <ChartNoAxesCombined className='h-4 w-4' /> Analyze
+              </>
+            )}
           </Button>
           <Button className='bg-[#0F172A] text-white hover:bg-[#1E293B]'>
             <Send className='h-4 w-4' /> Apply
           </Button>
         </div>
       </header>
+
+      {analysisRes && (
+        <Card className='mb-6'>
+          <CardContent className='space-y-6'>{analysisRes}</CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader className='space-y-4'>
@@ -101,7 +135,7 @@ export default function JobDetail({ id }: IProps) {
 
         <CardContent className='space-y-6'>
           <div
-            className='prose max-w-none'
+            className='prose max-w-none dark:text-white'
             dangerouslySetInnerHTML={{
               __html: DOMPurify.sanitize(job?.description!),
             }}

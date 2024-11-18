@@ -1,6 +1,11 @@
 import { catchORMError } from "@/lib/utils";
 import prisma from "@/lib/prisma";
 import { ITableParams } from "@/lib/interfaces";
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: process.env["OPENAI_API_KEY"], // This is the default and can be omitted
+});
 
 export async function listAllJobs({
   page,
@@ -135,5 +140,72 @@ export async function getJob(id: string) {
     };
   } catch (err) {
     return catchORMError("Failed to get job description", err);
+  }
+}
+
+export async function analyzeJob({
+  id,
+  user_id,
+}: {
+  id: string;
+  user_id: string;
+}) {
+  try {
+    // step 1: get the job description
+    const job = await prisma.jobDescriptions.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    // step 2: use openai to analyze the job description
+    const resume = await prisma.onlineResumes.findFirst({
+      where: {
+        user_id,
+      },
+    });
+
+    if (job && resume) {
+      // Call OpenAI API to analyze resume
+      // const analysisResponse = await openai.createCompletion({
+      //   model: "text-davinci-003",
+      //   prompt: `Analyze the following resume against the job description:\n\nJob Description: ${job.description}\n\nResume Content: ${resumePath}`,
+      //   max_tokens: 150,
+      // });
+
+      const chatCompletion: OpenAI.Chat.ChatCompletion =
+        await client.chat.completions.create({
+          model: "gpt-3.5-turbo",
+          messages: [
+            {
+              role: "user",
+              content: `Analyze the following resume against the job description:\n\nJob Description: ${job.description}\n\nResume Content: ${resume.content}. The scoring mechanism is one to ten, the is full score, how many score do you decide? `,
+            },
+          ],
+        });
+
+      const analysisText = chatCompletion.choices[0].message?.content;
+
+      // Implement your scoring mechanism here
+      // Placeholder for actual scoring logic
+      // const score = Math.random() * 100;
+
+      return {
+        meta: {
+          code: "OK",
+        },
+        data: {
+          analysisText,
+        },
+      };
+    } else {
+      return {
+        meta: {
+          code: "ERROR",
+        },
+      };
+    }
+  } catch (err) {
+    return catchORMError("Failed to analyze job description", err);
   }
 }
