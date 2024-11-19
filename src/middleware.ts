@@ -8,16 +8,22 @@ export default async function middleware(req: NextRequest) {
   // const url = req.nextUrl.clone();
   const { pathname } = req.nextUrl;
 
+  // Ignore the root page (home page) and static files like /_next
+  if (
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/register") ||
+    pathname.startsWith("/api/jobs") ||
+    pathname === "/" ||
+    pathname.startsWith("/_next")
+  ) {
+    return NextResponse.next();
+  }
+
   const token = await getToken({
     req,
     secret: NEXTAUTH_SECRET,
     salt: NEXTAUTH_SALT,
   });
-
-  // Ignore the root page (home page) and static files like /_next
-  if (pathname === "/" || pathname.startsWith("/_next")) {
-    return NextResponse.next();
-  }
 
   // Option A: Apply NextAuth middleware to other routes
   // return auth(req as any);
@@ -26,7 +32,7 @@ export default async function middleware(req: NextRequest) {
   console.log({ token });
 
   if (!token) {
-    if (pathname.startsWith("/api")) {
+    if (pathname.startsWith("/api/admin")) {
       return NextResponse.json(
         {
           meta: {
