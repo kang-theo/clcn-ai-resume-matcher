@@ -50,7 +50,6 @@ Table User {
   resumes Resumes [not null]
   applications Applications [not null]
   OnlineResumes OnlineResumes [not null]
-  JobDescriptionAnalysis JobDescriptionAnalysis [not null]
 }
 
 Table VerificationToken {
@@ -104,7 +103,6 @@ Table JobDescriptions {
   questionaires QuestionairesOnJobDescriptions [not null]
   applications Applications [not null]
   TagsOnJobDescriptions TagsOnJobDescriptions [not null]
-  JobDescriptionAnalysis JobDescriptionAnalysis [not null]
 }
 
 Table Tags {
@@ -250,19 +248,6 @@ Table Applications {
   onlineResumesId String
 }
 
-Table JobDescriptionAnalysis {
-  id String [pk]
-  job_description JobDescriptions [not null]
-  job_description_id String [not null]
-  user User [not null]
-  user_id String [not null]
-  score Decimal
-  analysis Json
-  created_at DateTime [default: `now()`, not null]
-  last_modifier String
-  updated_at DateTime [not null]
-}
-
 Enum UserState {
   Active
   Inactive
@@ -325,7 +310,3 @@ Ref: Applications.questionaire_id > Questionaires.id
 Ref: Applications.resume_id > Resumes.id
 
 Ref: Applications.onlineResumesId > OnlineResumes.id
-
-Ref: JobDescriptionAnalysis.job_description_id > JobDescriptions.id
-
-Ref: JobDescriptionAnalysis.user_id > User.id

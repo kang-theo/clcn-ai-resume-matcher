@@ -4,7 +4,7 @@ import { ITableParams } from "@/lib/interfaces";
 import OpenAI from "openai";
 
 const client = new OpenAI({
-  apiKey: process.env["AI_KEY"], // This is the default and can be omitted
+  apiKey: process.env["OPENAI_API_KEY"], // This is the default and can be omitted
 });
 
 export async function listAllJobs({

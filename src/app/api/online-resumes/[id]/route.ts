@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-// import { auth } from "@/lib/auth";
-// import { Session } from "next-auth";
+import { auth } from "@/lib/auth";
+import { Session } from "next-auth";
 import { getResume, updateResume, deleteResume } from "@/models/online-resume";
 
 /*
@@ -65,10 +65,7 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  request: any,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request, { params }: { params: { id: string } }) {
   try {
     const result: API.ModelRes = await deleteResume(params.id);
 

@@ -1,19 +1,22 @@
-import { Meta } from "@/components/common/Meta";
+import { Meta } from '@/components/common/Meta';
 import { ThemeProvider } from "@/components/providers/themes";
+import { Inter as FontSans } from "next/font/google";
 import "@/assets/styles/global.css";
 import { ScrollToTop } from "@/components/layout/client/ScrollToTop";
 import { Navbar } from "@/components/layout/client/Navbar";
-import { auth } from "@/lib/auth";
-import { Session } from "next-auth";
 
 export const metadata = Meta();
 
-export default async function ClientLayout({
+const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+export default function ClientLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session: Session | null = await auth();
   return (
     <ThemeProvider
       attribute='class'
@@ -21,7 +24,7 @@ export default async function ClientLayout({
       enableSystem
       disableTransitionOnChange
     >
-      <Navbar session={session} />
+      <Navbar />
       {children}
       <ScrollToTop />
     </ThemeProvider>

@@ -7,14 +7,13 @@ const { NEXTAUTH_SECRET = "", NEXTAUTH_SALT = "authjs.session-token" } =
 export default async function middleware(req: NextRequest) {
   // const url = req.nextUrl.clone();
   const { pathname } = req.nextUrl;
+
   // Ignore the root page (home page) and static files like /_next
   if (
-    pathname === "/home" ||
-    pathname.startsWith("/auth") ||
-    pathname.startsWith("/jobs") ||
     pathname.startsWith("/api/auth") ||
-    pathname.startsWith("/api/jobs") ||
     pathname.startsWith("/api/register") ||
+    pathname.startsWith("/api/jobs") ||
+    pathname === "/" ||
     pathname.startsWith("/_next")
   ) {
     return NextResponse.next();
@@ -29,6 +28,8 @@ export default async function middleware(req: NextRequest) {
   // Option A: Apply NextAuth middleware to other routes
   // return auth(req as any);
   // Option B:
+
+  console.log({ token });
 
   if (!token) {
     if (pathname.startsWith("/api/admin")) {
