@@ -35,22 +35,22 @@ const routeList: RouteProps[] = [
     href: "/jobs",
     label: "Jobs",
   },
-  {
-    href: "/#features",
-    label: "Features",
-  },
-  {
-    href: "/#testimonials",
-    label: "Testimonials",
-  },
-  {
-    href: "/#pricing",
-    label: "Pricing",
-  },
-  {
-    href: "/#faq",
-    label: "FAQ",
-  },
+  // {
+  //   href: "/#features",
+  //   label: "Features",
+  // },
+  // {
+  //   href: "/#testimonials",
+  //   label: "Testimonials",
+  // },
+  // {
+  //   href: "/#pricing",
+  //   label: "Pricing",
+  // },
+  // {
+  //   href: "/#faq",
+  //   label: "FAQ",
+  // },
 ];
 
 export const Navbar = () => {
