@@ -179,7 +179,7 @@ export async function analyzeJob({
           messages: [
             {
               role: "user",
-              content: `Analyze the following resume against the job description:\n\nJob Description: ${job.description}\n\nResume Content: ${resume.content}. The scoring mechanism is one to ten, the is full score, how many score do you decide? `,
+              content: `Analyze the following resume against the job description:\n\nJob Description: ${job.description}\n\n and Job required skills: ${job.skills} \n\n Resume Content: ${resume.content}. The scoring mechanism is one to ten, the ten is full score, how many score do you decide? `,
             },
           ],
         });

@@ -17,6 +17,7 @@ import toast from "react-hot-toast";
 import CommonSkeleton from "@/components/common/Skeleton";
 import DOMPurify from "dompurify";
 import { Icons } from "../common/Icons";
+import Link from "next/link";
 
 interface IProps {
   id: string;
@@ -79,9 +80,11 @@ export default function JobDetail({ id }: IProps) {
       {/* Header */}
       <header className='flex justify-between items-center mb-6'>
         <div className='flex items-center gap-2'>
-          <Button variant='ghost'>
-            <ArrowLeft className='h-4 w-4' /> Back
-          </Button>
+          <Link href='/jobs'>
+            <Button variant='ghost'>
+              <ArrowLeft className='h-4 w-4' /> Back
+            </Button>
+          </Link>
         </div>
         <div className='flex items-center gap-2'>
           <Button variant={"outline"} onClick={handleAnalyze}>
