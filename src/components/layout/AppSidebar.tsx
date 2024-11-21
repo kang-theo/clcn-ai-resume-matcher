@@ -4,6 +4,7 @@ import {
   Bell,
   Calendar,
   ChevronsUpDown,
+  CircleUser,
   CreditCard,
   GalleryVerticalEnd,
   Home,
@@ -14,6 +15,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import { BreadcrumbWrapper } from "@/components/common/BreadcrumbWrapper";
+import { useSession, signOut } from "next-auth/react";
+// import { useRouter } from "next/navigation";
 
 import {
   Sidebar,
@@ -49,20 +52,70 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SiderbarNavs } from "./SiderbarNavs";
-
-const data = {
-  user: {
-    name: "tangbaba918",
-    email: "tangbaba918@gmail.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-};
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 interface AppLayoutProps {
   children: React.ReactNode;
 }
 
 export function AppSidebar({ children }: AppLayoutProps) {
+  const { data: session, status, update } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      // Redirect to sign-in page with a callback URL
+      router.push(
+        `/auth/signin?callbackUrl=${encodeURIComponent(
+          window.location.pathname
+        )}`
+      );
+    }
+  }, [status, router]);
+
+  // Polling the session every 1 hour
+  useEffect(() => {
+    // TIP: You can also use `navigator.onLine` and some extra event handlers
+    // to check if the user is online and only update the session if they are.
+    // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/onLine
+    // 1 hour
+    const interval = setInterval(() => checkSession(), 1000 * 60 * 60 * 8);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Listen for when the page is visible, if the user switches tabs
+  // and makes our tab visible again, re-fetch the session
+  useEffect(() => {
+    const visibilityHandler = () =>
+      document.visibilityState === "visible" && update();
+    window.addEventListener("visibilitychange", visibilityHandler, false);
+    return () =>
+      window.removeEventListener("visibilitychange", visibilityHandler, false);
+  }, [update]);
+
+  // Function to check session validity
+  const checkSession = async () => {
+    try {
+      // Manually trigger a session update
+      await update();
+
+      // const expireTime = new Date(session?.expires);
+
+      // if (new Date() > expireTime) {
+      //   console.log("Session expired......");
+      // }
+
+      // If session is null after update, redirect to sign-in
+      if (!session) {
+        router.replace("/auth/signin");
+      }
+    } catch (error) {
+      // Handle error, possibly redirect to sign-in
+      router.replace("/auth/signin");
+    }
+  };
+
   return (
     <SidebarProvider>
       <Sidebar collapsible='icon'>
@@ -96,17 +149,21 @@ export function AppSidebar({ children }: AppLayoutProps) {
                   >
                     <Avatar className='h-8 w-8 rounded-lg'>
                       <AvatarImage
-                        src={data.user.avatar}
-                        alt={data.user.name}
+                        src={session?.user?.image ?? ""}
+                        alt={session?.user?.username ?? "User avatar"}
                       />
-                      <AvatarFallback className='rounded-lg'>CN</AvatarFallback>
+                      <AvatarFallback className='rounded-lg'>
+                        {session?.user?.username
+                          ? session?.user?.username.slice(0, 2)
+                          : "N/A"}
+                      </AvatarFallback>
                     </Avatar>
                     <div className='grid flex-1 text-left text-sm leading-tight'>
                       <span className='truncate font-semibold'>
-                        {data.user.name}
+                        {session?.user?.username}
                       </span>
                       <span className='truncate text-xs'>
-                        {data.user.email}
+                        {session?.user?.email}
                       </span>
                     </div>
                     <ChevronsUpDown className='ml-auto size-4' />
@@ -118,23 +175,24 @@ export function AppSidebar({ children }: AppLayoutProps) {
                   align='end'
                   sideOffset={4}
                 >
+                  {/* 
                   <DropdownMenuLabel className='p-0 font-normal'>
                     <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
-                      <Avatar className='h-8 w-8 rounded-lg'>
+                      <Avatar className='h-8 w-8'>
                         <AvatarImage
-                          src={data.user.avatar}
-                          alt={data.user.name}
+                          src={session?.user?.image ?? ""}
+                          alt='User avatar'
                         />
                         <AvatarFallback className='rounded-lg'>
-                          CN
+                          <CircleUser className='h-full w-full' />
                         </AvatarFallback>
                       </Avatar>
                       <div className='grid flex-1 text-left text-sm leading-tight'>
                         <span className='truncate font-semibold'>
-                          {data.user.name}
+                          {session?.user?.name}
                         </span>
                         <span className='truncate text-xs'>
-                          {data.user.email}
+                          {session?.user?.email}
                         </span>
                       </div>
                     </div>
@@ -161,8 +219,16 @@ export function AppSidebar({ children }: AppLayoutProps) {
                       Notifications
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
+                  <DropdownMenuSeparator /> */}
+                  <DropdownMenuItem
+                    onClick={() =>
+                      signOut({
+                        callbackUrl: `/auth/signin?callbackUrl=${encodeURIComponent(
+                          window.location.pathname
+                        )}`,
+                      })
+                    }
+                  >
                     <LogOut />
                     Log out
                   </DropdownMenuItem>
