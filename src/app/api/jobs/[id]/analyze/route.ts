@@ -27,7 +27,7 @@ export async function POST(
     // Currently, user only has one resume to analyze
     const result: API.ModelRes = await analyzeJob({
       id: params.id,
-      user_id: session.user.id,
+      user_id: session.user.id!,
     });
 
     if (result.meta.code === "OK") {

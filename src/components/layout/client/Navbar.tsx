@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Session } from "next-auth";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -35,25 +36,29 @@ const routeList: RouteProps[] = [
     href: "/jobs",
     label: "Jobs",
   },
-  {
-    href: "/#features",
-    label: "Features",
-  },
-  {
-    href: "/#testimonials",
-    label: "Testimonials",
-  },
-  {
-    href: "/#pricing",
-    label: "Pricing",
-  },
-  {
-    href: "/#faq",
-    label: "FAQ",
-  },
+  // {
+  //   href: "/#features",
+  //   label: "Features",
+  // },
+  // {
+  //   href: "/#testimonials",
+  //   label: "Testimonials",
+  // },
+  // {
+  //   href: "/#pricing",
+  //   label: "Pricing",
+  // },
+  // {
+  //   href: "/#faq",
+  //   label: "FAQ",
+  // },
 ];
 
-export const Navbar = () => {
+interface IProps {
+  session: Session | null;
+}
+
+export const Navbar = ({ session }: IProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const currPath = usePathname();
 
@@ -140,14 +145,26 @@ export const Navbar = () => {
           </nav>
 
           <div className='hidden md:flex gap-2'>
-            <Link
-              href='/auth/signin'
-              className={`${buttonVariants({
-                variant: "ghost",
-              })}`}
-            >
-              Sign In
-            </Link>
+            {session ? (
+              <Link
+                href='/dashboard'
+                className={`${buttonVariants({
+                  variant: "ghost",
+                })}`}
+              >
+                My Account
+              </Link>
+            ) : (
+              <Link
+                href='/auth/signin'
+                className={`${buttonVariants({
+                  variant: "ghost",
+                })}`}
+              >
+                Sign In
+              </Link>
+            )}
+
             <ModeToggle />
           </div>
         </NavigationMenuList>

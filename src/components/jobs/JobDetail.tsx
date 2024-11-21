@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "@/lib/axios";
 import { IJob } from "./AvailableJobs";
 import toast from "react-hot-toast";
 import CommonSkeleton from "@/components/common/Skeleton";
@@ -54,6 +54,7 @@ export default function JobDetail({ id }: IProps) {
       setRequesting(true);
       setAnalysisRes("");
       const { data } = await axios.post(`/api/jobs/${id}/analyze`);
+
       if (data.meta.code === "OK") {
         setAnalysisRes(data.result.analysisText);
         toast.success("Job analyzed successfully");

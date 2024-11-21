@@ -1,7 +1,7 @@
 import React from "react";
 
 function DashboardPage() {
-  return <div>Dashboard Page</div>;
+  return <div className='p-4'>Dashboard Page is in progress</div>;
 }
 
 export default DashboardPage;

@@ -1,7 +1,7 @@
 import React from "react";
 
 function MyProfilePage() {
-  return <div>My Profile Page</div>;
+  return <div className='p-4'>My Profile Page is in progress</div>;
 }
 
 export default MyProfilePage;

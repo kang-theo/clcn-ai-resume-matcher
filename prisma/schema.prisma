@@ -14,7 +14,7 @@ generator dbml {
 }
 
 datasource db {
-  provider = "postgres"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -52,25 +52,26 @@ enum UserState {
 }
 
 model User {
-  id             String          @id @default(cuid())
-  phone          String?         @unique
-  name           String?
-  username       String          @unique
-  password       String
-  email          String          @unique
-  email_verified DateTime?
-  image          String?
-  linkedin       String?
-  address        String?
-  accounts       Account[]
-  sessions       Session[]
-  roles          RolesOnUsers[]
-  status         UserState       @default(Active)
-  created_at     DateTime        @default(now())
-  updated_at     DateTime        @updatedAt
-  resumes        Resumes[]
-  applications   Applications[] // 一个人可以投递多个职位
-  OnlineResumes  OnlineResumes[]
+  id                     String                   @id @default(cuid())
+  phone                  String?                  @unique
+  name                   String?
+  username               String                   @unique
+  password               String
+  email                  String                   @unique
+  email_verified         DateTime?
+  image                  String?
+  linkedin               String?
+  address                String?
+  accounts               Account[]
+  sessions               Session[]
+  roles                  RolesOnUsers[]
+  status                 UserState                @default(Active)
+  created_at             DateTime                 @default(now())
+  updated_at             DateTime                 @updatedAt
+  resumes                Resumes[]
+  applications           Applications[] // 一个人可以投递多个职位
+  OnlineResumes          OnlineResumes[]
+  JobDescriptionAnalysis JobDescriptionAnalysis[]
 }
 
 model VerificationToken {
@@ -109,23 +110,24 @@ enum JobStatus {
 }
 
 model JobDescriptions {
-  id                    String                           @id @default(cuid())
-  title                 String                           @db.VarChar(100)
-  company               String?
-  position              String?
-  skills                String                           @db.Text
-  work_scope            String?
-  description           String                           @db.Text
-  status                JobStatus                        @default(Draft)
-  contact               String?
-  department            String?
-  created_by            String
-  created_at            DateTime                         @default(now())
-  last_modifier         String?
-  updated_at            DateTime                         @updatedAt
-  questionaires         QuestionairesOnJobDescriptions[]
-  applications          Applications[]
-  TagsOnJobDescriptions TagsOnJobDescriptions[]
+  id                     String                           @id @default(cuid())
+  title                  String                           @db.VarChar(100)
+  company                String?
+  position               String?
+  skills                 String                           @db.Text
+  work_scope             String?
+  description            String                           @db.Text
+  status                 JobStatus                        @default(Draft)
+  contact                String?
+  department             String?
+  created_by             String
+  created_at             DateTime                         @default(now())
+  last_modifier          String?
+  updated_at             DateTime                         @updatedAt
+  questionaires          QuestionairesOnJobDescriptions[]
+  applications           Applications[]
+  TagsOnJobDescriptions  TagsOnJobDescriptions[]
+  JobDescriptionAnalysis JobDescriptionAnalysis[]
 }
 
 model Tags {
@@ -296,4 +298,17 @@ model Applications {
   updated_at          DateTime          @updatedAt
   OnlineResumes       OnlineResumes?    @relation(fields: [onlineResumesId], references: [id])
   onlineResumesId     String?
+}
+
+model JobDescriptionAnalysis {
+  id                 String          @id @default(uuid())
+  job_description    JobDescriptions @relation(fields: [job_description_id], references: [id])
+  job_description_id String
+  user               User            @relation(fields: [user_id], references: [id])
+  user_id            String
+  score              Decimal?        @db.Decimal(10, 2)
+  analysis           Json?
+  created_at         DateTime        @default(now())
+  last_modifier      String?
+  updated_at         DateTime        @updatedAt
 }
