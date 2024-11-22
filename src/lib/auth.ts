@@ -94,6 +94,7 @@ export const {
           email: token.email,
           linkedin: token.youtube_link,
           image: token.image,
+          roles: token.roles,
         };
       }
       return session;

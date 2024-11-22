@@ -11,6 +11,23 @@ export async function authenticateUser(credentials: {
   try {
     const user = await prisma.user.findUnique({
       where: { username: credentials.username as string },
+      select: {
+        id: true,
+        username: true,
+        password: true,
+        email: true,
+        linkedin: true,
+        image: true,
+        roles: {
+          select: {
+            role: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!user) return null;
@@ -22,7 +39,10 @@ export async function authenticateUser(credentials: {
 
     if (!isPasswordValid) return null;
 
-    return user;
+    return {
+      ...user,
+      roles: user.roles.map((role) => role.role.name),
+    };
   } catch (err) {
     return null;
   } finally {
@@ -223,40 +243,60 @@ export async function updateUser(
   operator: string
 ) {
   try {
-    const role = await prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        roles: {
-          set: payload.roles?.map((roleId) => ({
-            user_id_role_id: { user_id: userId, role_id: roleId }, // Use the compound unique input
-          })),
+    return await prisma.$transaction(async (tx) => {
+      const user = await prisma.user.update({
+        where: {
+          id: userId,
         },
-      },
-      include: {
-        roles: {
-          include: {
-            role: true,
+        data: {
+          ...payload,
+          roles: undefined,
+        },
+        include: {
+          roles: {
+            include: {
+              role: true,
+            },
           },
         },
-      },
-    });
+      });
 
-    if (role) {
-      return {
-        meta: {
-          code: "OK",
-        },
-        data: role,
-      };
-    } else {
-      return {
-        meta: {
-          code: "400",
-        },
-      };
-    }
+      if (payload.roles?.length) {
+        // Remove all existing roles for the user
+        await prisma.rolesOnUsers.deleteMany({
+          where: {
+            user_id: userId,
+          },
+        });
+
+        // Add new roles for the user
+        const rolesOnUsersData = payload.roles.map((roleId) => ({
+          user_id: userId,
+          role_id: roleId,
+          assigned_by: operator,
+          assigned_at: new Date(),
+        }));
+
+        await prisma.rolesOnUsers.createMany({
+          data: rolesOnUsersData,
+        });
+      }
+
+      if (user) {
+        return {
+          meta: {
+            code: "OK",
+          },
+          data: user,
+        };
+      } else {
+        return {
+          meta: {
+            code: "400",
+          },
+        };
+      }
+    });
   } catch (err) {
     return catchORMError("Failed to update user", err);
   } finally {
