@@ -81,13 +81,15 @@ export function UserForm({ headless = false, onComplete, userId }: IProps) {
         setLoading(false);
         if (data.meta.code === "OK") {
           api.success({
-            message: "Create user successfully",
+            message: userId
+              ? "Update user successfully"
+              : "Create user successfully",
           });
           form.resetFields();
           if (onComplete) onComplete();
         } else {
           api.error({
-            message: "Failed to create user, please contact admin",
+            message: "Failed to operate, please contact admin",
           });
         }
       })
