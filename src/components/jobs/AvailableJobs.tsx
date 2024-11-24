@@ -9,6 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import CommonSkeleton from "../common/Skeleton";
 
 export interface IJob {
   id: string;
@@ -46,6 +47,14 @@ export default function AvailableJobs() {
       toast.error(error.response.data.message || "Failed to get jobs");
     }
   };
+
+  if (loading) {
+    return (
+      <div className='container mx-auto p-4 max-w-4xl'>
+        <CommonSkeleton />
+      </div>
+    );
+  }
 
   return (
     <div className='max-w-5xl mx-auto p-4 mt-4 space-y-4'>
