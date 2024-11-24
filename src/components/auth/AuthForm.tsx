@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { signInWithGoogleAction } from "@/app/actions/auth";
 import SignInButton from "./SignInButton";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import { userSchema, UserForm } from "@/lib/schema";
@@ -221,14 +221,16 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           description: `Please check your ${result.error} and try again.`,
         });
       } else {
-        // Todo: RDBC
-        // user dashboard if it is not admin
-        // router.push("/dashboard");
-        // admin dashboard if it is admin
-        router.push("/admin/dashboard");
-        // Authentication succeeded, result contains session object
-        // alert("Authentication successful: " + JSON.stringify(result));
-        // Redirect or perform other actions
+        // If sign-in is successful, fetch the session
+        const session = await getSession();
+        if (
+          session?.user.roles.includes("Admin") ||
+          session?.user.roles.includes("HR")
+        ) {
+          router.push("/admin/dashboard");
+        } else {
+          router.push("/dashboard");
+        }
       }
       setIsLoading(false);
     } catch (err) {
