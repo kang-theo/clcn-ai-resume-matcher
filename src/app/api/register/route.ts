@@ -1,12 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
+import { registerUserSchema } from "@/lib/schema";
+import { catchError } from "@/lib/utils";
 
 export const POST = async (req: NextRequest) => {
   try {
     const payload = await req.json();
-    const { email, username, password } = payload;
+    const validation = registerUserSchema.safeParse(payload);
+    if (!validation.success) {
+      return NextResponse.json(
+        {
+          meta: {
+            code: 400,
+            message: validation.error.errors
+              ?.map((item: { message: string }) => item.message)
+              .join(", "),
+          },
+        },
+        { status: 400 }
+      );
+    }
 
+    const { email, username, password } = validation.data;
     const user = await prisma.user.findMany({
       where: {
         OR: [
@@ -26,17 +42,12 @@ export const POST = async (req: NextRequest) => {
 
     // user exists
     if (user && user.length) {
-      return NextResponse.json(
-        {
-          meta: {
-            code: "USER_EXISTS",
-            message: "User already exists",
-          },
+      return NextResponse.json({
+        meta: {
+          code: 400,
+          message: "User already exists",
         },
-        {
-          status: 400,
-        }
-      );
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -50,44 +61,27 @@ export const POST = async (req: NextRequest) => {
 
     if (newUser) {
       return NextResponse.json(
-        {
-          meta: {
-            code: "OK",
-            message: "Created a new user successfully",
-          },
-        },
+        { meta: { code: "OK" } },
         {
           status: 201,
         }
       );
     } else {
-      return NextResponse.json(
-        {
-          meta: {
-            code: "SERVER_ERROR",
-            message: "Failed to create user in database",
-          },
-        },
-        {
-          status: 500,
-        }
-      );
+      return NextResponse.json({
+        meta: { code: 500, message: "Failed to create user in database" },
+      });
     }
-  } catch (err: any) {
-    console.error("Error parsing request:", err.errors);
+  } catch (error: any) {
     return NextResponse.json(
       {
         meta: {
-          code: err?.response?.status || "Bad Request",
-          message:
-            err?.message || "Failed to create account, please contact support",
+          code: error.response?.status || "Bad Request",
+          message: catchError(error),
         },
       },
       {
-        status: err?.response?.status || 400,
+        status: error.response?.status || 400,
       }
     );
   }
 };
-
-// signIn is managed by next-auth.js

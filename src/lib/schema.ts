@@ -25,6 +25,22 @@ export const userSchema = z.object({
   password: passwordSchema,
 });
 
+export const registerUserSchema = z.object({
+  email: z
+    .string()
+    .regex(
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+      "Invalid email"
+    ),
+  username: z
+    .string()
+    .regex(
+      /^[a-z0-9_-]{3,15}$/g,
+      "Username should be 3 to 15 characters long and consist only of lowercase letters, digits, underscores, or hyphens."
+    ),
+  password: z.string().min(6, "Password should be minimum 6 characters"),
+});
+
 export const loginUserSchema = z.object({
   username: z.string(),
   email: z

@@ -135,73 +135,72 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       const passwordVal = form.get("password");
       const passwordConfirmationVal = form.get("passwordConfirmation");
       if (passwordVal !== passwordConfirmationVal) {
-        // setErrors({ password: "Passwords do not match." });
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        // send to api server for register
-        const res = await fetch("/api/register", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          // send in JSON string
-          body: JSON.stringify({
-            // csrfToken: form.get("csrfToken"),
-            username: form.get("username"),
-            email: form.get("email"),
-            password: passwordVal,
-            passwordConfirmation: passwordConfirmationVal,
-          }),
-        });
-
-        const data: any = await res.json();
-        const metaData = data.meta;
-
-        // Handle HTTP error status (e.g., res.status is not 2xx)
-        // Corner case, edge case
-        // 埋点 (event tracking)，Using RPC(Remote Procedure Call) 提交日志到服务器
-        // console.error(`HTTP Error: ${res.statusText}`);
-        if (!res.ok) {
-          showToast({
-            title: "Request Error",
-            description:
-              "Please try again later or contact support for assistance.",
-          });
-          return; // Early return on HTTP error
-        }
-
-        // Handle server-side errors
-        if (metaData.code !== "OK") {
-          showToast({
-            title: "Server Side Error",
-            description:
-              metaData.message ||
-              "An unexpected error occurred on the server. Please try again later or contact support for assistance.",
-          });
-          return;
-        }
-
-        // Sign-up success handling
-        toast.success(
-          "Congratulations! You have successfully signed up. Please check your email to verify your account.",
+        toast.error(
+          "Password mismatch, please check your input and try again.",
           { position: "top-right" }
         );
-        router.push("/auth/signin");
+        setIsLoading(false);
+
+        return null;
+      }
+
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          // csrfToken: form.get("csrfToken"),
+          username: form.get("username"),
+          email: form.get("email"),
+          password: passwordVal,
+          passwordConfirmation: passwordConfirmationVal,
+        }),
+      });
+
+      try {
+        const data = await res.json();
+
+        if (res.ok) {
+          const metaData = data.meta;
+
+          if (metaData.code === "OK") {
+            toast.success(
+              "Congratulations! You have successfully signed up. Please check your email to verify your account.",
+              { position: "top-right" }
+            );
+            router.push("/auth/signin");
+          } else {
+            // Handle the error, e.g., show an error message to the user
+            toast.error(
+              metaData.message ||
+                "An unexpected error occurred on the server. Please try again later or contact support for assistance.",
+              { position: "top-right" }
+            );
+          }
+        } else {
+          // Handle HTTP error status (e.g., res.status is not 2xx)
+          // Corner case, edge case
+          // 埋点，RPC(Remote Procedure Call) 提交日志到服务器
+          // console.error(`HTTP Error: ${res.statusText}`);
+          toast.error(
+            data.meta.message ||
+              "Please try again later or contact support for assistance.",
+            { position: "top-right" }
+          );
+        }
       } catch (error) {
-        // Handle network or other unexpected errors
-        console.error("Error during registration:", error);
-        showToast({
-          title: "Unexpected Error",
-          description: "An unexpected error occurred. Please try again.",
-        });
+        console.error(error);
+        // Handle JSON parsing error
+        toast.error(
+          "Please try again later or contact support for assistance.",
+          { position: "top-right" }
+        );
       } finally {
         // Always set loading to false, whether there was an error or not
         setIsLoading(false);
+        return null;
       }
-      return;
     }
 
     // after register successfully
