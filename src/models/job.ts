@@ -179,7 +179,15 @@ export async function analyzeJob({
           messages: [
             {
               role: "user",
-              content: `Analyze the following resume against the job description:\n\nJob Description: ${job.description}\n\n and Job required skills: ${job.skills} \n\n Resume Content: ${resume.content}. The scoring mechanism is one to ten, the ten is full score, how many score do you decide? `,
+              content: `Analyze the following resume against the job description:\n\nJob Description: ${
+                job.description
+              }\n\n and Job required skills: ${
+                job.skills
+              } \n\n Resume Content: ${JSON.stringify(
+                resume.content,
+                null,
+                2
+              )}}\n\n and user masters skills. By the way, ignore the resume content's HTML tag. The scoring mechanism is one to ten, the ten is full score, how many score do you decide? `,
             },
           ],
         });
