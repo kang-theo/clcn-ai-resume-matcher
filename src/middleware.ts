@@ -6,6 +6,7 @@ const { NEXTAUTH_SECRET = "", NEXTAUTH_SALT = "authjs.session-token" } =
 import {
   DEFAULT_LOGIN_REDIRECT,
   apiAuthPrefix,
+  apiAuthRegister,
   authRoutes,
   publicRoutes,
   DEFAULT_ADMIN_URL,
@@ -36,7 +37,8 @@ export default async function middleware(req: NextRequest) {
   const { nextUrl } = req;
   const { pathname } = nextUrl;
 
-  const isApiAuthRoute = pathname.startsWith(apiAuthPrefix);
+  const isApiAuthRoute =
+    pathname.startsWith(apiAuthPrefix) || pathname === apiAuthRegister;
   // const isPublicRoute = publicRoutes.includes(pathname) || publicRoutes;
   // Update the public route check
   const isPublicRoute = publicRoutes.some((route) =>
