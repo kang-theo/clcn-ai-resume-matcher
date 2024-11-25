@@ -209,3 +209,32 @@ export async function analyzeJob({
     return catchORMError("Failed to analyze job description", err);
   }
 }
+
+export async function updateJob(jobId: string, job: Omit<API.Job, "id">) {
+  try {
+    const updatedJob = await prisma.jobDescriptions.update({
+      where: { id: jobId },
+      data: { ...job },
+    });
+
+    if (updatedJob) {
+      return {
+        meta: {
+          code: "OK",
+        },
+        data: {
+          job: updatedJob,
+        },
+      };
+    } else {
+      return {
+        meta: {
+          code: 400,
+          message: "Failed to update job",
+        },
+      };
+    }
+  } catch (err) {
+    return catchORMError("Failed to update job", err);
+  }
+}

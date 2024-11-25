@@ -63,7 +63,7 @@ export const JobForm = forwardRef<JobFormHandlers, IProps>((props, ref) => {
       // fetch the job detail
       setLoading(true);
       axios
-        .get(`${url}/jobs/${jobId}`)
+        .get(`${url}/${jobId}`)
         .then(({ data }) => {
           setLoading(false);
           if (data.meta.code === "OK") {
