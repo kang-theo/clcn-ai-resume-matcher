@@ -138,10 +138,18 @@ export default function JobDetail({ id }: IProps) {
         </CardHeader>
 
         <CardContent className='space-y-6'>
+          <h2 className='text-lg font-semibold'>Description</h2>
           <div
             className='prose max-w-none dark:text-white'
             dangerouslySetInnerHTML={{
               __html: DOMPurify.sanitize(job?.description!),
+            }}
+          ></div>
+          <h2 className='text-lg font-semibold'>Skills</h2>
+          <div
+            className='prose max-w-none dark:text-white'
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(job?.skills!),
             }}
           ></div>
         </CardContent>

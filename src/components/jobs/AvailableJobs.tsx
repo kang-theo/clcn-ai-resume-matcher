@@ -15,6 +15,7 @@ export interface IJob {
   id: string;
   title: string;
   description: string;
+  skills: string;
   status: string;
   created_at: string;
   updated_at: string;
