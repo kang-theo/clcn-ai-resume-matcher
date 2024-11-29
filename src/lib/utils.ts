@@ -186,8 +186,8 @@ export function calculateTimeDifference(updatedTime: string): string {
   const daysAgo = Math.floor(diffInMilliseconds / millisecondsPerDay);
 
   if (totalHoursAgo >= 24) {
-    return `Updated ${daysAgo} days ago.`;
+    return `${daysAgo} days ago`;
   } else {
-    return `Updated ${totalHoursAgo} hours ago.`;
+    return `${totalHoursAgo} hours ago`;
   }
 }
