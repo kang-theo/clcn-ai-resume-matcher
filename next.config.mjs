@@ -10,7 +10,7 @@ const nextConfig = {
       {
         source: "/",
         basePath: false,
-        destination: `${BASE_PATH}/home`,
+        destination: `/jobs`,
         permanent: true, // Use `false` for temporary redirects
       },
       {
