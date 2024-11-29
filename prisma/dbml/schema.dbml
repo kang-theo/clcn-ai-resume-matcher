@@ -65,7 +65,8 @@ Table VerificationToken {
 
 Table Role {
   id String [pk]
-  name String [not null]
+  name String [unique, not null]
+  description String
   created_by String [not null]
   created_at DateTime [default: `now()`, not null]
   last_modifier String
