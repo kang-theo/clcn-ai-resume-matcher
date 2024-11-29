@@ -84,7 +84,8 @@ model VerificationToken {
 
 model Role {
   id            String         @id @default(cuid())
-  name          String         @db.Char(100)
+  name          String         @unique @db.Char(100)
+  description   String?
   created_by    String
   created_at    DateTime       @default(now())
   last_modifier String?
