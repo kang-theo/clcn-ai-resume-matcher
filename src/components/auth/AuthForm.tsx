@@ -11,8 +11,7 @@ import Link from "next/link";
 import { signInWithGoogleAction } from "@/app/actions/auth";
 import SignInButton from "./SignInButton";
 import { getSession, signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useCustomToast } from "@/hooks/useCustomToast";
+import { useRouter, useSearchParams } from "next/navigation";
 import { userSchema, UserForm } from "@/lib/schema";
 import { z } from "zod";
 import ErrorMessage from "@/components/common/ErrorMessage";
@@ -36,7 +35,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   // const [githubSigning, setGithubSigning] = useState<boolean>(false);
   const [googleSigning, setGoogleSigning] = useState<boolean>(false);
   const router = useRouter();
-  const { showToast } = useCustomToast();
+  const searchParams = useSearchParams();
   const [errors, setErrors] = useState<FormErrors>({});
   const [formData, setFormData] = useState({
     username: "",
@@ -44,6 +43,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     password: "",
     passwordConfirmation: "",
   });
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
 
   // Handle input change (real-time validation)
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -112,25 +112,13 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   };
 
   async function onSubmit(event: React.SyntheticEvent) {
-    event.preventDefault();
-
-    try {
-      // Validate the whole form
-      userSchema.parse(formData);
-      console.log("Form submitted successfully:", formData);
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        const newErrors: FormErrors = {};
-        err.errors.forEach((error) => {
-          newErrors[error.path[0] as keyof FormErrors] = error.message;
-        });
-        setErrors(newErrors); // Update error info
-      }
-    }
+    // const onSubmit = async (event: React.SyntheticEvent) => {
     setIsLoading(true);
+
+    event.preventDefault();
+    // use original form submit
     const form = new FormData(event.target as HTMLFormElement);
 
-    // currently, next-auth.js has no signUp function
     if (type === "signup") {
       const passwordVal = form.get("password");
       const passwordConfirmationVal = form.get("passwordConfirmation");
@@ -204,47 +192,62 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     }
 
     // after register successfully
-    // next-auth.js provided signIn function; it sends credentials and next-auth.js will use prisma client to find in postgresql
+    // error=CredentialsSignin
     try {
       const result = await signIn("credentials", {
-        username: form.get("username"),
+        email: form.get("email"),
         password: form.get("password"),
         // callbackUrl: "/admin/dashboard",
+        // callbackUrl,
         redirect: false,
       });
 
       // for example: {"error":"CredentialsSignin","status":200,"ok":true,"url":null}
       if (result && result.error) {
-        showToast({
-          title: "Failed To Sign In",
-          description: `Please check your ${result.error} and try again.`,
-        });
-      } else {
-        // If sign-in is successful, fetch the session
-        const session = await getSession();
-        if (
-          session?.user.roles.includes("Admin") ||
-          session?.user.roles.includes("HR")
-        ) {
-          router.push("/admin/dashboard");
-        } else {
-          router.push("/dashboard");
+        // toast.error(
+        //   "Failed to sign in. please try again later or contact support for assistance.",
+        //   { position: "top-right" }
+        // );
+        switch (result.error) {
+          case "AccessDenied":
+            toast.error(
+              "Access denied. Please verify your email before signing in.",
+              { position: "top-right" }
+            );
+            break;
+          case "CredentialsSignin":
+            toast.error(
+              "Invalid email or password. Please check your credentials.",
+              { position: "top-right" }
+            );
+            break;
+          default:
+            toast.error(
+              "Failed to sign in. Please try again later or contact support.",
+              { position: "top-right" }
+            );
         }
+      } else {
+        // SSO and crendentails -> redirect to profile
+        // if user does not set youtube channel, redirect to profile page and set channel
+        router.push(callbackUrl);
+        // router.push(`${adminUrl}/admin/dashboard`);
+        // Authentication succeeded, result contains session object
+        // alert("Authentication successful: " + JSON.stringify(result));
+        // Redirect or perform other actions
       }
       setIsLoading(false);
+      // console.log("Authentication successful");
     } catch (err) {
       if (err instanceof Error) {
-        showToast({
-          title: "Failed To Sign In",
-          description: err.message || "Please check your input and try again.",
-        });
+        toast.error(
+          "Failed to sign in. Please check your input and try again.",
+          { position: "top-right" }
+        );
       } else {
         console.error("An unexpected error occurred.", err);
-        showToast({
-          title: "Unexpected Error Occurred",
-          description: "Unexpected error occurred.",
-        });
       }
+
       setIsLoading(false);
     }
   }
