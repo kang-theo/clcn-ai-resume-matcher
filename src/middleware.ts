@@ -61,7 +61,6 @@ export default async function middleware(req: NextRequest) {
     // logged in
     if (token) {
       const userRoles: string[] = token.roles as string[];
-      console.log({ userRoles });
       if (userRoles.includes("Admin") || userRoles.includes("HR")) {
         return Response.redirect(new URL(DEFAULT_ADMIN_URL, nextUrl));
       } else {
@@ -75,7 +74,6 @@ export default async function middleware(req: NextRequest) {
   // logged out and access not a public route
   // redirect to sign in page
   if (!token && !isPublicRoute) {
-    console.log("666666");
     let callbackUrl = pathname;
     if (nextUrl.search) {
       callbackUrl += nextUrl.search;

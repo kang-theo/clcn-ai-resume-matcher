@@ -1,9 +1,9 @@
-import AvailableJobs from "@/components/jobs/AvailableJobs";
+import JobBoard from "@/components/jobs/JobBoard";
 
 export default function JobsPage() {
   return (
     <div>
-      <AvailableJobs />
+      <JobBoard />
     </div>
   );
 }

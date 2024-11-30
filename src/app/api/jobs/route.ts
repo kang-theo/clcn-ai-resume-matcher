@@ -6,6 +6,7 @@ import {
   formatDatetime,
 } from "@/lib/utils";
 import { listAllJobs } from "@/models/job";
+import { convert } from "html-to-text";
 
 /*
   Bleow option is when you want no caching at all, there are more options
@@ -41,6 +42,16 @@ export async function GET(request: NextRequest) {
             ...job,
             times_ago: calculateTimeDifference(job.updated_at),
             created_at: formatDatetime(job.created_at),
+            // tags: [], // TODO
+            description: convert(job.description),
+            tags: [
+              { name: "Entry Level", color: "bg-purple-100 text-purple-900" },
+              { name: "Full-Time", color: "bg-green-100 text-green-900" },
+              { name: "Remote", color: "bg-orange-100 text-orange-900" },
+              { name: "UI/UX", color: "bg-blue-100 text-blue-900" },
+              { name: "Enterprise", color: "bg-red-100 text-red-900" },
+              { name: "SaaS", color: "bg-yellow-100 text-yellow-900" },
+            ],
           })),
         },
       });

@@ -126,7 +126,7 @@ export default function JobDetail({ id }: IProps) {
 
           {/* Title and tags */}
           <div>
-            <h2 className='text-xl font-semibold mb-4'>{job?.title}</h2>
+            <h2 className='text-xl font-semibold mb-'>{job?.title}</h2>
             <div className='flex gap-2 flex-wrap'>
               <Badge variant='outline'>Tag1</Badge>
               <Badge variant='outline'>Tag2</Badge>

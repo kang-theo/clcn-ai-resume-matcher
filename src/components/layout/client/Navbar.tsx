@@ -28,14 +28,14 @@ interface RouteProps {
 }
 
 const routeList: RouteProps[] = [
-  {
-    href: "/home",
-    label: "Home",
-  },
-  {
-    href: "/jobs",
-    label: "Jobs",
-  },
+  // {
+  //   href: "/home",
+  //   label: "Home",
+  // },
+  // {
+  //   href: "/jobs",
+  //   label: "Jobs",
+  // },
   // {
   //   href: "/#features",
   //   label: "Features",
@@ -68,17 +68,17 @@ export const Navbar = ({ session }: IProps) => {
   }
 
   return (
-    <header className='border-b-[1px] top-0 z-40 w-full'>
+    <header className='border-b-[1px] top-0 z-40 w-full bg-slate-50'>
       <NavigationMenu className='mx-auto'>
         <NavigationMenuList className='container h-14 px-4 w-screen flex justify-between '>
           <NavigationMenuItem className='font-bold flex'>
             <Link
               rel='noreferrer noopener'
               href='/'
-              className='ml-2 font-bold text-xl flex items-center'
+              className='ml-2 font-medium text-xl flex items-center'
             >
               <BookA />
-              ARM
+              AI-Powered Resume Matcher
             </Link>
           </NavigationMenuItem>
 
@@ -96,7 +96,9 @@ export const Navbar = ({ session }: IProps) => {
 
               <SheetContent side={"left"}>
                 <SheetHeader>
-                  <SheetTitle className='font-bold text-xl'>ARM</SheetTitle>
+                  <SheetTitle className='font-bold text-xl'>
+                    AI-Powered Resume Matcher
+                  </SheetTitle>
                 </SheetHeader>
                 <nav className='flex flex-col justify-center items-center gap-2 mt-4'>
                   {routeList.map(({ href, label }: RouteProps) => (
@@ -127,7 +129,7 @@ export const Navbar = ({ session }: IProps) => {
           </span>
 
           {/* desktop */}
-          <nav className='hidden md:flex gap-2'>
+          {/* <nav className='hidden md:flex gap-2'>
             {routeList.map((route: RouteProps, i) => (
               <Link
                 rel='noreferrer noopener'
@@ -142,7 +144,7 @@ export const Navbar = ({ session }: IProps) => {
                 {route.label}
               </Link>
             ))}
-          </nav>
+          </nav> */}
 
           <div className='hidden md:flex gap-2'>
             {session ? (
