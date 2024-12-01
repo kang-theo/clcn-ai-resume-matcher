@@ -43,7 +43,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     password: "",
     passwordConfirmation: "",
   });
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const callbackUrl = searchParams.get("callbackUrl");
 
   // Handle input change (real-time validation)
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -228,9 +228,19 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             );
         }
       } else {
+        // If sign-in is successful, fetch the session
+        const session = await getSession();
+        if (
+          session?.user.roles.includes("Admin") ||
+          session?.user.roles.includes("HR")
+        ) {
+          // callback
+          router.push("/admin/dashboard");
+        } else {
+          // callback
+          router.push("/dashboard");
+        }
         // SSO and crendentails -> redirect to profile
-        // if user does not set youtube channel, redirect to profile page and set channel
-        router.push(callbackUrl);
         // router.push(`${adminUrl}/admin/dashboard`);
         // Authentication succeeded, result contains session object
         // alert("Authentication successful: " + JSON.stringify(result));
