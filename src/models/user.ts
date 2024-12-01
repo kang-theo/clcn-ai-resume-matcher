@@ -10,7 +10,7 @@ export async function authenticateUser(credentials: {
 }) {
   try {
     const user = await prisma.user.findUnique({
-      where: { username: credentials.username as string },
+      where: { email: credentials.email as string },
       select: {
         id: true,
         username: true,

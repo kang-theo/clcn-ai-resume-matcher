@@ -42,7 +42,7 @@ export const registerUserSchema = z.object({
 });
 
 export const loginUserSchema = z.object({
-  username: z.string(),
+  username: z.string().optional(),
   email: z
     .string()
     .regex(

@@ -284,10 +284,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               Username
             </Label>
             <Input
-              id='username'
-              name='username'
-              placeholder='username'
-              type='input'
+              id='email'
+              name='email'
+              placeholder='Email'
+              type='email'
               autoCapitalize='none'
               autoComplete='input'
               autoCorrect='off'
