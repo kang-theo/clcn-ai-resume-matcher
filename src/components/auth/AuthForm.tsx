@@ -292,22 +292,22 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
           <div className='grid gap-1'>
             <Label className='sr-only' htmlFor='username'>
-              Username
+              Email
             </Label>
             <Input
-              id='username'
-              name='username'
-              placeholder='Username'
-              type='input'
+              id='email'
+              name='email'
+              placeholder='Email'
+              type='email'
               autoCapitalize='none'
               autoComplete='input'
               autoCorrect='off'
               disabled={isLoading}
               onChange={handleInputChange}
               onBlur={handleBlur}
-              className={getBorderClass(errors.username)}
+              className={getBorderClass(errors.email)}
             />
-            <ErrorMessage error={errors.username} />
+            <ErrorMessage error={errors.email} />
           </div>
 
           <div className='grid gap-1'>
