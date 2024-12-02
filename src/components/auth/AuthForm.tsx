@@ -95,6 +95,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         return rest;
       });
     } catch (err) {
+      console.error(err);
       if (err instanceof z.ZodError) {
         const errorMessage = err.errors[0]?.message;
         setErrors((prevErrors) => ({
@@ -294,10 +295,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               Username
             </Label>
             <Input
-              id='email'
-              name='email'
-              placeholder='Email'
-              type='email'
+              id='username'
+              name='username'
+              placeholder='Username'
+              type='input'
               autoCapitalize='none'
               autoComplete='input'
               autoCorrect='off'

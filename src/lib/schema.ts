@@ -11,7 +11,13 @@ const usernameSchema = z
   );
 
 // Email validation
-const emailSchema = z.string().email("Invalid email format").optional();
+const emailSchema = z
+  .string()
+  .regex(
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+    "Invalid email"
+  )
+  .optional();
 
 // Password validation
 const passwordSchema = z
