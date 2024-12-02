@@ -80,3 +80,7 @@ export const newJobSchema = z.object({
 export const deleteItemsSchema = z.object({
   ids: z.array(z.string()),
 });
+
+export const newTagSchema = z.object({
+  name: z.string(),
+});
