@@ -27,8 +27,8 @@ export function BreadcrumbWrapper() {
           const title = path.charAt(0).toUpperCase() + path.slice(1);
 
           return (
-            <>
-              <BreadcrumbItem key={path}>
+            <div key={path}>
+              <BreadcrumbItem>
                 {isLast ? (
                   <BreadcrumbPage>{title}</BreadcrumbPage>
                 ) : (
@@ -38,7 +38,7 @@ export function BreadcrumbWrapper() {
               {isLast ? null : (
                 <BreadcrumbSeparator className='hidden md:block' />
               )}
-            </>
+            </div>
           );
         })}
       </BreadcrumbList>
