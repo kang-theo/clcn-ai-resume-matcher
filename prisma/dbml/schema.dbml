@@ -111,6 +111,8 @@ Table JobDescriptions {
 Table Tags {
   id String [pk]
   name String [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
   TagsOnJobDescriptions TagsOnJobDescriptions [not null]
 }
 

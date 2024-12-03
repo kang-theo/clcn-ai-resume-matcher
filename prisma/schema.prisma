@@ -133,7 +133,9 @@ model JobDescriptions {
 
 model Tags {
   id                    String                  @id @default(cuid())
-  name                  String                  @db.VarChar(50)
+  name                  String                  @db.VarChar(100)
+  created_at            DateTime                @default(now())
+  updated_at            DateTime                @updatedAt
   TagsOnJobDescriptions TagsOnJobDescriptions[]
 }
 
