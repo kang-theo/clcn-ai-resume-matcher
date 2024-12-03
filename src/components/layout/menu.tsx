@@ -39,7 +39,10 @@ function getItem(
 // TODO(Refactor): It could come from the backend for RBAC
 export const items: MenuItem[] = [
   getItem("Dashboard", "/admin/dashboard", <LayoutGrid size={20} />),
-  getItem("Jobs", "/admin/jobs", <List size={20} />),
+  getItem("Jobs", "/admin/jobs", <List size={20} />, [
+    getItem("All", "/admin/jobs", <List size={20} />),
+    getItem("Tags", "/admin/tags", <List size={20} />),
+  ]),
   getItem(
     "Questionnaires",
     "/admin/questionaires",
