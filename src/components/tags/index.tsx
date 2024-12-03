@@ -127,7 +127,7 @@ function TagList({
             message: "Tag",
             description:
               data.message ||
-              "Failed to get Tags, please contact administrator",
+              "Failed to get tags, please contact administrator",
           });
         }
       })
@@ -137,7 +137,7 @@ function TagList({
           message: "Tags",
           description:
             error.response.data.message ||
-            "Failed to get Tags, please contact administrator",
+            "Failed to get tags, please contact administrator",
         });
       });
   };
@@ -156,10 +156,10 @@ function TagList({
 
   const handleDelete = (ids: React.Key[]) => {
     confirm({
-      title: "Are you sure to delete selected Tags",
+      title: "Are you sure to delete selected tags",
       icon: <TriangleAlert color='#ff4d4f' className='mr-2' />,
       content:
-        "Deleted Tags will not be able to recover, and corresponding job descriptions will not display it",
+        "Deleted tags will not be able to recover, and corresponding job descriptions will not display it",
       okType: "danger",
       onOk() {
         return axios
@@ -172,7 +172,7 @@ function TagList({
             if (!data.code) {
               fetchData();
               api["success"]({
-                message: "Delete Tags successfully",
+                message: "Delete tags successfully",
               });
               setSelectedRowKeys([]);
             } else {
@@ -180,7 +180,7 @@ function TagList({
                 message: "Tags",
                 description:
                   data.message ||
-                  "Failed to delete Tags, please contact the administrator.",
+                  "Failed to delete tags, please contact the administrator.",
               });
             }
           })
@@ -189,7 +189,7 @@ function TagList({
               message: "Tags",
               description:
                 error.response.data.message ||
-                "Failed to delete Tags, please contact the administrator.",
+                "Failed to delete tags, please contact the administrator.",
             });
           });
       },
@@ -357,7 +357,7 @@ function TagList({
                                 Delete
                               </span>
                               <Tooltip
-                                title={"Deleted Tags can not be restored"}
+                                title={"Deleted tags can not be restored"}
                               >
                                 <Info size={16} />
                               </Tooltip>
@@ -417,7 +417,7 @@ function TagList({
                     TagFormRef?.current?.executeOperation();
                   }}
                 >
-                  {selectedItem ? "Update Tag" : "Create"}
+                  {selectedItem ? "Update" : "Create"}
                 </Button>
               </Space>
             }
@@ -437,7 +437,7 @@ function TagList({
                 setOperating(false);
               }}
               method={selectedItem ? "put" : "post"}
-              TagId={selectedItem?.id}
+              tagId={selectedItem?.id}
             />
           </Drawer>
         </Card>
