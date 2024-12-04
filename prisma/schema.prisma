@@ -286,21 +286,22 @@ model Applications {
   id                  String            @id @default(uuid())
   user                User              @relation(fields: [user_id], references: [id])
   user_id             String
+  online_resume       OnlineResumes     @relation(fields: [online_resume_id], references: [id])
+  online_resume_id    String
   job_description     JobDescriptions   @relation(fields: [job_description_id], references: [id])
   job_description_id  String
-  questionaire        Questionaires     @relation(fields: [questionaire_id], references: [id])
-  questionaire_id     String
+  // fill the questionaire before apply the job
+  questionaire        Questionaires?    @relation(fields: [questionaire_id], references: [id])
+  questionaire_id     String?
   questionare_answers Json? // 问卷的答案 {[questionaire_item_id]: [answer]}
-  resume_id           String
-  resume              Resumes           @relation(fields: [resume_id], references: [id])
+  // attached resume
+  resume_id           String?
+  resume              Resumes?          @relation(fields: [resume_id], references: [id])
   scores              Int               @default(0)
   status              ApplicationStatus @default(pending)
-  created_by          String
   created_at          DateTime          @default(now())
   last_modifier       String?
   updated_at          DateTime          @updatedAt
-  OnlineResumes       OnlineResumes?    @relation(fields: [onlineResumesId], references: [id])
-  onlineResumesId     String?
 }
 
 model JobDescriptionAnalysis {

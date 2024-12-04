@@ -84,3 +84,10 @@ export const deleteItemsSchema = z.object({
 export const newTagSchema = z.object({
   name: z.string(),
 });
+
+export const newApplicationSchema = z.object({
+  user_id: z.string(),
+  online_resume_id: z.string(),
+  job_description_id: z.string(),
+  scores: z.number().optional(),
+});
