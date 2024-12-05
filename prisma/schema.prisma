@@ -191,7 +191,7 @@ model TagsOnJobDescriptions {
 // 4. (optional)使用QuestionaireItem 组装Questionaires
 // ----- 说明
 // 1. 一个调查问卷可以由多个调查项目构成
-// 2. 一个调查项目有多个选项可以选择，这些选项独立的，可以重复使用在多个调查项目中
+// 2. 一个调查项目有多个选项可以选择，这些选独立的，可以重复使用在多个调查项目中
 // 3. 一个调查项目也可以引用在多个调查问卷中
 model Questionaires {
   id                 String                            @id @default(cuid())
@@ -433,8 +433,10 @@ model OnlineResumes {
   applications Applications[]
   JobMatch     JobMatch[]
 
+  skills_searchable String? @db.Text // Generated column for search
+
   @@index([user_id])
-  @@index([technical_skills]) // For faster skill-based searches
+  @@index([skills_searchable(length: 768)])
 }
 
 enum ApplicationStatus {
@@ -489,25 +491,29 @@ model JobDescriptionAnalysis {
 
 // Optional: Add a new model for match analysis
 model JobMatch {
-  id                 String          @id @default(uuid())
-  job_description    JobDescriptions @relation(fields: [job_description_id], references: [id])
-  job_description_id String
-  online_resume      OnlineResumes   @relation(fields: [online_resume_id], references: [id])
-  online_resume_id   String
+  id String @id @default(uuid())
 
-  // Match Analysis
-  overall_match_score    Decimal @db.Decimal(5, 2) // 0-100
-  skill_match_score      Decimal @db.Decimal(5, 2)
-  experience_match_score Decimal @db.Decimal(5, 2)
-  education_match_score  Decimal @db.Decimal(5, 2)
+  // Relations
+  job_description_id String
+  job_description    JobDescriptions @relation(fields: [job_description_id], references: [id])
+  online_resume_id   String
+  online_resume      OnlineResumes   @relation(fields: [online_resume_id], references: [id])
+
+  // Match Scores
+  overall_match_score    Float // 0-100
+  skill_match_score      Float // 0-100
+  experience_match_score Float // 0-100
+  education_match_score  Float // 0-100
 
   // Detailed Analysis
-  matching_skills String[] // Skills that match
-  missing_skills  String[] // Required skills that are missing
-  recommendations String?  @db.Text // AI suggestions for improvement
+  matching_skills Json // ["React", "Node.js", etc.]
+  missing_skills  Json // ["GraphQL", "AWS", etc.]
+  recommendations String? @db.Text // AI suggestions for improvement
 
+  // Metadata
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  @@unique([job_description_id, online_resume_id])
+  @@index([job_description_id])
+  @@index([online_resume_id])
 }

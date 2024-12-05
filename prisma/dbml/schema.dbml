@@ -89,15 +89,12 @@ Table RolesOnUsers {
 
 Table JobDescriptions {
   id String [pk]
-  title String [not null]
-  company String
   position String
   skills String [not null]
   work_scope String
   description String [not null]
   status JobStatus [not null, default: 'Draft']
   contact String
-  department String
   created_by String [not null]
   created_at DateTime [default: `now()`, not null]
   last_modifier String
@@ -106,6 +103,29 @@ Table JobDescriptions {
   applications Applications [not null]
   TagsOnJobDescriptions TagsOnJobDescriptions [not null]
   JobDescriptionAnalysis JobDescriptionAnalysis [not null]
+  title String [not null]
+  company String
+  department String
+  location String
+  job_type String
+  experience_level String
+  salary_range Json
+  required_skills Json
+  preferred_skills Json
+  technical_requirements String
+  responsibilities String [not null]
+  qualifications String [not null]
+  benefits String
+  keywords Json
+  skill_weights Json
+  seniority_level String
+  JobMatch JobMatch [not null]
+  remote_policy String
+  visa_sponsorship Boolean [default: false]
+  industry_sector String
+  company_size String
+  role_level String
+  cultural_keywords Json
 }
 
 Table Tags {
@@ -226,10 +246,29 @@ Table OnlineResumes {
   id String [pk]
   user_id String [not null]
   user User [not null]
-  content Json [not null]
+  title String [not null]
+  summary String [not null]
+  headline String
+  current_status String
+  location String
+  relocation Boolean [not null, default: false]
+  remote_preference String
+  experiences Json [not null]
+  technical_skills Json [not null]
+  soft_skills Json [not null]
+  education Json [not null]
+  certifications Json
+  job_preferences Json [not null]
+  projects Json
+  languages Json
+  ai_analysis Json
+  visibility String [not null, default: 'public']
+  completeness Int [not null, default: 0]
+  last_updated DateTime [not null]
   created_at DateTime [default: `now()`, not null]
-  updated_at DateTime [not null]
   applications Applications [not null]
+  JobMatch JobMatch [not null]
+  skills_searchable String
 }
 
 Table Applications {
@@ -262,6 +301,23 @@ Table JobDescriptionAnalysis {
   analysis Json
   created_at DateTime [default: `now()`, not null]
   last_modifier String
+  updated_at DateTime [not null]
+}
+
+Table JobMatch {
+  id String [pk]
+  job_description_id String [not null]
+  job_description JobDescriptions [not null]
+  online_resume_id String [not null]
+  online_resume OnlineResumes [not null]
+  overall_match_score Float [not null]
+  skill_match_score Float [not null]
+  experience_match_score Float [not null]
+  education_match_score Float [not null]
+  matching_skills Json [not null]
+  missing_skills Json [not null]
+  recommendations String
+  created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
 }
 
@@ -331,3 +387,7 @@ Ref: Applications.resume_id > Resumes.id
 Ref: JobDescriptionAnalysis.job_description_id > JobDescriptions.id
 
 Ref: JobDescriptionAnalysis.user_id > User.id
+
+Ref: JobMatch.job_description_id > JobDescriptions.id
+
+Ref: JobMatch.online_resume_id > OnlineResumes.id

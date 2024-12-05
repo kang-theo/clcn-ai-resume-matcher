@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 // Mock job descriptions data
 const mockJobDescriptions = [
   {
-    // Tech Industry
     title: "Senior Full Stack Developer",
     company: "TechCorp Solutions",
     department: "Engineering",
@@ -14,6 +13,7 @@ const mockJobDescriptions = [
     location: "San Francisco, CA",
     job_type: "Full-time",
     experience_level: "Senior",
+    skills: "React, Node.js, TypeScript, AWS, GraphQL, Docker, Kubernetes",
     salary_range: {
       min: 140000,
       max: 180000,
@@ -23,19 +23,17 @@ const mockJobDescriptions = [
     preferred_skills: ["GraphQL", "Docker", "Kubernetes"],
     technical_requirements: "5+ years of experience in full-stack development",
     responsibilities:
-      "Lead development of scalable web applications, mentor junior developers, collaborate with product teams",
-    qualifications:
-      "Bachelor's degree in Computer Science or related field, proven experience with modern web technologies",
+      "Lead development of scalable web applications, mentor junior developers",
+    qualifications: "Bachelor's degree in Computer Science or related field",
     benefits:
       "Competitive salary, health insurance, 401k matching, unlimited PTO",
     description:
       "Join our engineering team to build next-generation web applications",
     work_scope: "Full-stack development, system architecture, team leadership",
     status: "Open",
-    created_by: "admin@example.com",
+    created_by: "hr1@company.com", // Created by HR
   },
   {
-    // Finance Industry
     title: "Financial Analyst",
     company: "Global Finance Corp",
     department: "Finance",
@@ -43,6 +41,8 @@ const mockJobDescriptions = [
     location: "New York, NY",
     job_type: "Full-time",
     experience_level: "Mid-Senior",
+    skills:
+      "Financial Modeling, Excel, SQL, Bloomberg Terminal, Python, R, Power BI",
     salary_range: {
       min: 90000,
       max: 120000,
@@ -64,117 +64,117 @@ const mockJobDescriptions = [
       "Join a leading financial firm to analyze market trends and investment opportunities",
     work_scope: "Financial analysis, reporting, market research",
     status: "Open",
-    created_by: "admin@example.com",
+    created_by: "hr2@company.com", // Created by another HR
   },
+];
+
+// Mock online resumes data
+const mockOnlineResumes = [
   {
-    // Healthcare Industry
-    title: "Healthcare Data Scientist",
-    company: "HealthTech Innovations",
-    department: "Data Science",
-    position: "Lead Data Scientist",
-    location: "Boston, MA",
-    job_type: "Full-time",
-    experience_level: "Senior",
-    salary_range: {
-      min: 130000,
-      max: 160000,
-      currency: "USD",
-    },
-    required_skills: [
-      "Python",
-      "Machine Learning",
-      "SQL",
-      "Healthcare Analytics",
-    ],
-    preferred_skills: ["R", "HIPAA Compliance", "Electronic Health Records"],
-    technical_requirements: "4+ years experience in healthcare data analysis",
-    responsibilities:
-      "Analyze patient data, develop predictive models, improve healthcare outcomes",
-    qualifications:
-      "Master's degree in Data Science or related field, healthcare experience preferred",
-    benefits: "Medical benefits, research funding, conference attendance",
-    description:
-      "Use data science to improve patient care and healthcare operations",
-    work_scope: "Healthcare analytics, machine learning, research",
-    status: "Open",
-    created_by: "admin@example.com",
+    title: "Senior Software Engineer",
+    summary: "Experienced full-stack developer with 8 years in web development",
+    headline: "Full Stack Developer | React | Node.js | AWS",
+    current_status: "Actively looking",
+    location: "San Francisco, CA",
+    experiences: JSON.stringify([
+      {
+        company: "Tech Innovators Inc",
+        position: "Senior Software Engineer",
+        department: "Engineering",
+        location: "San Francisco, CA",
+        employment_type: "Full-time",
+        duration: {
+          start: "2020-01",
+          end: null,
+          is_current: true,
+        },
+        responsibilities: [
+          "Led development of microservices architecture",
+          "Mentored junior developers",
+          "Implemented CI/CD pipelines",
+        ],
+        achievements: [
+          "Reduced deployment time by 50%",
+          "Improved application performance by 30%",
+        ],
+        technologies: ["React", "Node.js", "AWS", "Docker"],
+      },
+    ]),
+    technical_skills: JSON.stringify([
+      {
+        skill: "React",
+        proficiency: "Expert",
+        years_experience: 5,
+        last_used: "2024-03",
+      },
+      {
+        skill: "Node.js",
+        proficiency: "Advanced",
+        years_experience: 4,
+        last_used: "2024-03",
+      },
+    ]),
+    soft_skills: JSON.stringify([
+      {
+        skill: "Leadership",
+        context: "Led team of 5 developers",
+      },
+      {
+        skill: "Communication",
+        context: "Regular client presentations",
+      },
+    ]),
+    education: JSON.stringify([
+      {
+        institution: "University of California",
+        degree: "Bachelor of Science",
+        field: "Computer Science",
+        graduation: "2016-05",
+        gpa: 3.8,
+        honors: ["Cum Laude"],
+        relevant_courses: ["Data Structures", "Algorithms"],
+      },
+    ]),
+    job_preferences: JSON.stringify({
+      desired_role_level: ["Senior", "Lead"],
+      preferred_industries: ["Technology", "Finance"],
+      job_types: ["Full-time"],
+      preferred_locations: ["San Francisco", "Remote"],
+      salary_expectations: {
+        min: 150000,
+        max: 200000,
+        currency: "USD",
+      },
+      notice_period: "2 weeks",
+    }),
   },
+];
+
+// Mock job match data
+const mockJobMatches = [
   {
-    // Marketing Industry
-    title: "Digital Marketing Manager",
-    company: "Brand Builders Inc",
-    department: "Marketing",
-    position: "Marketing Manager",
-    location: "Los Angeles, CA",
-    job_type: "Full-time",
-    experience_level: "Mid-Senior",
-    salary_range: {
-      min: 85000,
-      max: 110000,
-      currency: "USD",
-    },
-    required_skills: [
-      "SEO",
-      "Google Analytics",
-      "Social Media Marketing",
-      "Content Strategy",
-    ],
-    preferred_skills: [
-      "Adobe Creative Suite",
-      "Email Marketing",
-      "Paid Advertising",
-    ],
-    technical_requirements: "5+ years of digital marketing experience",
-    responsibilities:
-      "Lead digital marketing campaigns, analyze performance metrics, manage team",
-    qualifications:
-      "Bachelor's degree in Marketing or related field, proven track record in digital marketing",
-    benefits: "Performance bonuses, creative budget, flexible schedule",
-    description:
-      "Drive brand growth through innovative digital marketing strategies",
-    work_scope: "Digital marketing, team management, strategy development",
-    status: "Open",
-    created_by: "admin@example.com",
-  },
-  {
-    // Manufacturing Industry
-    title: "Supply Chain Manager",
-    company: "Industrial Manufacturing Co",
-    department: "Operations",
-    position: "Operations Manager",
-    location: "Detroit, MI",
-    job_type: "Full-time",
-    experience_level: "Senior",
-    salary_range: {
-      min: 95000,
-      max: 125000,
-      currency: "USD",
-    },
-    required_skills: [
-      "Supply Chain Management",
-      "ERP Systems",
-      "Lean Manufacturing",
-      "Inventory Management",
-    ],
-    preferred_skills: ["Six Sigma", "SAP", "Project Management"],
-    technical_requirements: "7+ years in manufacturing operations",
-    responsibilities:
-      "Optimize supply chain operations, manage vendor relationships, improve efficiency",
-    qualifications:
-      "Bachelor's degree in Supply Chain Management or related field, Six Sigma certification preferred",
-    benefits:
-      "Performance bonuses, relocation assistance, professional development",
-    description:
-      "Lead supply chain operations for a leading manufacturing company",
-    work_scope:
-      "Supply chain optimization, vendor management, process improvement",
-    status: "Open",
-    created_by: "admin@example.com",
+    overall_match_score: 85,
+    skill_match_score: 90,
+    experience_match_score: 80,
+    education_match_score: 88,
+    matching_skills: JSON.stringify(["React", "Node.js"]),
+    missing_skills: JSON.stringify(["GraphQL"]),
+    recommendations: "Consider learning GraphQL to improve job match.",
   },
 ];
 
 async function main() {
   try {
+    // Clear existing data in the correct order (respecting foreign key constraints)
+    await prisma.rolesOnUsers.deleteMany({}); // Delete role assignments first
+    await prisma.jobMatch.deleteMany({}); // Delete matches
+    await prisma.onlineResumes.deleteMany({}); // Delete resumes
+    await prisma.jobDescriptions.deleteMany({}); // Delete job descriptions
+    await prisma.user.deleteMany({}); // Delete users
+    await prisma.role.deleteMany({}); // Delete roles last
+
+    console.log("Cleared existing data");
+
     // Create roles
     const roles = await Promise.all([
       prisma.role.upsert({
@@ -325,18 +325,55 @@ async function main() {
             ...job,
             required_skills: JSON.stringify(job.required_skills),
             preferred_skills: JSON.stringify(job.preferred_skills),
+            salary_range: JSON.stringify(job.salary_range),
           },
         })
       )
     );
 
-    console.log("Seed data created successfully:");
-    console.log("Roles:", roles);
-    console.log(
-      "Users:",
-      users.map((user) => ({ email: user.email, username: user.username }))
+    // Create online resumes (for john.dev@example.com)
+    const johnUser = await prisma.user.findUnique({
+      where: { email: "john.dev@example.com" },
+    });
+
+    const onlineResumes = await Promise.all(
+      mockOnlineResumes.map((resume) =>
+        prisma.onlineResumes.create({
+          data: {
+            ...resume,
+            user_id: johnUser.id,
+            visibility: "public", // Add any required fields
+            completeness: 100, // Add any required fields
+          },
+        })
+      )
     );
-    console.log("Job Descriptions:", jobDescriptions);
+
+    // Create job matches
+    const jobMatches = await Promise.all(
+      mockJobMatches.map((match, index) =>
+        prisma.jobMatch.create({
+          data: {
+            overall_match_score: 85,
+            skill_match_score: 90,
+            experience_match_score: 80,
+            education_match_score: 88,
+            matching_skills: JSON.stringify(["React", "Node.js"]),
+            missing_skills: JSON.stringify(["GraphQL"]),
+            recommendations: "Consider learning GraphQL to improve job match.",
+            job_description_id:
+              jobDescriptions[index % jobDescriptions.length].id,
+            online_resume_id: onlineResumes[0].id,
+          },
+        })
+      )
+    );
+
+    console.log(
+      `Created or updated ${jobDescriptions.length} job descriptions`
+    );
+    console.log(`Created or updated ${onlineResumes.length} online resumes`);
+    console.log(`Created or updated ${jobMatches.length} job matches`);
   } catch (error) {
     console.error("Error seeding data:", error);
     process.exit(1);

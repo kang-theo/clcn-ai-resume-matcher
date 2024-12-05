@@ -64,11 +64,13 @@ CREATE TABLE `VerificationToken` (
 CREATE TABLE `Role` (
     `id` VARCHAR(191) NOT NULL,
     `name` CHAR(100) NOT NULL,
+    `description` VARCHAR(191) NULL,
     `created_by` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `last_modifier` VARCHAR(191) NULL,
     `updated_at` DATETIME(3) NOT NULL,
 
+    UNIQUE INDEX `Role_name_key`(`name`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -85,19 +87,38 @@ CREATE TABLE `RolesOnUsers` (
 -- CreateTable
 CREATE TABLE `JobDescriptions` (
     `id` VARCHAR(191) NOT NULL,
-    `title` VARCHAR(100) NOT NULL,
-    `company` VARCHAR(191) NULL,
     `position` VARCHAR(191) NULL,
     `skills` TEXT NOT NULL,
     `work_scope` VARCHAR(191) NULL,
     `description` TEXT NOT NULL,
     `status` ENUM('Draft', 'Open', 'Closed') NOT NULL DEFAULT 'Draft',
     `contact` VARCHAR(191) NULL,
-    `department` VARCHAR(191) NULL,
     `created_by` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `last_modifier` VARCHAR(191) NULL,
     `updated_at` DATETIME(3) NOT NULL,
+    `title` VARCHAR(100) NOT NULL,
+    `company` VARCHAR(191) NULL,
+    `department` VARCHAR(191) NULL,
+    `location` VARCHAR(191) NULL,
+    `job_type` VARCHAR(191) NULL,
+    `experience_level` VARCHAR(191) NULL,
+    `salary_range` JSON NULL,
+    `required_skills` JSON NULL,
+    `preferred_skills` JSON NULL,
+    `technical_requirements` TEXT NULL,
+    `responsibilities` TEXT NOT NULL,
+    `qualifications` TEXT NOT NULL,
+    `benefits` TEXT NULL,
+    `keywords` JSON NULL,
+    `skill_weights` JSON NULL,
+    `seniority_level` VARCHAR(191) NULL,
+    `remote_policy` VARCHAR(191) NULL,
+    `visa_sponsorship` BOOLEAN NULL DEFAULT false,
+    `industry_sector` VARCHAR(191) NULL,
+    `company_size` VARCHAR(191) NULL,
+    `role_level` VARCHAR(191) NULL,
+    `cultural_keywords` JSON NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -105,7 +126,9 @@ CREATE TABLE `JobDescriptions` (
 -- CreateTable
 CREATE TABLE `Tags` (
     `id` VARCHAR(191) NOT NULL,
-    `name` VARCHAR(50) NOT NULL,
+    `name` VARCHAR(100) NOT NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -212,10 +235,30 @@ CREATE TABLE `Resumes` (
 CREATE TABLE `OnlineResumes` (
     `id` VARCHAR(191) NOT NULL,
     `user_id` VARCHAR(191) NOT NULL,
-    `content` JSON NOT NULL,
+    `title` VARCHAR(191) NOT NULL,
+    `summary` TEXT NOT NULL,
+    `headline` VARCHAR(191) NULL,
+    `current_status` VARCHAR(191) NULL,
+    `location` VARCHAR(191) NULL,
+    `relocation` BOOLEAN NOT NULL DEFAULT false,
+    `remote_preference` VARCHAR(191) NULL,
+    `experiences` JSON NOT NULL,
+    `technical_skills` JSON NOT NULL,
+    `soft_skills` JSON NOT NULL,
+    `education` JSON NOT NULL,
+    `certifications` JSON NULL,
+    `job_preferences` JSON NOT NULL,
+    `projects` JSON NULL,
+    `languages` JSON NULL,
+    `ai_analysis` JSON NULL,
+    `visibility` VARCHAR(191) NOT NULL DEFAULT 'public',
+    `completeness` INTEGER NOT NULL DEFAULT 0,
+    `last_updated` DATETIME(3) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updated_at` DATETIME(3) NOT NULL,
+    `skills_searchable` TEXT NULL,
 
+    INDEX `OnlineResumes_user_id_idx`(`user_id`),
+    INDEX `OnlineResumes_skills_searchable_idx`(`skills_searchable`(768)),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -223,18 +266,51 @@ CREATE TABLE `OnlineResumes` (
 CREATE TABLE `Applications` (
     `id` VARCHAR(191) NOT NULL,
     `user_id` VARCHAR(191) NOT NULL,
+    `online_resume_id` VARCHAR(191) NOT NULL,
     `job_description_id` VARCHAR(191) NOT NULL,
-    `questionaire_id` VARCHAR(191) NOT NULL,
+    `questionaire_id` VARCHAR(191) NULL,
     `questionare_answers` JSON NULL,
-    `resume_id` VARCHAR(191) NOT NULL,
+    `resume_id` VARCHAR(191) NULL,
     `scores` INTEGER NOT NULL DEFAULT 0,
     `status` ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'pending',
-    `created_by` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `last_modifier` VARCHAR(191) NULL,
     `updated_at` DATETIME(3) NOT NULL,
-    `onlineResumesId` VARCHAR(191) NULL,
 
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `JobDescriptionAnalysis` (
+    `id` VARCHAR(191) NOT NULL,
+    `job_description_id` VARCHAR(191) NOT NULL,
+    `user_id` VARCHAR(191) NOT NULL,
+    `score` DECIMAL(10, 2) NULL,
+    `analysis` JSON NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `last_modifier` VARCHAR(191) NULL,
+    `updated_at` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `JobMatch` (
+    `id` VARCHAR(191) NOT NULL,
+    `job_description_id` VARCHAR(191) NOT NULL,
+    `online_resume_id` VARCHAR(191) NOT NULL,
+    `overall_match_score` DOUBLE NOT NULL,
+    `skill_match_score` DOUBLE NOT NULL,
+    `experience_match_score` DOUBLE NOT NULL,
+    `education_match_score` DOUBLE NOT NULL,
+    `matching_skills` JSON NOT NULL,
+    `missing_skills` JSON NOT NULL,
+    `recommendations` TEXT NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL,
+
+    INDEX `JobMatch_job_description_id_idx`(`job_description_id`),
+    INDEX `JobMatch_online_resume_id_idx`(`online_resume_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -284,13 +360,25 @@ ALTER TABLE `OnlineResumes` ADD CONSTRAINT `OnlineResumes_user_id_fkey` FOREIGN 
 ALTER TABLE `Applications` ADD CONSTRAINT `Applications_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `Applications` ADD CONSTRAINT `Applications_online_resume_id_fkey` FOREIGN KEY (`online_resume_id`) REFERENCES `OnlineResumes`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `Applications` ADD CONSTRAINT `Applications_job_description_id_fkey` FOREIGN KEY (`job_description_id`) REFERENCES `JobDescriptions`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Applications` ADD CONSTRAINT `Applications_questionaire_id_fkey` FOREIGN KEY (`questionaire_id`) REFERENCES `Questionaires`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Applications` ADD CONSTRAINT `Applications_questionaire_id_fkey` FOREIGN KEY (`questionaire_id`) REFERENCES `Questionaires`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Applications` ADD CONSTRAINT `Applications_resume_id_fkey` FOREIGN KEY (`resume_id`) REFERENCES `Resumes`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Applications` ADD CONSTRAINT `Applications_resume_id_fkey` FOREIGN KEY (`resume_id`) REFERENCES `Resumes`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Applications` ADD CONSTRAINT `Applications_onlineResumesId_fkey` FOREIGN KEY (`onlineResumesId`) REFERENCES `OnlineResumes`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `JobDescriptionAnalysis` ADD CONSTRAINT `JobDescriptionAnalysis_job_description_id_fkey` FOREIGN KEY (`job_description_id`) REFERENCES `JobDescriptions`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `JobDescriptionAnalysis` ADD CONSTRAINT `JobDescriptionAnalysis_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `JobMatch` ADD CONSTRAINT `JobMatch_job_description_id_fkey` FOREIGN KEY (`job_description_id`) REFERENCES `JobDescriptions`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `JobMatch` ADD CONSTRAINT `JobMatch_online_resume_id_fkey` FOREIGN KEY (`online_resume_id`) REFERENCES `OnlineResumes`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

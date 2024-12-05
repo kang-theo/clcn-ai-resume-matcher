@@ -141,7 +141,7 @@ export const TagForm = forwardRef<TagFormHandlers, IProps>((props, ref) => {
           form={form}
           layout='vertical'
           {...layout}
-          initialValues={{ ...tag, status: "Draft" }}
+          initialValues={{ ...tag || {}, status: "Draft" }}
           // style={{ width: 600 }}
         >
           <Form.Item
