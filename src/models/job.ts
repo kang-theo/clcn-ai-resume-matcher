@@ -4,7 +4,7 @@ import { ITableParams } from "@/lib/interfaces";
 import OpenAI from "openai";
 
 const client = new OpenAI({
-  apiKey: process.env.AI_KEY, // This is the default and can be omitted
+  apiKey: process.env["AI_KEY"], // This is the default and can be omitted
 });
 
 export async function listAllJobs({
@@ -245,4 +245,104 @@ export async function updateJob(jobId: string, job: Omit<API.Job, "id">) {
   } catch (err) {
     return catchORMError("Failed to update job", err);
   }
+}
+
+async function analyzeJobMatch(
+  jobDescription: JobDescription,
+  resume: OnlineResume
+) {
+  const matchAnalysisPrompt = `
+You are an expert AI recruitment analyst. Analyze the job description and resume data provided below to determine compatibility and generate matching scores.
+
+Job Description:
+{
+  "title": "${jobDescription.title}",
+  "required_skills": ${jobDescription.required_skills},
+  "preferred_skills": ${jobDescription.preferred_skills},
+  "experience_level": "${jobDescription.experience_level}",
+  "technical_requirements": "${jobDescription.technical_requirements}",
+  "responsibilities": "${jobDescription.responsibilities}",
+  "qualifications": "${jobDescription.qualifications}"
+}
+
+Candidate Resume:
+{
+  "skills": ${resume.skills},
+  "experience": ${resume.experiences},
+  "education": ${resume.education},
+  "summary": "${resume.summary}"
+}
+
+Please analyze and provide a structured evaluation with the following:
+
+1. Skills Match Analysis:
+   - Calculate percentage match of required skills
+   - Calculate percentage match of preferred skills
+   - Identify key missing skills
+   - Skills match score (0-100)
+
+2. Experience Match Analysis:
+   - Evaluate relevance of past experiences
+   - Compare experience level requirements
+   - Experience match score (0-100)
+
+3. Education & Qualifications Match:
+   - Evaluate educational background against requirements
+   - Consider relevant certifications
+   - Education match score (0-100)
+
+4. Overall Compatibility:
+   - Calculate weighted overall match score (0-100)
+   - Provide brief explanation of score
+   - List top 3 strengths
+   - List top 3 areas for improvement
+
+Please return the analysis in the following JSON format:
+{
+  "skill_match_score": number,
+  "experience_match_score": number,
+  "education_match_score": number,
+  "overall_match_score": number,
+  "matching_skills": string[],
+  "missing_skills": string[],
+  "recommendations": string,
+  "analysis_summary": string
+}
+`;
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-4",
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are an expert AI recruitment analyst specializing in job matching analysis.",
+      },
+      {
+        role: "user",
+        content: matchAnalysisPrompt,
+      },
+    ],
+    temperature: 0.3, // Lower temperature for more consistent scoring
+    response_format: { type: "json_object" },
+  });
+
+  const analysis = JSON.parse(response.choices[0].message.content);
+
+  // Save the match analysis
+  await prisma.jobMatch.create({
+    data: {
+      job_description_id: jobDescription.id,
+      online_resume_id: resume.id,
+      overall_match_score: analysis.overall_match_score,
+      skill_match_score: analysis.skill_match_score,
+      experience_match_score: analysis.experience_match_score,
+      education_match_score: analysis.education_match_score,
+      matching_skills: analysis.matching_skills,
+      missing_skills: analysis.missing_skills,
+      recommendations: analysis.recommendations,
+    },
+  });
+
+  return analysis;
 }

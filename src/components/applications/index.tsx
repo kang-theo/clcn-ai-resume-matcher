@@ -13,6 +13,7 @@ import {
   Tooltip,
   notification,
   Breadcrumb,
+  Application,
   message,
   Space,
 } from "antd";
@@ -346,8 +347,9 @@ function ApplicationList({
                           label: (
                             <div className='flex items-center justify-between'>
                               <span
-                                className={`mr-2 ${selectedRowKeys.length && "text-[#ff4d4f]"
-                                  }`}
+                                className={`mr-2 ${
+                                  selectedRowKeys.length && "text-[#ff4d4f]"
+                                }`}
                               >
                                 Delete
                               </span>

@@ -55,7 +55,6 @@ export const TagForm = forwardRef<TagFormHandlers, IProps>((props, ref) => {
   const [spinning, setSpinning] = useState<boolean>(false);
   // Destructure the props if needed
   const { url, onComplete, onError, tagId, method } = props;
-  // const [tag, setTag] = useState<API.Tag | null>(null);
   const [tag, setTag] = useState<API.Tag | null>(null);
 
   useEffect(() => {
@@ -142,8 +141,8 @@ export const TagForm = forwardRef<TagFormHandlers, IProps>((props, ref) => {
           form={form}
           layout='vertical'
           {...layout}
-          initialValues={{ ...tag || {}, status: "Draft" }}
-        // style={{ width: 600 }}
+          initialValues={{ ...tag, status: "Draft" }}
+          // style={{ width: 600 }}
         >
           <Form.Item
             name={"name"}

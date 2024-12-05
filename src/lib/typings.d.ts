@@ -82,15 +82,6 @@ declare namespace API {
   > & {
     questionaire_item_ids?: string[];
   };
-
-  export interface Tag {
-    id: number;
-    name: string;
-    description?: string;
-    status: string;
-    createdAt: string;
-    updatedAt: string;
-  }
 }
 
 type OnlineResume = {

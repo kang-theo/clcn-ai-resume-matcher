@@ -191,3 +191,11 @@ export function calculateTimeDifference(updatedTime: string): string {
     return `${totalHoursAgo} hours ago`;
   }
 }
+
+export const formatCurrency = (amount: number, currency = "USD") => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
