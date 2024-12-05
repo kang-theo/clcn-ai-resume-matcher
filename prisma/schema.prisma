@@ -112,15 +112,15 @@ enum JobStatus {
 
 model JobDescriptions {
   id                     String                           @id @default(cuid())
-  title                  String                           @db.VarChar(100)
-  company                String?
+  // title                  String                           @db.VarChar(100)
+  // company                String?
   position               String?
   skills                 String                           @db.Text
   work_scope             String?
   description            String                           @db.Text
   status                 JobStatus                        @default(Draft)
   contact                String?
-  department             String?
+  // department             String?
   created_by             String
   created_at             DateTime                         @default(now())
   last_modifier          String?
@@ -129,6 +129,41 @@ model JobDescriptions {
   applications           Applications[]
   TagsOnJobDescriptions  TagsOnJobDescriptions[]
   JobDescriptionAnalysis JobDescriptionAnalysis[]
+
+  // Core Job Details
+  title            String  @db.VarChar(100)
+  company          String?
+  department       String?
+  location         String?
+  job_type         String? // full-time, part-time, contract
+  experience_level String? // entry, mid, senior
+  salary_range     Json? // { min: number, max: number, currency: string }
+
+  // Technical Requirements
+  required_skills        Json? // Array of required skills
+  preferred_skills       Json? // Array of nice-to-have skills
+  technical_requirements String? @db.Text
+
+  // Job Specifics
+  responsibilities String  @db.Text
+  qualifications   String  @db.Text
+  benefits         String? @db.Text
+
+  // AI Analysis Fields
+  keywords        Json? // Extracted key terms for matching
+  skill_weights   Json? // Importance weight of each skill
+  seniority_level String? // Analyzed seniority requirement
+  JobMatch        JobMatch[]
+
+  // Add fields for better matching
+  remote_policy    String? // "Remote", "Hybrid", "On-site"
+  visa_sponsorship Boolean? @default(false)
+  industry_sector  String?
+  company_size     String? // "Startup", "Enterprise", etc.
+
+  // Enhance AI Analysis Fields
+  role_level        String? // "Junior", "Mid", "Senior", "Lead"
+  cultural_keywords Json? // ["Fast-paced", "Innovative", etc.]
 }
 
 model Tags {
@@ -257,14 +292,149 @@ model Resumes {
 }
 
 model OnlineResumes {
-  id           String         @id @default(uuid())
-  user_id      String
-  user         User           @relation(fields: [user_id], references: [id])
-  // flexible
-  content      Json
-  created_at   DateTime       @default(now())
-  updated_at   DateTime       @updatedAt
+  id      String @id @default(uuid())
+  user_id String
+  user    User   @relation(fields: [user_id], references: [id])
+
+  // Basic Info
+  title          String // Current/Desired job title
+  summary        String  @db.Text
+  headline       String? // Professional headline
+  current_status String? // "Actively looking", "Open to opportunities", etc.
+
+  // Contact & Location
+  location          String?
+  relocation        Boolean @default(false)
+  remote_preference String? // "Remote", "Hybrid", "On-site"
+
+  // Professional Details
+  experiences Json // Array of work experiences
+  // {
+  //   company: string
+  //   position: string
+  //   department: string?
+  //   location: string
+  //   employment_type: string // "Full-time", "Contract", etc.
+  //   duration: { 
+  //     start: date, 
+  //     end: date | null,  // null for current position
+  //     is_current: boolean 
+  //   }
+  //   responsibilities: string[]
+  //   achievements: string[]
+  //   technologies: string[]  // Tech stack or tools used
+  //   industry: string
+  // }
+
+  // Skills & Expertise
+  technical_skills Json // Technical skills with proficiency
+  // {
+  //   skill: string
+  //   proficiency: "Beginner" | "Intermediate" | "Advanced" | "Expert"
+  //   years_experience: number
+  //   last_used: date
+  // }[]
+
+  soft_skills Json // Soft skills with context
+  // {
+  //   skill: string
+  //   context: string     // Example of application
+  // }[]
+
+  // Education & Certifications
+  education Json // Array of education history
+  // {
+  //   institution: string
+  //   degree: string
+  //   field: string
+  //   graduation: date
+  //   gpa: number?
+  //   honors: string[]
+  //   relevant_courses: string[]
+  // }[]
+
+  certifications Json? // Professional certifications
+  // {
+  //   name: string
+  //   issuer: string
+  //   issued_date: date
+  //   expiry_date: date?
+  //   credential_id: string?
+  // }[]
+
+  // Career Preferences
+  job_preferences Json
+  // {
+  //   desired_role_level: string[]    // "Entry", "Mid", "Senior", "Lead"
+  //   preferred_industries: string[]   // Match with job industry_sector
+  //   job_types: string[]             // "Full-time", "Contract", etc.
+  //   preferred_locations: string[]    // Including "Remote"
+  //   salary_expectations: {
+  //     min: number
+  //     max: number
+  //     currency: string
+  //   }
+  //   notice_period: string           // "Immediate", "2 weeks", "1 month"
+  //   work_authorization: string      // Visa status if applicable
+  // }
+
+  // Projects & Portfolio
+  projects Json?
+  // {
+  //   title: string
+  //   description: string
+  //   technologies: string[]
+  //   role: string
+  //   url: string?
+  //   highlights: string[]
+  // }[]
+
+  // Languages
+  languages Json?
+  // {
+  //   language: string
+  //   proficiency: "Basic" | "Intermediate" | "Fluent" | "Native"
+  // }[]
+
+  // AI Analysis Fields
+  ai_analysis Json?
+  // {
+  //   skill_vector: number[]          // Embeddings for skill matching
+  //   experience_level: string        // Calculated from experience
+  //   seniority_score: number        // 0-100 based on experience
+  //   key_achievements: string[]      // Extracted notable achievements
+  //   industry_expertise: {
+  //     industry: string
+  //     years: number
+  //     level: string
+  //   }[]
+  //   role_keywords: string[]         // For search optimization
+  //   total_years_experience: number
+  //   skill_clusters: {              // Grouped related skills
+  //     category: string
+  //     skills: string[]
+  //     proficiency: number
+  //   }[]
+  //   match_factors: {               // Weighted factors for job matching
+  //     technical_skills: number
+  //     industry_fit: number
+  //     experience_match: number
+  //     education_match: number
+  //   }
+  // }
+
+  // Metadata
+  visibility   String   @default("public") // public, private, network
+  completeness Int      @default(0) // Profile completion %
+  last_updated DateTime @updatedAt
+  created_at   DateTime @default(now())
+
+  // Relations
   applications Applications[]
+  JobMatch     JobMatch[]
+
+  @@index([user_id])
+  @@index([technical_skills]) // For faster skill-based searches
 }
 
 enum ApplicationStatus {
@@ -315,4 +485,29 @@ model JobDescriptionAnalysis {
   created_at         DateTime        @default(now())
   last_modifier      String?
   updated_at         DateTime        @updatedAt
+}
+
+// Optional: Add a new model for match analysis
+model JobMatch {
+  id                 String          @id @default(uuid())
+  job_description    JobDescriptions @relation(fields: [job_description_id], references: [id])
+  job_description_id String
+  online_resume      OnlineResumes   @relation(fields: [online_resume_id], references: [id])
+  online_resume_id   String
+
+  // Match Analysis
+  overall_match_score    Decimal @db.Decimal(5, 2) // 0-100
+  skill_match_score      Decimal @db.Decimal(5, 2)
+  experience_match_score Decimal @db.Decimal(5, 2)
+  education_match_score  Decimal @db.Decimal(5, 2)
+
+  // Detailed Analysis
+  matching_skills String[] // Skills that match
+  missing_skills  String[] // Required skills that are missing
+  recommendations String?  @db.Text // AI suggestions for improvement
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([job_description_id, online_resume_id])
 }

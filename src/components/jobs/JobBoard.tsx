@@ -444,7 +444,7 @@ export default function JobBoard() {
                       <Plus className='h-4 w-4' />
                     </div>
                     <ul className='space-y-3'>
-                      {selectedJob.responsibilities.map((item, index) => (
+                      {[selectedJob.description].map((item, index) => (
                         <li key={index} className='flex items-start gap-2'>
                           <div className='mt-1.5 h-4 w-4 rounded-full bg-green-100 flex items-center justify-center'>
                             <svg
