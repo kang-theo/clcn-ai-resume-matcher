@@ -19,22 +19,22 @@ datasource db {
 }
 
 model Account {
-  id                String  @id @default(cuid())
-  user_id           String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
+  id                  String  @id @default(cuid())
+  user_id             String
+  type                String
+  provider            String
+  provider_account_id String
+  refresh_token       String? @db.Text
+  access_token        String? @db.Text
+  expires_at          Int?
+  token_type          String?
+  scope               String?
+  id_token            String? @db.Text
+  session_state       String?
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  @@unique([provider, providerAccountId])
+  @@unique([provider, provider_account_id])
 }
 
 model Session {
@@ -52,26 +52,26 @@ enum UserState {
 }
 
 model User {
-  id                     String                   @id @default(cuid())
-  phone                  String?                  @unique
-  name                   String?
-  username               String                   @unique
-  password               String
-  email                  String                   @unique
-  email_verified         DateTime?
-  image                  String?
-  linkedin               String?
-  address                String?
-  accounts               Account[]
-  sessions               Session[]
-  roles                  RolesOnUsers[]
-  status                 UserState                @default(Active)
-  created_at             DateTime                 @default(now())
-  updated_at             DateTime                 @updatedAt
-  resumes                Resumes[]
-  applications           Applications[] // 一个人可以投递多个职位
-  OnlineResumes          OnlineResumes[]
-  JobDescriptionAnalysis JobDescriptionAnalysis[]
+  id             String                   @id @default(cuid())
+  phone          String?                  @unique
+  name           String?
+  username       String                   @unique
+  password       String
+  email          String                   @unique
+  email_verified DateTime?
+  image          String?
+  linkedin       String?
+  address        String?
+  accounts       Account[]
+  sessions       Session[]
+  roles          RolesOnUsers[]
+  status         UserState                @default(Active)
+  created_at     DateTime                 @default(now())
+  updated_at     DateTime                 @updatedAt
+  resumes        Resumes[]
+  applications   Applications[] // 一个人可以投递多个职位
+  online_resumes OnlineResumes[]
+  analysis       JobDescriptionAnalysis[]
 }
 
 model VerificationToken {
@@ -111,24 +111,24 @@ enum JobStatus {
 }
 
 model JobDescriptions {
-  id                     String                           @id @default(cuid())
+  id            String                           @id @default(cuid())
   // title                  String                           @db.VarChar(100)
   // company                String?
-  position               String?
-  skills                 String                           @db.Text
-  work_scope             String?
-  description            String                           @db.Text
-  status                 JobStatus                        @default(Draft)
-  contact                String?
+  position      String?
+  skills        String                           @db.Text
+  work_scope    String?
+  description   String                           @db.Text
+  status        JobStatus                        @default(Draft)
+  contact       String?
   // department             String?
-  created_by             String
-  created_at             DateTime                         @default(now())
-  last_modifier          String?
-  updated_at             DateTime                         @updatedAt
-  questionaires          QuestionairesOnJobDescriptions[]
-  applications           Applications[]
-  TagsOnJobDescriptions  TagsOnJobDescriptions[]
-  JobDescriptionAnalysis JobDescriptionAnalysis[]
+  created_by    String
+  created_at    DateTime                         @default(now())
+  last_modifier String?
+  updated_at    DateTime                         @updatedAt
+  questionaires QuestionairesOnJobDescriptions[]
+  applications  Applications[]
+  tags          TagsOnJobDescriptions[]
+  analysis      JobDescriptionAnalysis[]
 
   // Core Job Details
   title            String  @db.VarChar(100)
@@ -167,11 +167,11 @@ model JobDescriptions {
 }
 
 model Tags {
-  id                    String                  @id @default(cuid())
-  name                  String                  @db.VarChar(100)
-  created_at            DateTime                @default(now())
-  updated_at            DateTime                @updatedAt
-  TagsOnJobDescriptions TagsOnJobDescriptions[]
+  id         String                  @id @default(cuid())
+  name       String                  @db.VarChar(100)
+  created_at DateTime                @default(now())
+  updated_at DateTime                @updatedAt
+  jobs       TagsOnJobDescriptions[]
 }
 
 model TagsOnJobDescriptions {
@@ -431,7 +431,7 @@ model OnlineResumes {
 
   // Relations
   applications Applications[]
-  JobMatch     JobMatch[]
+  job_matches  JobMatch[]
 
   skills_searchable String? @db.Text // Generated column for search
 

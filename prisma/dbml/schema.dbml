@@ -7,7 +7,7 @@ Table Account {
   user_id String [not null]
   type String [not null]
   provider String [not null]
-  providerAccountId String [not null]
+  provider_account_id String [not null]
   refresh_token String
   access_token String
   expires_at Int
@@ -18,7 +18,7 @@ Table Account {
   user User [not null]
 
   indexes {
-    (provider, providerAccountId) [unique]
+    (provider, provider_account_id) [unique]
   }
 }
 
@@ -49,8 +49,8 @@ Table User {
   updated_at DateTime [not null]
   resumes Resumes [not null]
   applications Applications [not null]
-  OnlineResumes OnlineResumes [not null]
-  JobDescriptionAnalysis JobDescriptionAnalysis [not null]
+  online_resumes OnlineResumes [not null]
+  analysis JobDescriptionAnalysis [not null]
 }
 
 Table VerificationToken {
@@ -101,8 +101,8 @@ Table JobDescriptions {
   updated_at DateTime [not null]
   questionaires QuestionairesOnJobDescriptions [not null]
   applications Applications [not null]
-  TagsOnJobDescriptions TagsOnJobDescriptions [not null]
-  JobDescriptionAnalysis JobDescriptionAnalysis [not null]
+  tags TagsOnJobDescriptions [not null]
+  analysis JobDescriptionAnalysis [not null]
   title String [not null]
   company String
   department String
@@ -133,7 +133,7 @@ Table Tags {
   name String [not null]
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
-  TagsOnJobDescriptions TagsOnJobDescriptions [not null]
+  jobs TagsOnJobDescriptions [not null]
 }
 
 Table TagsOnJobDescriptions {
@@ -267,7 +267,7 @@ Table OnlineResumes {
   last_updated DateTime [not null]
   created_at DateTime [default: `now()`, not null]
   applications Applications [not null]
-  JobMatch JobMatch [not null]
+  job_matches JobMatch [not null]
   skills_searchable String
 }
 

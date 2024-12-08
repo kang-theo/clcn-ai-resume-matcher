@@ -31,7 +31,13 @@ const mockJobDescriptions = [
       "Join our engineering team to build next-generation web applications",
     work_scope: "Full-stack development, system architecture, team leadership",
     status: "Open",
-    created_by: "hr1@company.com", // Created by HR
+    created_by: "hr1@company.com",
+    remote_policy: "Hybrid",
+    visa_sponsorship: true,
+    industry_sector: "Technology",
+    company_size: "Enterprise",
+    role_level: "Senior",
+    cultural_keywords: JSON.stringify(["Innovative", "Fast-paced"]),
   },
   {
     title: "Financial Analyst",
@@ -76,6 +82,8 @@ const mockOnlineResumes = [
     headline: "Full Stack Developer | React | Node.js | AWS",
     current_status: "Actively looking",
     location: "San Francisco, CA",
+    relocation: true,
+    remote_preference: "Hybrid",
     experiences: JSON.stringify([
       {
         company: "Tech Innovators Inc",
@@ -91,7 +99,6 @@ const mockOnlineResumes = [
         responsibilities: [
           "Led development of microservices architecture",
           "Mentored junior developers",
-          "Implemented CI/CD pipelines",
         ],
         achievements: [
           "Reduced deployment time by 50%",
@@ -147,6 +154,10 @@ const mockOnlineResumes = [
       },
       notice_period: "2 weeks",
     }),
+    skills_searchable:
+      "React Node.js TypeScript AWS Docker Kubernetes Leadership",
+    visibility: "public",
+    completeness: 100,
   },
 ];
 
@@ -163,15 +174,34 @@ const mockJobMatches = [
   },
 ];
 
+// Add mock tags data
+const mockTags = [
+  { name: "Remote" },
+  { name: "Senior Level" },
+  { name: "Engineering" },
+  { name: "Full Stack" },
+  { name: "Finance" },
+  { name: "Analytics" },
+  { name: "Entry Level" },
+  { name: "Mid Level" },
+  { name: "Tech" },
+  { name: "Healthcare" },
+];
+
 async function main() {
   try {
-    // Clear existing data in the correct order (respecting foreign key constraints)
-    await prisma.rolesOnUsers.deleteMany({}); // Delete role assignments first
-    await prisma.jobMatch.deleteMany({}); // Delete matches
+    // Clear existing data in the correct order (reverse of relationships)
+    await prisma.tagsOnJobDescriptions.deleteMany({}); // Delete tag relations first
+    await prisma.tags.deleteMany({}); // Delete tags
+    await prisma.jobMatch.deleteMany({}); // Delete job matches
+    await prisma.jobDescriptionAnalysis.deleteMany({}); // Delete analysis
+    await prisma.applications.deleteMany({}); // Delete applications
+    await prisma.questionairesOnJobDescriptions.deleteMany({}); // Delete questionnaire relations
+    await prisma.jobDescriptions.deleteMany({}); // Now safe to delete job descriptions
     await prisma.onlineResumes.deleteMany({}); // Delete resumes
-    await prisma.jobDescriptions.deleteMany({}); // Delete job descriptions
+    await prisma.rolesOnUsers.deleteMany({}); // Delete role assignments
     await prisma.user.deleteMany({}); // Delete users
-    await prisma.role.deleteMany({}); // Delete roles last
+    await prisma.role.deleteMany({}); // Delete roles
 
     console.log("Cleared existing data");
 
@@ -317,7 +347,22 @@ async function main() {
     await prisma.jobDescriptions.deleteMany({});
     console.log("Cleared existing job descriptions");
 
-    // Create job descriptions
+    // Clear existing tags and tag relations
+    await prisma.tagsOnJobDescriptions.deleteMany({});
+    await prisma.tags.deleteMany({});
+
+    // Create tags
+    const tags = await Promise.all(
+      mockTags.map((tag) =>
+        prisma.tags.create({
+          data: {
+            name: tag.name,
+          },
+        })
+      )
+    );
+
+    // Create job descriptions with tags
     const jobDescriptions = await Promise.all(
       mockJobDescriptions.map((job) =>
         prisma.jobDescriptions.create({
@@ -326,6 +371,10 @@ async function main() {
             required_skills: JSON.stringify(job.required_skills),
             preferred_skills: JSON.stringify(job.preferred_skills),
             salary_range: JSON.stringify(job.salary_range),
+            cultural_keywords: job.cultural_keywords,
+            tags: {
+              create: getTagsForJob(job, tags),
+            },
           },
         })
       )
@@ -354,13 +403,13 @@ async function main() {
       mockJobMatches.map((match, index) =>
         prisma.jobMatch.create({
           data: {
-            overall_match_score: 85,
-            skill_match_score: 90,
-            experience_match_score: 80,
-            education_match_score: 88,
-            matching_skills: JSON.stringify(["React", "Node.js"]),
-            missing_skills: JSON.stringify(["GraphQL"]),
-            recommendations: "Consider learning GraphQL to improve job match.",
+            overall_match_score: match.overall_match_score,
+            skill_match_score: match.skill_match_score,
+            experience_match_score: match.experience_match_score,
+            education_match_score: match.education_match_score,
+            matching_skills: JSON.stringify(match.matching_skills),
+            missing_skills: JSON.stringify(match.missing_skills),
+            recommendations: match.recommendations,
             job_description_id:
               jobDescriptions[index % jobDescriptions.length].id,
             online_resume_id: onlineResumes[0].id,
@@ -380,6 +429,43 @@ async function main() {
   } finally {
     await prisma.$disconnect();
   }
+}
+
+// Helper function to determine which tags to assign to each job
+function getTagsForJob(job, tags) {
+  const tagAssignments = [];
+
+  // Experience level tags
+  if (job.experience_level?.toLowerCase().includes("senior")) {
+    const seniorTag = tags.find((t) => t.name === "Senior Level");
+    if (seniorTag) tagAssignments.push({ tag_id: seniorTag.id });
+  } else if (job.experience_level?.toLowerCase().includes("mid")) {
+    const midTag = tags.find((t) => t.name === "Mid Level");
+    if (midTag) tagAssignments.push({ tag_id: midTag.id });
+  }
+
+  // Department/Field tags
+  if (job.department?.toLowerCase().includes("engineering")) {
+    const engineeringTag = tags.find((t) => t.name === "Engineering");
+    if (engineeringTag) tagAssignments.push({ tag_id: engineeringTag.id });
+  } else if (job.department?.toLowerCase().includes("finance")) {
+    const financeTag = tags.find((t) => t.name === "Finance");
+    if (financeTag) tagAssignments.push({ tag_id: financeTag.id });
+  }
+
+  // Job type specific tags
+  if (job.title?.toLowerCase().includes("full stack")) {
+    const fullStackTag = tags.find((t) => t.name === "Full Stack");
+    if (fullStackTag) tagAssignments.push({ tag_id: fullStackTag.id });
+  }
+
+  // Industry tags
+  if (job.company?.toLowerCase().includes("tech")) {
+    const techTag = tags.find((t) => t.name === "Tech");
+    if (techTag) tagAssignments.push({ tag_id: techTag.id });
+  }
+
+  return tagAssignments;
 }
 
 main().catch((e) => {

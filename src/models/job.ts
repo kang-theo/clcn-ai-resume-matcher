@@ -22,6 +22,7 @@ export async function listAllJobs({
       select: {
         id: true,
         title: true,
+        company: true,
         description: true,
         status: true,
         department: true,
@@ -29,6 +30,16 @@ export async function listAllJobs({
         last_modifier: true,
         created_at: true,
         updated_at: true,
+        tags: {
+          select: {
+            tag: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
         [sortField]: sortOrder,
