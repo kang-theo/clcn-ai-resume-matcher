@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getJob } from "@/models/job";
 import { calculateTimeDifference, formatDatetime } from "@/lib/utils";
+import { convert } from "html-to-text";
+import { TAG_COLORS } from "@/lib/constant";
 
 /*
   Bleow option is when you want no caching at all, there are more options
@@ -16,12 +18,22 @@ export async function GET(
     const result: API.ModelRes = await getJob(params.id);
 
     if (result.meta.code === "OK") {
+      const job = result.data;
       return NextResponse.json({
         meta: { code: "OK" },
         result: {
-          ...result.data,
-          times_ago: calculateTimeDifference(result.data.updated_at),
-          created_at: formatDatetime(result.data.created_at),
+          ...job,
+          company:
+            typeof job.company === "string"
+              ? JSON.parse(job.company)
+              : job.company,
+          posted_at: calculateTimeDifference(job.updated_at),
+          created_at: formatDatetime(job.created_at),
+          description: convert(job.description),
+          tags: job.tags.map((tagRelation: any) => ({
+            name: tagRelation.tag.name,
+            color: TAG_COLORS[tagRelation.tag.name] || TAG_COLORS.default,
+          })),
         },
       });
     } else {
