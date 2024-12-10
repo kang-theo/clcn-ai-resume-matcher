@@ -30,6 +30,7 @@ export async function listAllJobs({
         last_modifier: true,
         created_at: true,
         updated_at: true,
+        salary_range: true,
         tags: {
           select: {
             tag: {

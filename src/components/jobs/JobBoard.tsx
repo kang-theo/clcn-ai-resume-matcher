@@ -12,6 +12,7 @@ import {
   Send,
   Sparkles,
   Star,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -42,25 +43,106 @@ import { SalaryRangeFilter } from "./SalaryRangeFilter";
 interface Job {
   id: number;
   title: string;
-  company: string;
-  logo: string;
-  applicants: string;
+  company: {
+    name: string;
+    logo: string;
+    about: string;
+    size: string;
+    industry: string;
+    website?: string;
+    location: string;
+  };
+  location: string;
+  job_type: string; // "Full-time" | "Part-time" | "Contract"
+  location_type: string; // "Remote" | "Hybrid" | "On-site"
+  experience_level: string;
+  salary_range: {
+    min: number;
+    max: number;
+    currency: string;
+    period: string; // "yearly" | "monthly" | "hourly"
+  };
+  description: string;
+  required_skills: string | string[];
+  preferred_skills?: string | string[];
+  responsibilities: string | string[];
+  benefits?: string[];
+  skills: string[];
+  posted_at: string;
+  deadline?: string;
+  applicants_count: number;
   tags: {
     name: string;
     color: string;
   }[];
-  description: string;
+}
+
+interface OnlineResume {
+  // ... other fields ...
+  experiences: string | Experience[];
+  technical_skills: string | TechnicalSkill[];
+  soft_skills: string | SoftSkill[];
+  education: string | Education[];
+  job_preferences: string | JobPreferences;
+  // ... other fields ...
+}
+
+interface Experience {
+  company: string;
+  position: string;
+  department: string;
+  location: string;
+  employment_type: string;
+  duration: {
+    start: string;
+    end: string | null;
+    is_current: boolean;
+  };
   responsibilities: string[];
-  overview: string;
-  about: string;
-  salary: string;
-  times_ago: string;
+  achievements: string[];
+  technologies: string[];
+}
+
+interface TechnicalSkill {
+  skill: string;
+  proficiency: string;
+  years_experience: number;
+  last_used: string;
+}
+
+interface SoftSkill {
+  skill: string;
+  context: string;
+}
+
+interface Education {
+  institution: string;
+  degree: string;
+  field: string;
+  graduation: string;
+  gpa: number;
+  honors: string[];
+  relevant_courses: string[];
+}
+
+interface JobPreferences {
+  desired_role_level: string[];
+  preferred_industries: string[];
+  job_types: string[];
+  preferred_locations: string[];
+  salary_expectations: {
+    min: number;
+    max: number;
+    currency: string;
+  };
+  notice_period: string;
 }
 
 export default function JobBoard() {
   const [salaryRange, setSalaryRange] = useState<[number, number]>([0, 200]);
   const [selectedJob, setSelectedJob] = React.useState<Job | null>(null);
   const [sheetOpen, setSheetOpen] = React.useState(false);
+  const [loadingJobDetails, setLoadingJobDetails] = useState(false);
 
   // const jobs = [
   //   {
@@ -167,9 +249,26 @@ export default function JobBoard() {
     }
   };
 
-  const handleShowDetails = (job: Job) => {
-    setSelectedJob(job);
+  const getJobDetails = async (jobId: number) => {
+    setLoadingJobDetails(true);
+    try {
+      const { data } = await axios.get(`/api/jobs/${jobId}`);
+      if (data.meta.code === "OK") {
+        setSelectedJob(data.result);
+      } else {
+        toast.error(data.meta.message || "Failed to get job details");
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to get job details");
+      setSelectedJob(null);
+    } finally {
+      setLoadingJobDetails(false);
+    }
+  };
+
+  const handleShowDetails = async (job: Job) => {
     setSheetOpen(true);
+    await getJobDetails(job.id);
   };
 
   const JobFilterPanel = () => {
@@ -362,10 +461,16 @@ export default function JobBoard() {
                           <Heart className='h-4 w-4' />
                         </Button>
                         <div className='flex items-start gap-2 mb-4'>
-                          {job.logo ? (
+                          <div>
+                            <Building
+                              className='h-[40px] w-[40px]'
+                              strokeWidth={1}
+                            />
+                          </div>
+                          {/* {job.company.logo ? (
                             <Image
-                              src={job.logo}
-                              alt={job.company}
+                              src={job.company.logo}
+                              alt={job.company.name}
                               className='rounded-lg'
                               width={40}
                               height={40}
@@ -377,7 +482,7 @@ export default function JobBoard() {
                                 strokeWidth={1}
                               />
                             </div>
-                          )}
+                          )} */}
 
                           <div>
                             <Tooltip>
@@ -392,7 +497,7 @@ export default function JobBoard() {
                             </Tooltip>
                             <p className='text-sm text-gray-500'>
                               {/* {job.company ?? 'N/A'} • {job.applicants ?? "0 applicants"} */}
-                              {job.company ?? "N/A"}
+                              {job.company.name ?? "N/A"}
                             </p>
                           </div>
                         </div>
@@ -419,15 +524,18 @@ export default function JobBoard() {
                         <p className='flex-grow mb-4 line-clamp-3 text-sm text-gray-600 overflow-hidden'>
                           {job.description}
                         </p>
-                        <div className='mt-auto flex items-center justify-between'>
-                          {job.salary ? (
-                            <div className='font-semibold'>{job.salary}/hr</div>
-                          ) : (
-                            <div></div>
+                        <div className='mt-auto space-y-1'>
+                          {job.salary_range && (
+                            <div className='text-sm text-gray-900 font-medium'>
+                              {job.salary_range.min.toLocaleString()} -{" "}
+                              {job.salary_range.max.toLocaleString()}{" "}
+                              {job.salary_range.currency}/
+                              {job.salary_range.period?.slice(0, 2) ?? "yr"}
+                            </div>
                           )}
-                          <div className='flex items-center gap-2'>
-                            <span className='text-sm text-gray-500'>
-                              {job.times_ago}
+                          <div className='flex items-center justify-between'>
+                            <span className='text-xs text-gray-500'>
+                              {job.posted_at}
                             </span>
                             <Button
                               variant='ghost'
@@ -451,15 +559,20 @@ export default function JobBoard() {
         {/* Job Details Sheet */}
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <SheetContent className='w-full sm:max-w-3xl overflow-y-auto pt-10'>
-            {selectedJob && (
+            {loadingJobDetails ? (
+              <div className='space-y-4'>
+                <CommonSkeleton />
+              </div>
+            ) : selectedJob ? (
               <div className='space-y-8'>
+                {/* Header */}
                 <SheetHeader className='space-y-4'>
                   <div className='flex items-center justify-between'>
                     <div className='flex items-center gap-4'>
-                      {selectedJob.logo ? (
+                      {selectedJob.company.logo ? (
                         <Image
-                          src={selectedJob.logo}
-                          alt={selectedJob.company}
+                          src={selectedJob.company.logo}
+                          alt={selectedJob.company.name}
                           width={56}
                           height={56}
                           className='rounded-xl'
@@ -467,84 +580,183 @@ export default function JobBoard() {
                       ) : (
                         <Building className='h-12 w-12' strokeWidth={1} />
                       )}
-
-                      <SheetTitle className='text-2xl font-bold'>
-                        {selectedJob.title}
-                      </SheetTitle>
+                      <div>
+                        <SheetTitle className='text-2xl font-bold'>
+                          {selectedJob.title}
+                        </SheetTitle>
+                        <p className='text-gray-600'>
+                          {selectedJob.company.name}
+                        </p>
+                      </div>
                     </div>
                     <div className='flex gap-2'>
-                      <Button variant='outline' className='rounded-full'>
-                        <Sparkles className='h-4 w-4' strokeWidth={1} />
-                        Analysis
+                      <Button variant='outline' className='rounded-full gap-2'>
+                        <Star className='h-4 w-4' strokeWidth={1} />
+                        Save
                       </Button>
-                      <Button className='rounded-full'>
+                      <Button className='rounded-full gap-2'>
                         <Send className='h-4 w-4' strokeWidth={1} />
                         Apply Now
                       </Button>
                     </div>
                   </div>
-                  <p className='text-gray-600'>{selectedJob.company}</p>
+
+                  {/* Quick Info */}
+                  <div className='grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-lg'>
+                    <div>
+                      <p className='text-sm text-gray-500'>Experience</p>
+                      <p className='font-medium'>
+                        {selectedJob.experience_level}
+                      </p>
+                    </div>
+                    <div>
+                      <p className='text-sm text-gray-500'>Work Type</p>
+                      <p className='font-medium'>{selectedJob.job_type}</p>
+                    </div>
+                    <div>
+                      <p className='text-sm text-gray-500'>Location Type</p>
+                      <p className='font-medium'>{selectedJob.location_type}</p>
+                    </div>
+                    <div>
+                      <p className='text-sm text-gray-500'>Location</p>
+                      <p className='font-medium'>{selectedJob.location}</p>
+                    </div>
+                  </div>
                 </SheetHeader>
 
                 <div className='space-y-6'>
-                  <div className='space-y-4'>
-                    <div className='flex items-center gap-2'>
-                      <h2 className='text-xl font-semibold'>Job Overview</h2>
-                      <Plus className='h-4 w-4' />
-                    </div>
+                  {/* Description */}
+                  <section className='space-y-4'>
+                    <h2 className='text-xl font-semibold'>About the Role</h2>
                     <p className='text-gray-600 leading-relaxed'>
-                      {selectedJob.overview}
+                      {selectedJob.description}
                     </p>
-                  </div>
+                  </section>
 
-                  <div className='space-y-4'>
-                    <div className='flex items-center gap-2'>
-                      <h2 className='text-xl font-semibold'>
-                        What You Will Do
-                      </h2>
-                      <Plus className='h-4 w-4' />
-                    </div>
-                    <ul className='space-y-3'>
-                      {[selectedJob.description].map((item, index) => (
-                        <li key={index} className='flex items-start gap-2'>
-                          <div className='mt-1.5 h-4 w-4 rounded-full bg-green-100 flex items-center justify-center'>
-                            <svg
-                              className='h-2.5 w-2.5 text-green-600'
-                              fill='none'
-                              viewBox='0 0 24 24'
-                              stroke='currentColor'
-                            >
-                              <path
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
-                                strokeWidth={2}
-                                d='M5 13l4 4L19 7'
-                              />
-                            </svg>
-                          </div>
-                          <span className='text-gray-600'>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  {/* Key Responsibilities */}
+                  <section className='space-y-4'>
+                    <h2 className='text-xl font-semibold'>
+                      Key Responsibilities
+                    </h2>
+                    {Array.isArray(selectedJob.responsibilities) ? (
+                      <ul className='space-y-3'>
+                        {selectedJob.responsibilities.map((item, index) => (
+                          <li key={index} className='flex items-start gap-2'>
+                            <div className='mt-1.5 h-4 w-4 rounded-full bg-green-100 flex items-center justify-center'>
+                              <svg
+                                className='h-2.5 w-2.5 text-green-600'
+                                fill='none'
+                                viewBox='0 0 24 24'
+                                stroke='currentColor'
+                              >
+                                <path
+                                  strokeLinecap='round'
+                                  strokeLinejoin='round'
+                                  strokeWidth={2}
+                                  d='M5 13l4 4L19 7'
+                                />
+                              </svg>
+                            </div>
+                            <span className='text-gray-600'>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className='text-gray-600 leading-relaxed'>
+                        {selectedJob.responsibilities}
+                      </p>
+                    )}
+                  </section>
 
-                  <div className='space-y-4'>
-                    <div className='flex items-center justify-between'>
-                      <div className='flex items-center gap-2'>
-                        <h2 className='text-xl font-semibold'>
-                          About {selectedJob.company}
-                        </h2>
-                        <Plus className='h-4 w-4' />
+                  {/* Skills */}
+                  <section className='space-y-4'>
+                    <h2 className='text-xl font-semibold'>Skills</h2>
+                    <div className='space-y-4'>
+                      <div>
+                        <h3 className='font-medium mb-2'>Required Skills</h3>
+                        <ul className='space-y-2'>
+                          {(typeof selectedJob.required_skills === "string"
+                            ? JSON.parse(selectedJob.required_skills)
+                            : selectedJob.required_skills
+                          ).map((skill: string, index: number) => (
+                            <li key={index} className='flex items-start gap-2'>
+                              <span className='text-gray-600'>• {skill}</span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                      <Button variant='outline' className='rounded-full'>
-                        Follow
+                      {selectedJob.preferred_skills && (
+                        <div>
+                          <h3 className='font-medium mb-2'>Preferred Skills</h3>
+                          <ul className='space-y-2'>
+                            {(typeof selectedJob.preferred_skills === "string"
+                              ? JSON.parse(selectedJob.preferred_skills)
+                              : selectedJob.preferred_skills
+                            ).map((skill: string, index: number) => (
+                              <li
+                                key={index}
+                                className='flex items-start gap-2'
+                              >
+                                <span className='text-gray-600'>• {skill}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </section>
+
+                  {/* Benefits if available */}
+                  {selectedJob.benefits && (
+                    <section className='space-y-4'>
+                      <h2 className='text-xl font-semibold'>Benefits</h2>
+                      <ul className='grid grid-cols-2 gap-3'>
+                        {selectedJob.benefits.map((benefit, index) => (
+                          <li key={index} className='flex items-center gap-2'>
+                            <Check className='h-4 w-4 text-green-500' />
+                            <span className='text-gray-600'>{benefit}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </section>
+                  )}
+
+                  {/* Company Info */}
+                  <section className='space-y-4'>
+                    <div className='flex items-center justify-between'>
+                      <h2 className='text-xl font-semibold'>
+                        About {selectedJob.company.name}
+                      </h2>
+                      <Button variant='outline' className='rounded-full gap-2'>
+                        <Building className='h-4 w-4' />
+                        View Company
                       </Button>
                     </div>
-                    <p className='text-gray-600 leading-relaxed'>
-                      {selectedJob.about}
-                    </p>
-                  </div>
+                    <div className='space-y-4'>
+                      <p className='text-gray-600 leading-relaxed'>
+                        {selectedJob.company.about}
+                      </p>
+                      <div className='grid grid-cols-2 gap-4'>
+                        <div>
+                          <p className='text-sm text-gray-500'>Industry</p>
+                          <p className='font-medium'>
+                            {selectedJob.company.industry}
+                          </p>
+                        </div>
+                        <div>
+                          <p className='text-sm text-gray-500'>Company size</p>
+                          <p className='font-medium'>
+                            {selectedJob.company.size}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
                 </div>
+              </div>
+            ) : (
+              <div className='text-center text-gray-500'>
+                Failed to load job details
               </div>
             )}
           </SheetContent>

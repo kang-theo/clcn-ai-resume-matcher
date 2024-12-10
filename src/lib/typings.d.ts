@@ -48,6 +48,42 @@ declare namespace API {
     created_by: string;
   };
 
+  interface IJob {
+    id: number;
+    title: string;
+    company: {
+      name: string;
+      logo: string;
+      about: string;
+      size: string;
+      industry: string;
+      website?: string;
+      location: string;
+    };
+    employment: {
+      type: string; // "Full-time" | "Part-time" | "Contract"
+      location_type: string; // "Remote" | "Hybrid" | "On-site"
+      experience_level: string;
+    };
+    salary: {
+      min: number;
+      max: number;
+      currency: string;
+      period: string; // "yearly" | "monthly" | "hourly"
+    };
+    description: string;
+    requirements: {
+      must_have: string[];
+      nice_to_have?: string[];
+    };
+    responsibilities: string[];
+    benefits?: string[];
+    skills: string[];
+    posted_at: string;
+    deadline?: string;
+    applicants_count: number;
+  }
+
   type QuestionaireItem = {
     id: string;
     description: string;

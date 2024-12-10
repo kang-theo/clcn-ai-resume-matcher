@@ -74,7 +74,11 @@ export async function GET(request: NextRequest) {
           ...result.data,
           records: result.data.records.map((job: any) => ({
             ...job,
-            times_ago: calculateTimeDifference(job.updated_at),
+            company:
+              typeof job.company === "string"
+                ? JSON.parse(job.company)
+                : job.company,
+            posted_at: calculateTimeDifference(job.updated_at),
             created_at: formatDatetime(job.created_at),
             description: convert(job.description),
             tags: job.tags.map((tagRelation: any) => ({
