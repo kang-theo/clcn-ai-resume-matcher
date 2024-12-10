@@ -18,7 +18,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
 import Image from "next/image";
 import {
   Sheet,
@@ -37,6 +36,8 @@ import {
 } from "@/components/ui/tooltip";
 
 import { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { SalaryRangeFilter } from "./SalaryRangeFilter";
 
 interface Job {
   id: number;
@@ -57,7 +58,7 @@ interface Job {
 }
 
 export default function JobBoard() {
-  const [salaryRange, setSalaryRange] = React.useState([50]);
+  const [salaryRange, setSalaryRange] = useState<[number, number]>([0, 200]);
   const [selectedJob, setSelectedJob] = React.useState<Job | null>(null);
   const [sheetOpen, setSheetOpen] = React.useState(false);
 
@@ -171,9 +172,134 @@ export default function JobBoard() {
     setSheetOpen(true);
   };
 
+  const JobFilterPanel = () => {
+    return (
+      <div className='w-full lg:w-64 space-y-6'>
+        {/* Employment Type */}
+        <FilterSection
+          title='Employment Type'
+          options={[
+            { id: "full-time", label: "Full Time" },
+            { id: "part-time", label: "Part Time" },
+            { id: "contract", label: "Contract" },
+            { id: "internship", label: "Internship" },
+          ]}
+        />
+
+        {/* Work Location */}
+        <FilterSection
+          title='Work Location'
+          options={[
+            { id: "remote", label: "Remote" },
+            { id: "hybrid", label: "Hybrid" },
+            { id: "on-site", label: "On-site" },
+          ]}
+        />
+
+        {/* Experience Level */}
+        <FilterSection
+          title='Experience Level'
+          options={[
+            { id: "entry", label: "Entry Level (0-2 years)" },
+            { id: "mid", label: "Mid Level (3-5 years)" },
+            { id: "senior", label: "Senior Level (5+ years)" },
+            { id: "lead", label: "Lead/Manager" },
+          ]}
+        />
+
+        {/* Salary Range */}
+        <SalaryRangeFilter
+          onChange={setSalaryRange}
+          value={salaryRange}
+          min={0}
+          max={200}
+          currency='USD'
+        />
+
+        {/* Industry Sector */}
+        <FilterSection
+          title='Industry'
+          options={[
+            { id: "tech", label: "Technology" },
+            { id: "finance", label: "Finance" },
+            { id: "healthcare", label: "Healthcare" },
+            { id: "education", label: "Education" },
+            { id: "retail", label: "Retail" },
+          ]}
+        />
+
+        {/* Company Size */}
+        <FilterSection
+          title='Company Size'
+          options={[
+            { id: "startup", label: "Startup (<50)" },
+            { id: "small", label: "Small (50-200)" },
+            { id: "mid", label: "Mid-size (201-1000)" },
+            { id: "enterprise", label: "Enterprise (1000+)" },
+          ]}
+        />
+
+        {/* Skills */}
+        {/* <div className='space-y-4'>
+          <h2 className='font-semibold'>Skills</h2>
+          <div className='flex flex-wrap gap-2'>
+            <Badge variant='outline'>React</Badge>
+            <Badge variant='outline'>Node.js</Badge>
+            <Badge variant='outline'>Python</Badge>
+            <Badge variant='outline'>AWS</Badge>
+            <Badge variant='outline'>+ Add Skill</Badge>
+          </div>
+        </div> */}
+
+        {/* Additional Filters */}
+        {/* <FilterSection
+          title='Additional Filters'
+          options={[
+            { id: "visa", label: "Visa Sponsorship" },
+            { id: "urgent", label: "Urgent Hiring" },
+            { id: "benefits", label: "Benefits Package" },
+          ]}
+        /> */}
+      </div>
+    );
+  };
+
+  // Reusable Filter Section Component
+  const FilterSection = ({
+    title,
+    options,
+  }: {
+    title: string;
+    options: { id: string; label: string }[];
+  }) => {
+    return (
+      <div className='space-y-4'>
+        <div className='flex items-center justify-between'>
+          <h2 className='font-semibold'>{title}</h2>
+          <Button variant='ghost' size='sm'>
+            Clear
+          </Button>
+        </div>
+        <div className='space-y-3'>
+          {options.map((option) => (
+            <div key={option.id} className='flex items-center justify-between'>
+              <div className='flex items-center space-x-2'>
+                <Checkbox id={option.id} />
+                <Label htmlFor={option.id}>{option.label}</Label>
+              </div>
+              <span className='text-sm text-gray-500'>
+                {/* Count can be added here */}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <TooltipProvider>
-      <div className='min-h-screen bg-slate-50'>
+      <div className='min-h-screen pb-6 bg-slate-50'>
         {/* Search Section */}
         <div className='bg-slate-50 p-6'>
           <div className='mx-auto max-w-6xl'>
@@ -212,72 +338,7 @@ export default function JobBoard() {
 
           <div className='mt-6 flex flex-col lg:flex-row gap-6'>
             {/* Filters */}
-            <div className='w-full lg:w-64 space-y-6'>
-              <div>
-                <div className='flex items-center justify-between'>
-                  <h2 className='font-semibold'>Job Type</h2>
-                  <Button variant='link' className='text-blue-600'>
-                    Clear all
-                  </Button>
-                </div>
-                <div className='mt-4 space-y-3'>
-                  {[
-                    "Full time",
-                    "Part time",
-                    "Internship",
-                    "Project work",
-                    "Volunteering",
-                  ].map((type) => (
-                    <div key={type} className='flex items-center space-x-2'>
-                      <Checkbox id={type} />
-                      <Label htmlFor={type}>{type}</Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h2 className='font-semibold'>Salary Range</h2>
-                <div className='mt-4'>
-                  <Slider
-                    value={salaryRange}
-                    onValueChange={setSalaryRange}
-                    max={120}
-                    min={50}
-                    step={1}
-                    className='py-4'
-                  />
-                  <div className='flex justify-between text-sm'>
-                    <span>${salaryRange}k</span>
-                    <span>$120k</span>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h2 className='font-semibold'>Experience Level</h2>
-                <div className='mt-4 space-y-3'>
-                  {[
-                    { name: "Entry level", count: "392" },
-                    { name: "Intermediate", count: "124" },
-                    { name: "Expert", count: "3921" },
-                  ].map((level) => (
-                    <div
-                      key={level.name}
-                      className='flex items-center justify-between'
-                    >
-                      <div className='flex items-center space-x-2'>
-                        <Checkbox id={level.name} />
-                        <Label htmlFor={level.name}>{level.name}</Label>
-                      </div>
-                      <span className='text-sm text-gray-500'>
-                        {level.count}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <JobFilterPanel />
 
             {/* Job Listings */}
             {loading ? (
