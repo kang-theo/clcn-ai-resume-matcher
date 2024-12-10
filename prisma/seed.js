@@ -7,71 +7,330 @@ const prisma = new PrismaClient();
 const mockJobDescriptions = [
   {
     title: "Senior Full Stack Developer",
-    company: "TechCorp Solutions",
+    company: {
+      name: "TechCorp Solutions",
+      logo: "/company-logos/techcorp.png",
+      about:
+        "TechCorp Solutions is a leading software development company specializing in enterprise solutions...",
+      size: "501-1000 employees",
+      industry: "Technology",
+      website: "https://techcorp.example.com",
+      location: "San Francisco, CA",
+    },
     department: "Engineering",
-    position: "Senior Engineer",
     location: "San Francisco, CA",
     job_type: "Full-time",
     experience_level: "Senior",
-    skills: "React, Node.js, TypeScript, AWS, GraphQL, Docker, Kubernetes",
+    skills: "React, Node.js, TypeScript, AWS, REST APIs, SQL, MongoDB",
+    required_skills: ["React", "Node.js", "TypeScript", "AWS"],
+    preferred_skills: ["GraphQL", "Docker", "Kubernetes"],
     salary_range: {
       min: 140000,
       max: 180000,
       currency: "USD",
     },
-    required_skills: ["React", "Node.js", "TypeScript", "AWS"],
-    preferred_skills: ["GraphQL", "Docker", "Kubernetes"],
-    technical_requirements: "5+ years of experience in full-stack development",
-    responsibilities:
-      "Lead development of scalable web applications, mentor junior developers",
-    qualifications: "Bachelor's degree in Computer Science or related field",
-    benefits:
-      "Competitive salary, health insurance, 401k matching, unlimited PTO",
     description:
-      "Join our engineering team to build next-generation web applications",
-    work_scope: "Full-stack development, system architecture, team leadership",
+      "Join our engineering team to build next-generation web applications...",
+    responsibilities:
+      "Lead development of scalable web applications, mentor junior developers...",
+    qualifications:
+      "Bachelor's degree in Computer Science or related field, 5+ years of experience in full-stack development",
     status: "Open",
-    created_by: "hr1@company.com",
-    remote_policy: "Hybrid",
-    visa_sponsorship: true,
     industry_sector: "Technology",
-    company_size: "Enterprise",
-    role_level: "Senior",
-    cultural_keywords: JSON.stringify(["Innovative", "Fast-paced"]),
+    remote_policy: "Hybrid",
+    created_by: "hr1@company.com",
+    cultural_keywords: null,
   },
   {
-    title: "Financial Analyst",
-    company: "Global Finance Corp",
-    department: "Finance",
-    position: "Senior Analyst",
+    title: "Investment Banking Analyst",
+    company: {
+      name: "Goldman Financial",
+      logo: "/company-logos/goldman.png",
+      about:
+        "Goldman Financial is a global investment banking firm with a rich history...",
+      size: "10000+ employees",
+      industry: "Finance",
+      website: "https://goldman.example.com",
+      location: "New York, NY",
+    },
+    department: "Investment Banking",
     location: "New York, NY",
     job_type: "Full-time",
-    experience_level: "Mid-Senior",
+    experience_level: "Entry Level",
     skills:
-      "Financial Modeling, Excel, SQL, Bloomberg Terminal, Python, R, Power BI",
+      "Financial Modeling, Excel, PowerPoint, SQL, Financial Analysis, Valuation",
+    required_skills: ["Financial Modeling", "Excel", "PowerPoint", "SQL"],
+    preferred_skills: ["Bloomberg Terminal", "Python", "VBA"],
+    salary_range: {
+      min: 95000,
+      max: 125000,
+      currency: "USD",
+    },
+    description:
+      "Join our investment banking team to support M&A transactions and financial analysis.",
+    responsibilities:
+      "Conduct financial analysis, prepare client presentations, support deal execution",
+    qualifications:
+      "Bachelor's degree in Finance, Economics, or related field, Strong analytical and quantitative skills, Excellent attention to detail",
+    status: "Open",
+    industry_sector: "Finance",
+    remote_policy: "On-site",
+    created_by: "hr1@company.com",
+    cultural_keywords: null,
+  },
+  {
+    title: "Clinical Research Coordinator",
+    company: {
+      name: "BioHealth Research",
+      logo: "/company-logos/biohealth.png",
+      about:
+        "BioHealth Research is at the forefront of clinical trials and medical research...",
+      size: "201-500 employees",
+      industry: "Healthcare",
+      website: "https://biohealth.example.com",
+      location: "Boston, MA",
+    },
+    department: "Clinical Operations",
+    location: "Boston, MA",
+    job_type: "Full-time",
+    experience_level: "Mid Level",
+    skills: "Clinical Trial Management, GCP, HIPAA, Data Collection",
+    required_skills: [
+      "Clinical Trial Management",
+      "GCP",
+      "HIPAA",
+      "Data Collection",
+    ],
+    preferred_skills: ["REDCap", "CTMS", "Medical Terminology"],
+    salary_range: {
+      min: 65000,
+      max: 85000,
+      currency: "USD",
+    },
+    description:
+      "Coordinate clinical trials and ensure compliance with protocols and regulations.",
+    responsibilities:
+      "Manage clinical trials, coordinate with research teams, ensure regulatory compliance",
+    qualifications:
+      "Bachelor's degree in Life Sciences or related field, 3+ years of experience in clinical research",
+    status: "Open",
+    industry_sector: "Healthcare",
+    remote_policy: "On-site",
+    created_by: "hr1@company.com",
+    cultural_keywords: null,
+  },
+  {
+    title: "Marketing Manager",
+    company: {
+      name: "Consumer Brands Co",
+      logo: "/company-logos/consumerbrands.png",
+      about:
+        "Consumer Brands Co is a leader in the consumer goods industry, known for its innovative products...",
+      size: "1001-5000 employees",
+      industry: "Consumer Goods",
+      website: "https://consumerbrands.example.com",
+      location: "Chicago, IL",
+    },
+    department: "Marketing",
+    location: "Chicago, IL",
+    job_type: "Full-time",
+    experience_level: "Senior",
+    skills:
+      "Digital Marketing, Brand Management, Analytics, Campaign Management",
+    required_skills: [
+      "Digital Marketing",
+      "Brand Management",
+      "Analytics",
+      "Campaign Management",
+    ],
+    preferred_skills: [
+      "Adobe Creative Suite",
+      "Google Analytics",
+      "Social Media Management",
+    ],
     salary_range: {
       min: 90000,
       max: 120000,
       currency: "USD",
     },
-    required_skills: [
-      "Financial Modeling",
-      "Excel",
-      "SQL",
-      "Bloomberg Terminal",
-    ],
-    preferred_skills: ["Python", "R", "Power BI"],
-    technical_requirements: "3+ years of financial analysis experience",
-    responsibilities:
-      "Perform financial analysis, create reports, support investment decisions",
-    qualifications: "Bachelor's degree in Finance or Economics, CFA preferred",
-    benefits: "Annual bonus, health benefits, stock options",
     description:
-      "Join a leading financial firm to analyze market trends and investment opportunities",
-    work_scope: "Financial analysis, reporting, market research",
+      "Lead marketing initiatives for our consumer products division.",
+    responsibilities:
+      "Develop marketing strategies, manage campaigns, analyze performance metrics",
+    qualifications:
+      "Bachelor's degree in Marketing or related field, 5+ years of experience in marketing management",
     status: "Open",
-    created_by: "hr2@company.com", // Created by another HR
+    industry_sector: "Consumer Goods",
+    remote_policy: "Hybrid",
+    created_by: "hr1@company.com",
+    cultural_keywords: null,
   },
+  {
+    title: "Environmental Engineer",
+    company: {
+      name: "GreenTech Solutions",
+      logo: "/company-logos/greentech.png",
+      about:
+        "GreenTech Solutions is committed to sustainable engineering and environmental solutions...",
+      size: "501-1000 employees",
+      industry: "Environmental",
+      website: "https://greentech.example.com",
+      location: "Seattle, WA",
+    },
+    department: "Engineering",
+    location: "Seattle, WA",
+    job_type: "Full-time",
+    experience_level: "Mid Level",
+    skills:
+      "Environmental Impact Assessment, AutoCAD, Waste Management, Regulatory Compliance",
+    required_skills: [
+      "Environmental Impact Assessment",
+      "AutoCAD",
+      "Waste Management",
+      "Regulatory Compliance",
+    ],
+    preferred_skills: ["GIS", "Environmental Modeling"],
+    salary_range: {
+      min: 75000,
+      max: 95000,
+      currency: "USD",
+    },
+    description:
+      "Work on projects that focus on environmental sustainability and compliance.",
+    responsibilities:
+      "Conduct environmental assessments, design sustainable solutions, ensure regulatory compliance",
+    qualifications:
+      "Bachelor's degree in Environmental Engineering or related field, 3+ years of experience in environmental engineering",
+    status: "Open",
+    industry_sector: "Environmental",
+    remote_policy: "Hybrid",
+    created_by: "hr1@company.com",
+    cultural_keywords: null,
+  },
+  {
+    title: "Data Scientist",
+    company: {
+      name: "Data Insights Inc",
+      logo: "/company-logos/datainsights.png",
+      about:
+        "Data Insights Inc provides cutting-edge data analytics solutions to businesses worldwide...",
+      size: "201-500 employees",
+      industry: "Data Science",
+      website: "https://datainsights.example.com",
+      location: "Austin, TX",
+    },
+    department: "Data Science",
+    location: "Austin, TX",
+    job_type: "Full-time",
+    experience_level: "Senior",
+    skills: "Python, R, Machine Learning, Data Visualization, SQL",
+    required_skills: [
+      "Python",
+      "Machine Learning",
+      "Data Visualization",
+      "SQL",
+    ],
+    preferred_skills: ["R", "Deep Learning", "Big Data Technologies"],
+    salary_range: {
+      min: 110000,
+      max: 140000,
+      currency: "USD",
+    },
+    description:
+      "Analyze complex datasets to drive business insights and strategy.",
+    responsibilities:
+      "Develop machine learning models, create data visualizations, collaborate with cross-functional teams",
+    qualifications:
+      "Master's degree in Data Science or related field, 5+ years of experience in data analysis",
+    status: "Open",
+    industry_sector: "Data Science",
+    remote_policy: "Remote",
+    created_by: "hr1@company.com",
+    cultural_keywords: null,
+  },
+  {
+    title: "Construction Project Manager",
+    company: {
+      name: "BuildIt Construction",
+      logo: "/company-logos/buildit.png",
+      about:
+        "BuildIt Construction is a leading construction company known for its innovative projects...",
+      size: "1001-5000 employees",
+      industry: "Construction",
+      website: "https://buildit.example.com",
+      location: "Denver, CO",
+    },
+    department: "Project Management",
+    location: "Denver, CO",
+    job_type: "Full-time",
+    experience_level: "Senior",
+    skills:
+      "Project Management, Construction Management, Budgeting, Scheduling",
+    required_skills: [
+      "Project Management",
+      "Construction Management",
+      "Budgeting",
+      "Scheduling",
+    ],
+    preferred_skills: ["AutoCAD", "MS Project", "Risk Management"],
+    salary_range: {
+      min: 95000,
+      max: 125000,
+      currency: "USD",
+    },
+    description: "Oversee construction projects from inception to completion.",
+    responsibilities:
+      "Manage project timelines, budgets, and resources, ensure compliance with safety regulations",
+    qualifications:
+      "Bachelor's degree in Construction Management or related field, 7+ years of experience in project management",
+    status: "Open",
+    industry_sector: "Construction",
+    remote_policy: "On-site",
+    created_by: "hr1@company.com",
+    cultural_keywords: null,
+  },
+  {
+    title: "UX Designer",
+    company: {
+      name: "Creative Designs Studio",
+      logo: "/company-logos/creativedesigns.png",
+      about:
+        "Creative Designs Studio is a top design firm specializing in user experience and interface design...",
+      size: "51-200 employees",
+      industry: "Design",
+      website: "https://creativedesigns.example.com",
+      location: "Los Angeles, CA",
+    },
+    department: "Design",
+    location: "Los Angeles, CA",
+    job_type: "Full-time",
+    experience_level: "Mid Level",
+    skills: "UX Design, Wireframing, Prototyping, User Research",
+    required_skills: [
+      "UX Design",
+      "Wireframing",
+      "Prototyping",
+      "User Research",
+    ],
+    preferred_skills: ["Adobe XD", "Sketch", "Figma"],
+    salary_range: {
+      min: 70000,
+      max: 90000,
+      currency: "USD",
+    },
+    description:
+      "Design user-friendly interfaces for our consumer products division.",
+    responsibilities:
+      "Develop user experience strategies, create wireframes and prototypes, conduct user research",
+    qualifications:
+      "Bachelor's degree in Design or related field, 3+ years of experience in UX design",
+    status: "Open",
+    industry_sector: "Design",
+    remote_policy: "Hybrid",
+    created_by: "hr1@company.com",
+    cultural_keywords: null,
+  },
+  // ... other job descriptions
 ];
 
 // Mock online resumes data
@@ -84,7 +343,7 @@ const mockOnlineResumes = [
     location: "San Francisco, CA",
     relocation: true,
     remote_preference: "Hybrid",
-    experiences: JSON.stringify([
+    experiences: [
       {
         company: "Tech Innovators Inc",
         position: "Senior Software Engineer",
@@ -106,8 +365,8 @@ const mockOnlineResumes = [
         ],
         technologies: ["React", "Node.js", "AWS", "Docker"],
       },
-    ]),
-    technical_skills: JSON.stringify([
+    ],
+    technical_skills: [
       {
         skill: "React",
         proficiency: "Expert",
@@ -120,8 +379,8 @@ const mockOnlineResumes = [
         years_experience: 4,
         last_used: "2024-03",
       },
-    ]),
-    soft_skills: JSON.stringify([
+    ],
+    soft_skills: [
       {
         skill: "Leadership",
         context: "Led team of 5 developers",
@@ -130,8 +389,8 @@ const mockOnlineResumes = [
         skill: "Communication",
         context: "Regular client presentations",
       },
-    ]),
-    education: JSON.stringify([
+    ],
+    education: [
       {
         institution: "University of California",
         degree: "Bachelor of Science",
@@ -141,8 +400,8 @@ const mockOnlineResumes = [
         honors: ["Cum Laude"],
         relevant_courses: ["Data Structures", "Algorithms"],
       },
-    ]),
-    job_preferences: JSON.stringify({
+    ],
+    job_preferences: {
       desired_role_level: ["Senior", "Lead"],
       preferred_industries: ["Technology", "Finance"],
       job_types: ["Full-time"],
@@ -153,7 +412,7 @@ const mockOnlineResumes = [
         currency: "USD",
       },
       notice_period: "2 weeks",
-    }),
+    },
     skills_searchable:
       "React Node.js TypeScript AWS Docker Kubernetes Leadership",
     visibility: "public",
@@ -168,13 +427,14 @@ const mockJobMatches = [
     skill_match_score: 90,
     experience_match_score: 80,
     education_match_score: 88,
-    matching_skills: JSON.stringify(["React", "Node.js"]),
-    missing_skills: JSON.stringify(["GraphQL"]),
+    matching_skills: ["React", "Node.js"],
+    missing_skills: ["GraphQL"],
     recommendations: "Consider learning GraphQL to improve job match.",
   },
+  // ... other job matches
 ];
 
-// Add mock tags data
+// Mock tags data
 const mockTags = [
   { name: "Remote" },
   { name: "Senior Level" },
@@ -190,18 +450,18 @@ const mockTags = [
 
 async function main() {
   try {
-    // Clear existing data in the correct order (reverse of relationships)
-    await prisma.tagsOnJobDescriptions.deleteMany({}); // Delete tag relations first
-    await prisma.tags.deleteMany({}); // Delete tags
-    await prisma.jobMatch.deleteMany({}); // Delete job matches
-    await prisma.jobDescriptionAnalysis.deleteMany({}); // Delete analysis
-    await prisma.applications.deleteMany({}); // Delete applications
-    await prisma.questionairesOnJobDescriptions.deleteMany({}); // Delete questionnaire relations
-    await prisma.jobDescriptions.deleteMany({}); // Now safe to delete job descriptions
-    await prisma.onlineResumes.deleteMany({}); // Delete resumes
-    await prisma.rolesOnUsers.deleteMany({}); // Delete role assignments
-    await prisma.user.deleteMany({}); // Delete users
-    await prisma.role.deleteMany({}); // Delete roles
+    // Clear existing data
+    await prisma.tagsOnJobDescriptions.deleteMany({});
+    await prisma.tags.deleteMany({});
+    await prisma.jobMatch.deleteMany({});
+    await prisma.jobDescriptionAnalysis.deleteMany({});
+    await prisma.applications.deleteMany({});
+    await prisma.questionairesOnJobDescriptions.deleteMany({});
+    await prisma.jobDescriptions.deleteMany({});
+    await prisma.onlineResumes.deleteMany({});
+    await prisma.rolesOnUsers.deleteMany({});
+    await prisma.user.deleteMany({});
+    await prisma.role.deleteMany({});
 
     console.log("Cleared existing data");
 
@@ -240,7 +500,6 @@ async function main() {
     const hashedPassword = await hash("Password@123", 12);
 
     const users = await Promise.all([
-      // Admin user
       prisma.user.upsert({
         where: { email: "admin@example.com" },
         update: {},
@@ -250,14 +509,12 @@ async function main() {
           password: hashedPassword,
           roles: {
             create: {
-              role_id: roles[0].id, // Admin role
+              role_id: roles[0].id,
               assigned_by: "admin@example.com",
             },
           },
         },
       }),
-
-      // HR users
       prisma.user.upsert({
         where: { email: "hr1@company.com" },
         update: {},
@@ -267,7 +524,7 @@ async function main() {
           password: hashedPassword,
           roles: {
             create: {
-              role_id: roles[1].id, // HR role
+              role_id: roles[1].id,
               assigned_by: "admin@example.com",
             },
           },
@@ -282,14 +539,12 @@ async function main() {
           password: hashedPassword,
           roles: {
             create: {
-              role_id: roles[1].id, // HR role
+              role_id: roles[1].id,
               assigned_by: "admin@example.com",
             },
           },
         },
       }),
-
-      // Regular users
       prisma.user.upsert({
         where: { email: "john.dev@example.com" },
         update: {},
@@ -299,7 +554,7 @@ async function main() {
           password: hashedPassword,
           roles: {
             create: {
-              role_id: roles[2].id, // User role
+              role_id: roles[2].id,
               assigned_by: "admin@example.com",
             },
           },
@@ -314,7 +569,7 @@ async function main() {
           password: hashedPassword,
           roles: {
             create: {
-              role_id: roles[2].id, // User role
+              role_id: roles[2].id,
               assigned_by: "admin@example.com",
             },
           },
@@ -329,7 +584,7 @@ async function main() {
           password: hashedPassword,
           roles: {
             create: {
-              role_id: roles[2].id, // User role
+              role_id: roles[2].id,
               assigned_by: "admin@example.com",
             },
           },
@@ -343,15 +598,7 @@ async function main() {
       users.map((user) => ({ email: user.email, username: user.username }))
     );
 
-    // Clear existing job descriptions
-    await prisma.jobDescriptions.deleteMany({});
-    console.log("Cleared existing job descriptions");
-
-    // Clear existing tags and tag relations
-    await prisma.tagsOnJobDescriptions.deleteMany({});
-    await prisma.tags.deleteMany({});
-
-    // Create tags
+    // First create the tags
     const tags = await Promise.all(
       mockTags.map((tag) =>
         prisma.tags.create({
@@ -362,16 +609,14 @@ async function main() {
       )
     );
 
-    // Create job descriptions with tags
+    console.log("Created tags:", tags);
+
+    // Then create job descriptions with the created tag IDs
     const jobDescriptions = await Promise.all(
       mockJobDescriptions.map((job) =>
         prisma.jobDescriptions.create({
           data: {
             ...job,
-            required_skills: JSON.stringify(job.required_skills),
-            preferred_skills: JSON.stringify(job.preferred_skills),
-            salary_range: JSON.stringify(job.salary_range),
-            cultural_keywords: job.cultural_keywords,
             tags: {
               create: getTagsForJob(job, tags),
             },
@@ -380,7 +625,7 @@ async function main() {
       )
     );
 
-    // Create online resumes (for john.dev@example.com)
+    // Create online resumes
     const johnUser = await prisma.user.findUnique({
       where: { email: "john.dev@example.com" },
     });
@@ -391,8 +636,6 @@ async function main() {
           data: {
             ...resume,
             user_id: johnUser.id,
-            visibility: "public", // Add any required fields
-            completeness: 100, // Add any required fields
           },
         })
       )
@@ -403,13 +646,7 @@ async function main() {
       mockJobMatches.map((match, index) =>
         prisma.jobMatch.create({
           data: {
-            overall_match_score: match.overall_match_score,
-            skill_match_score: match.skill_match_score,
-            experience_match_score: match.experience_match_score,
-            education_match_score: match.education_match_score,
-            matching_skills: JSON.stringify(match.matching_skills),
-            missing_skills: JSON.stringify(match.missing_skills),
-            recommendations: match.recommendations,
+            ...match,
             job_description_id:
               jobDescriptions[index % jobDescriptions.length].id,
             online_resume_id: onlineResumes[0].id,
@@ -431,42 +668,28 @@ async function main() {
   }
 }
 
-// Helper function to determine which tags to assign to each job
-function getTagsForJob(job, tags) {
-  const tagAssignments = [];
+// Update the getTagsForJob function
+const getTagsForJob = (job, allTags) => {
+  const tags = [];
+  const lowercaseTitle = job.title.toLowerCase();
+  const lowercaseCompany = job.company.name.toLowerCase();
+  const lowercaseIndustry = job.industry_sector.toLowerCase();
+  const lowercaseExperience = job.experience_level.toLowerCase();
 
-  // Experience level tags
-  if (job.experience_level?.toLowerCase().includes("senior")) {
-    const seniorTag = tags.find((t) => t.name === "Senior Level");
-    if (seniorTag) tagAssignments.push({ tag_id: seniorTag.id });
-  } else if (job.experience_level?.toLowerCase().includes("mid")) {
-    const midTag = tags.find((t) => t.name === "Mid Level");
-    if (midTag) tagAssignments.push({ tag_id: midTag.id });
-  }
+  allTags.forEach((tag) => {
+    const lowercaseTag = tag.name.toLowerCase();
+    if (
+      lowercaseTitle.includes(lowercaseTag) ||
+      lowercaseCompany.includes(lowercaseTag) ||
+      lowercaseIndustry.includes(lowercaseTag) ||
+      lowercaseExperience.includes(lowercaseTag)
+    ) {
+      tags.push({ tag_id: tag.id });
+    }
+  });
 
-  // Department/Field tags
-  if (job.department?.toLowerCase().includes("engineering")) {
-    const engineeringTag = tags.find((t) => t.name === "Engineering");
-    if (engineeringTag) tagAssignments.push({ tag_id: engineeringTag.id });
-  } else if (job.department?.toLowerCase().includes("finance")) {
-    const financeTag = tags.find((t) => t.name === "Finance");
-    if (financeTag) tagAssignments.push({ tag_id: financeTag.id });
-  }
-
-  // Job type specific tags
-  if (job.title?.toLowerCase().includes("full stack")) {
-    const fullStackTag = tags.find((t) => t.name === "Full Stack");
-    if (fullStackTag) tagAssignments.push({ tag_id: fullStackTag.id });
-  }
-
-  // Industry tags
-  if (job.company?.toLowerCase().includes("tech")) {
-    const techTag = tags.find((t) => t.name === "Tech");
-    if (techTag) tagAssignments.push({ tag_id: techTag.id });
-  }
-
-  return tagAssignments;
-}
+  return tags;
+};
 
 main().catch((e) => {
   console.error(e);
