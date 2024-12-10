@@ -132,7 +132,7 @@ model JobDescriptions {
 
   // Core Job Details
   title            String  @db.VarChar(100)
-  company          String?
+  company          Json // Changed from String to Json
   department       String?
   location         String?
   job_type         String? // full-time, part-time, contract
@@ -140,8 +140,8 @@ model JobDescriptions {
   salary_range     Json? // { min: number, max: number, currency: string }
 
   // Technical Requirements
-  required_skills        Json? // Array of required skills
-  preferred_skills       Json? // Array of nice-to-have skills
+  required_skills        Json // Will store JSON array
+  preferred_skills       Json? // Optional JSON array
   technical_requirements String? @db.Text
 
   // Job Specifics

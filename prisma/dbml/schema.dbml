@@ -104,13 +104,13 @@ Table JobDescriptions {
   tags TagsOnJobDescriptions [not null]
   analysis JobDescriptionAnalysis [not null]
   title String [not null]
-  company String
+  company Json [not null]
   department String
   location String
   job_type String
   experience_level String
   salary_range Json
-  required_skills Json
+  required_skills Json [not null]
   preferred_skills Json
   technical_requirements String
   responsibilities String [not null]
