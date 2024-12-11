@@ -41,47 +41,111 @@ interface MenuItem {
   subItems?: MenuItem[];
 }
 
-// Menu items.
-const menus = [
-  {
-    title: "My Workspace",
-    url: "#",
-    items: [
-      {
-        title: "Dashboard",
-        url: "/dashboard",
-        icon: Home,
-      },
-      {
-        title: "My Applications",
-        url: "/applications",
-        icon: Inbox,
-      },
-      {
-        title: "Notifications",
-        url: "/notifications",
-        icon: Bell,
-      },
-    ],
-  },
-  {
-    title: "Settings",
-    url: "#",
-    // icon: Settings,
-    items: [
-      {
-        title: "Profile",
-        url: "/settings/profile",
-        icon: Home,
-      },
-      {
-        title: "My Resumes",
-        url: "/settings/resumes",
-        icon: Inbox,
-      },
-    ],
-  },
-];
+// Update menus based on user role
+const getMenus = (userRole: string[]) => {
+  const baseMenus: MenuItem[] = [];
+
+  if (userRole.includes("User")) {
+    baseMenus.push(
+      ...[
+        {
+          title: "My Workspace",
+          url: "#",
+          subItems: [
+            {
+              title: "Dashboard",
+              url: "/dashboard",
+              icon: Home,
+            },
+            {
+              title: "My Applications",
+              url: "/applications",
+              icon: Inbox,
+            },
+            {
+              title: "Notifications",
+              url: "/notifications",
+              icon: Bell,
+            },
+          ],
+        },
+        {
+          title: "Settings",
+          url: "#",
+          subItems: [
+            {
+              title: "Profile",
+              url: "/settings/profile",
+              icon: Home,
+            },
+            {
+              title: "My Resumes",
+              url: "/settings/resumes",
+              icon: Inbox,
+            },
+          ],
+        },
+      ]
+    );
+  }
+
+  if (userRole.includes("HR") || userRole.includes("Admin")) {
+    baseMenus.push({
+      title: "Job Management",
+      url: "#",
+      subItems: [
+        {
+          title: "All Jobs",
+          url: "/jobs/all",
+          icon: GalleryVerticalEnd,
+          subItems: [
+            {
+              title: "Active Jobs",
+              url: "/jobs/active",
+              icon: BadgeCheck,
+            },
+            {
+              title: "Draft Jobs",
+              url: "/jobs/draft",
+              icon: ChevronsUpDown,
+            },
+            {
+              title: "Closed Jobs",
+              url: "/jobs/closed",
+              icon: LogOut,
+            },
+          ],
+        },
+        {
+          title: "Applications",
+          url: "/applications/manage",
+          icon: Inbox,
+          subItems: [
+            {
+              title: "New",
+              url: "/applications/new",
+              icon: Sparkles,
+            },
+            {
+              title: "In Review",
+              url: "/applications/review",
+              icon: Search,
+            },
+            {
+              title: "Scheduled",
+              url: "/applications/scheduled",
+              icon: Calendar,
+            },
+          ],
+        },
+      ],
+    });
+  }
+
+  baseMenus.push();
+
+  return baseMenus;
+};
 
 interface IconComponentProps {
   icon: React.ElementType | undefined;
@@ -155,8 +219,13 @@ const renderMenuItem = (item: MenuItem, pathname: string) => {
   );
 };
 
-export function SiderbarNavs() {
+export function SiderbarNavs({
+  userRole = ["User"],
+}: {
+  userRole?: string[]; //"User" | "HR" | "Admin";
+}) {
   const pathname = usePathname();
+  const menus = getMenus(userRole);
 
   return (
     <>
@@ -164,7 +233,9 @@ export function SiderbarNavs() {
         <SidebarGroup key={menu.title}>
           <SidebarGroupLabel>{menu.title}</SidebarGroupLabel>
           <SidebarMenu>
-            {menu.items.map((item: MenuItem) => renderMenuItem(item, pathname))}
+            {menu.subItems?.map((item: MenuItem) =>
+              renderMenuItem(item, pathname)
+            )}
           </SidebarMenu>
         </SidebarGroup>
       ))}

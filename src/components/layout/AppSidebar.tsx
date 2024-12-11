@@ -136,7 +136,7 @@ export function AppSidebar({ children }: AppLayoutProps) {
           </SidebarMenu>
         </SidebarHeader>
         <SidebarContent>
-          <SiderbarNavs />
+          <SiderbarNavs userRole={session?.user?.roles} />
         </SidebarContent>
         <SidebarFooter>
           <SidebarMenu>
