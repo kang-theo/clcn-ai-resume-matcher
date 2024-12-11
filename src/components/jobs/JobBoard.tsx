@@ -54,7 +54,7 @@ interface Job {
   };
   location: string;
   job_type: string; // "Full-time" | "Part-time" | "Contract"
-  location_type: string; // "Remote" | "Hybrid" | "On-site"
+  remote_policy: string; // "Remote" | "Hybrid" | "On-site"
   experience_level: string;
   salary_range: {
     min: number;
@@ -569,7 +569,8 @@ export default function JobBoard() {
                 <SheetHeader className='space-y-4'>
                   <div className='flex items-center justify-between'>
                     <div className='flex items-center gap-4'>
-                      {selectedJob.company.logo ? (
+                      <Building className='h-12 w-12' strokeWidth={1} />
+                      {/* {selectedJob.company.logo ? (
                         <Image
                           src={selectedJob.company.logo}
                           alt={selectedJob.company.name}
@@ -579,7 +580,7 @@ export default function JobBoard() {
                         />
                       ) : (
                         <Building className='h-12 w-12' strokeWidth={1} />
-                      )}
+                      )} */}
                       <div>
                         <SheetTitle className='text-2xl font-bold'>
                           {selectedJob.title}
@@ -601,6 +602,18 @@ export default function JobBoard() {
                     </div>
                   </div>
 
+                  {/* Tags */}
+                  <div className='flex flex-wrap gap-2'>
+                    {selectedJob.tags.map((tag) => (
+                      <span
+                        key={tag.name}
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${tag.color}`}
+                      >
+                        {tag.name}
+                      </span>
+                    ))}
+                  </div>
+
                   {/* Quick Info */}
                   <div className='grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-lg'>
                     <div>
@@ -615,11 +628,20 @@ export default function JobBoard() {
                     </div>
                     <div>
                       <p className='text-sm text-gray-500'>Location Type</p>
-                      <p className='font-medium'>{selectedJob.location_type}</p>
+                      <p className='font-medium'>{selectedJob.remote_policy}</p>
                     </div>
                     <div>
                       <p className='text-sm text-gray-500'>Location</p>
                       <p className='font-medium'>{selectedJob.location}</p>
+                    </div>
+                    <div className='md:col-span-2'>
+                      <p className='text-sm text-gray-500'>Salary Range</p>
+                      <p className='font-medium'>
+                        {selectedJob.salary_range.min.toLocaleString()} -{" "}
+                        {selectedJob.salary_range.max.toLocaleString()}{" "}
+                        {selectedJob.salary_range.currency}/
+                        {selectedJob.salary_range.period?.slice(0, 2) ?? "yr"}
+                      </p>
                     </div>
                   </div>
                 </SheetHeader>

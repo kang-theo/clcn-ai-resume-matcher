@@ -135,6 +135,19 @@ export async function getJob(id: string) {
       where: {
         id,
       },
+      include: {
+        tags: {
+          include: {
+            tag: {
+              select: {
+                id: true,
+                name: true,
+                // color: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (job) {
