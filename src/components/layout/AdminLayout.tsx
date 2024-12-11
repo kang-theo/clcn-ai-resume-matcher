@@ -17,15 +17,17 @@ import dynamic from "next/dynamic";
 import zhCN from "antd/locale/zh_CN";
 // for date-picker i18n
 import "dayjs/locale/zh-cn";
+import { User } from "next-auth";
 const Collapse = dynamic(() => import("./Collapse"), { ssr: false });
 const { Header, Content, Footer, Sider } = Layout;
 
 interface AdminLayoutProps {
+  user: User;
   children: React.ReactNode;
   appName: string;
 }
 
-export function AdminLayout({ children, appName }: AdminLayoutProps) {
+export function AdminLayout({ user, children, appName }: AdminLayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
   // const {
   //   token: { colorPrimaryBg, colorBgContainer, borderRadiusLG },
@@ -87,7 +89,7 @@ export function AdminLayout({ children, appName }: AdminLayoutProps) {
             theme={theme as SiderTheme}
             defaultSelectedKeys={[pathname.split("/").slice(0, 2).join("/")]}
             mode='inline'
-            items={items}
+            items={items(user.roles!)}
             style={{
               border: "none",
               background: themeTokens?.colorBgBase,

@@ -138,11 +138,48 @@ const getMenus = (userRole: string[]) => {
             },
           ],
         },
+        {
+          title: "Tags",
+          url: "/tags",
+          icon: Inbox,
+        },
+        {
+          title: "Interviews",
+          url: "/interviews",
+          icon: Inbox,
+        },
+        {
+          title: "Offers",
+          url: "/offers",
+          icon: Inbox,
+        },
       ],
     });
   }
 
-  baseMenus.push();
+  if (userRole.includes("Admin")) {
+    baseMenus.push({
+      title: "System",
+      url: "#",
+      subItems: [
+        {
+          title: "Users",
+          url: "/admin/users",
+          icon: GalleryVerticalEnd,
+        },
+        {
+          title: "Roles",
+          url: "/admin/roles",
+          icon: Inbox,
+        },
+        {
+          title: "Logs",
+          url: "/admin/logs",
+          icon: Inbox,
+        },
+      ],
+    });
+  }
 
   return baseMenus;
 };

@@ -3,12 +3,16 @@ import { AdminLayout } from "@/components/layout/AdminLayout";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import React from "react";
 const appName = process.env.APP_NAME || "ARM";
+import { auth } from "@/lib/auth";
+import { Session } from "next-auth";
 
-function BackendLayout({
+async function BackendLayout({
   children, // will be a page or nested layout
 }: {
   children: React.ReactNode;
 }) {
+  const session: Session | null = await auth();
+
   return (
     <ThemeProvider
       attribute='data-prefers-color'
@@ -17,7 +21,9 @@ function BackendLayout({
       disableTransitionOnChange
     >
       <AntdRegistry>
-        <AdminLayout appName={appName}>{children}</AdminLayout>
+        <AdminLayout user={session?.user!} appName={appName}>
+          {children}
+        </AdminLayout>
       </AntdRegistry>
     </ThemeProvider>
   );
