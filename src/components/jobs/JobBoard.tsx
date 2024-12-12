@@ -13,6 +13,7 @@ import {
   Sparkles,
   Star,
   Check,
+  ChartNoAxesCombined,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -39,6 +40,8 @@ import {
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { SalaryRangeFilter } from "./SalaryRangeFilter";
+import { Icons } from "../common/Icons";
+import { MatchAnalysisChart } from "./MatchAnalysisChart";
 
 interface Job {
   id: number;
@@ -169,6 +172,20 @@ export default function JobBoard() {
   const [loading, setLoading] = useState(false);
   const [jobs, setJobs] = useState<Job[]>([]);
 
+  const [requesting, setRequesting] = useState(false);
+  const [analysisRes, setAnalysisRes] = useState<{
+    analysisText: {
+      skill_match_score: number;
+      experience_match_score: number;
+      education_match_score: number;
+      overall_match_score: number;
+      matching_skills: string[];
+      missing_skills: string[];
+      recommendations: string;
+      analysis_summary: string;
+    } | null;
+  }>(null);
+
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
@@ -207,6 +224,25 @@ export default function JobBoard() {
       setSelectedJob(null);
     } finally {
       setLoadingJobDetails(false);
+    }
+  };
+
+  const handleAnalyze = async () => {
+    try {
+      setRequesting(true);
+      setAnalysisRes(null);
+      const { data } = await axios.post(`/api/jobs/${selectedJob!.id}/analyze`);
+
+      if (data.meta.code === "OK") {
+        setAnalysisRes(data.result);
+        toast.success("Job analyzed successfully");
+      } else {
+        toast.error(data.meta.message || "Failed to analyze job");
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to analyze job");
+    } finally {
+      setRequesting(false);
     }
   };
 
@@ -535,9 +571,18 @@ export default function JobBoard() {
                       </div>
                     </div>
                     <div className='flex gap-2'>
-                      <Button variant='outline' className='rounded-full gap-2'>
-                        <Star className='h-4 w-4' strokeWidth={1} />
-                        Save
+                      <Button
+                        variant='outline'
+                        className='rounded-full gap-2'
+                        onClick={handleAnalyze}
+                      >
+                        {requesting ? (
+                          <Icons.Spinner className='mr-2 h-4 w-4 animate-spin' />
+                        ) : (
+                          <>
+                            <ChartNoAxesCombined className='h-4 w-4' /> Analyze
+                          </>
+                        )}
                       </Button>
                       <Button className='rounded-full gap-2'>
                         <Send className='h-4 w-4' strokeWidth={1} />
@@ -718,6 +763,13 @@ export default function JobBoard() {
                       </div>
                     </div>
                   </section>
+
+                  {analysisRes && (
+                    <section className='space-y-4'>
+                      <h2 className='text-xl font-semibold'>Match Analysis</h2>
+                      <MatchAnalysisChart data={analysisRes.analysisText!} />
+                    </section>
+                  )}
                 </div>
               </div>
             ) : (

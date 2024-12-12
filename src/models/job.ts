@@ -190,7 +190,16 @@ export async function analyzeJob({
       },
     });
 
-    if (job && resume) {
+    if (!resume) {
+      return {
+        meta: {
+          code: "ERROR",
+          message: "No resume found",
+        },
+      };
+    }
+
+    if (job) {
       // Call OpenAI API to analyze resume
       // const analysisResponse = await openai.createCompletion({
       //   model: "text-davinci-003",
@@ -198,26 +207,27 @@ export async function analyzeJob({
       //   max_tokens: 150,
       // });
 
-      const chatCompletion: OpenAI.Chat.ChatCompletion =
-        await client.chat.completions.create({
-          model: "gpt-3.5-turbo",
-          messages: [
-            {
-              role: "user",
-              content: `Analyze the following resume against the job description:\n\nJob Description: ${
-                job.description
-              }\n\n and Job required skills: ${
-                job.skills
-              } \n\n Resume Content: ${JSON.stringify(
-                resume.content,
-                null,
-                2
-              )}}\n\n and user masters skills. By the way, ignore the resume content's HTML tag. The scoring mechanism is one to ten, the ten is full score, how many score do you decide? `,
-            },
-          ],
-        });
+      // const chatCompletion: OpenAI.Chat.ChatCompletion =
+      //   await client.chat.completions.create({
+      //     model: "gpt-3.5-turbo",
+      //     messages: [
+      //       {
+      //         role: "user",
+      //         content: `Analyze the following resume against the job description:\n\nJob Description: ${
+      //           job.description
+      //         }\n\n and Job required skills: ${
+      //           job.skills
+      //         } \n\n Resume Content: ${JSON.stringify(
+      //           resume.content,
+      //           null,
+      //           2
+      //         )}}\n\n and user masters skills. By the way, ignore the resume content's HTML tag. The scoring mechanism is one to ten, the ten is full score, how many score do you decide? `,
+      //       },
+      //     ],
+      //   });
 
-      const analysisText = chatCompletion.choices[0].message?.content;
+      // const analysisText = chatCompletion.choices[0].message?.content;
+      const analysisText = await analyzeJobMatch(job, resume);
 
       // Implement your scoring mechanism here
       // Placeholder for actual scoring logic
@@ -235,10 +245,12 @@ export async function analyzeJob({
       return {
         meta: {
           code: "ERROR",
+          message: "Job not found",
         },
       };
     }
   } catch (err) {
+    console.log(err);
     return catchORMError("Failed to analyze job description", err);
   }
 }
@@ -272,10 +284,7 @@ export async function updateJob(jobId: string, job: Omit<API.Job, "id">) {
   }
 }
 
-async function analyzeJobMatch(
-  jobDescription: JobDescription,
-  resume: OnlineResume
-) {
+async function analyzeJobMatch(jobDescription: any, resume: any) {
   const matchAnalysisPrompt = `
 You are an expert AI recruitment analyst. Analyze the job description and resume data provided below to determine compatibility and generate matching scores.
 
@@ -335,24 +344,25 @@ Please return the analysis in the following JSON format:
 }
 `;
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4",
-    messages: [
-      {
-        role: "system",
-        content:
-          "You are an expert AI recruitment analyst specializing in job matching analysis.",
-      },
-      {
-        role: "user",
-        content: matchAnalysisPrompt,
-      },
-    ],
-    temperature: 0.3, // Lower temperature for more consistent scoring
-    response_format: { type: "json_object" },
-  });
+  const response: OpenAI.Chat.ChatCompletion =
+    await client.chat.completions.create({
+      model: "gpt-4-turbo-preview",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are an expert AI recruitment analyst specializing in job matching analysis.",
+        },
+        {
+          role: "user",
+          content: matchAnalysisPrompt,
+        },
+      ],
+      temperature: 0.3,
+      response_format: { type: "json_object" },
+    });
 
-  const analysis = JSON.parse(response.choices[0].message.content);
+  const analysis = JSON.parse(response.choices[0].message.content || "{}");
 
   // Save the match analysis
   await prisma.jobMatch.create({
