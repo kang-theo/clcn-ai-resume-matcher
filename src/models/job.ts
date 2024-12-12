@@ -301,10 +301,17 @@ Job Description:
 
 Candidate Resume:
 {
-  "skills": ${resume.skills},
-  "experience": ${resume.experiences},
+  "title": "${resume.title}",
+  "summary": "${resume.summary}",
+  "technical_skills": ${resume.technical_skills},
+  "experiences": ${resume.experiences},
   "education": ${resume.education},
-  "summary": "${resume.summary}"
+  "certifications": ${resume.certifications},
+  "projects": ${resume.projects},
+  "languages": ${resume.languages},
+  "soft_skills": ${resume.soft_skills},
+  "job_preferences": ${resume.job_preferences},
+  "ai_analysis": ${resume.ai_analysis}
 }
 
 Please analyze and provide a structured evaluation with the following:
