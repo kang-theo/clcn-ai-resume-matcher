@@ -45,7 +45,6 @@ export const items = (roles: string[]): MenuItem[] => {
       getItem("All", "/admin/jobs", <List size={20} />),
       getItem("Tags", "/admin/tags", <List size={20} />),
     ]),
-    getItem("Resumes", "/admin/resumes", <List size={20} />),
     getItem("Applications", "/admin/applications", <List size={20} />),
   ];
 
