@@ -185,7 +185,7 @@ export default function JobBoard() {
       recommendations: string;
       analysis_summary: string;
     } | null;
-  }>(null);
+  }>();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -231,7 +231,7 @@ export default function JobBoard() {
   const handleAnalyze = async () => {
     try {
       setRequesting(true);
-      setAnalysisRes(null);
+      // setAnalysisRes(null);
       const { data } = await axios.post(`/api/jobs/${selectedJob!.id}/analyze`);
 
       if (data.meta.code === "OK") {

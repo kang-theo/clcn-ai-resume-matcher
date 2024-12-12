@@ -29,7 +29,7 @@ export async function listAllApplications({
         online_resume: {
           select: {
             id: true,
-            content: true,
+            // content: true,
           },
         },
         job_description: {

@@ -44,6 +44,10 @@ declare namespace API {
     title: string;
     description: string;
     skills: string;
+    company: string;
+    required_skills: string;
+    responsibilities: string;
+    qualifications: string;
     status: "Draft" | "Open" | "Closed";
     created_by: string;
   };

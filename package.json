@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "PORT=3333 next dev",
-    "build": "npx prisma generate && next build",
+    "build": "tsc --noEmit --skipLibCheck && next build",
     "start": "next start",
     "lint": "next lint",
     "test": "jest",

@@ -76,9 +76,9 @@ export async function listAllJobs({
 // Pick etc
 export async function createJob(payload: Omit<API.Job, "id">) {
   try {
-    const job = await prisma.jobDescriptions.create({
-      data: payload,
-    });
+    // const job = await prisma.jobDescriptions.create({
+    //   data: payload,
+    // });
 
     if (job) {
       return {
