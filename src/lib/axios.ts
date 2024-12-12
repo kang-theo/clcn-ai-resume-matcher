@@ -36,6 +36,10 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (axios.isCancel(error)) {
+      return Promise.reject(error);
+    }
+
     if (error.response.status === 401) {
       // Handle unauthorized error, optionally redirect to sign-in
       window.location.href = "/auth/signin";
@@ -47,4 +51,5 @@ apiClient.interceptors.response.use(
   }
 );
 
+export const { isCancel } = axios;
 export default apiClient;
