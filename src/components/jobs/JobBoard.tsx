@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/sheet";
 import CommonSkeleton from "../common/Skeleton";
 import toast from "react-hot-toast";
-import axios from "@/lib/axios";
+import axios, { isCancel } from "@/lib/axios";
 import {
   Tooltip,
   TooltipContent,
@@ -138,116 +138,60 @@ interface JobPreferences {
   notice_period: string;
 }
 
+const fetchJobs = async (
+  signal?: AbortSignal,
+  params?: Record<string, any>
+) => {
+  try {
+    const { data } = await axios.get("/api/jobs", {
+      signal,
+      params,
+    });
+
+    if (data.meta.code === "OK") {
+      return data.result.records;
+    } else {
+      return [];
+    }
+  } catch (error: any) {
+    if (!isCancel(error)) {
+      throw error;
+    }
+  }
+};
+
 export default function JobBoard() {
   const [salaryRange, setSalaryRange] = useState<[number, number]>([0, 200]);
   const [selectedJob, setSelectedJob] = React.useState<Job | null>(null);
   const [sheetOpen, setSheetOpen] = React.useState(false);
   const [loadingJobDetails, setLoadingJobDetails] = useState(false);
 
-  // const jobs = [
-  //   {
-  //     id: 1,
-  //     title: "Product designer",
-  //     company: "MetaMask",
-  //     logo: "",
-  //     applicants: "25 Applicants",
-  //     tags: [
-  //       { name: "Entry Level", color: "bg-purple-100 text-purple-900" },
-  //       { name: "Full-Time", color: "bg-green-100 text-green-900" },
-  //       { name: "Remote", color: "bg-orange-100 text-orange-900" },
-  //       { name: "UI/UX", color: "bg-blue-100 text-blue-900" },
-  //       { name: "Enterprise", color: "bg-red-100 text-red-900" },
-  //       { name: "SaaS", color: "bg-yellow-100 text-yellow-900" },
-  //     ],
-  //     description:
-  //       "Doing the right thing for investors is what we're all about at Vanguard, and that in...",
-  //     salary: "",
-  //     postedTime: "12 days ago",
-  //     responsibilities: [
-  //       "Sitemap Analytics Sitemap Analytics. ask Sitemap Analytics Sitemap Analytics",
-  //       "Sitemap Analytics Sitemap Analytics. ask Sitemap Analytics Sitemap Analytics",
-  //       "Sitemap Analytics Sitemap Analytics. ask Sitemap Analytics Sitemap Analytics",
-  //     ],
-  //     overview:
-  //       "To reach millions, we need more people like you: entrepreneurs, builders, owners inside the company who are eager to grow at scale. Join us to empower more businesses with technology.",
-  //     about:
-  //       "Makro PRO is an exciting new digital venture by the iconic Makro. Our proud purpose is to build a technology platform that will help make business possible for restaurant owners, hotels, and independent retailers, and open the door for sellers. Makro PRO brings together the best talent across multi-nationals to transform",
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Sr. UX Designer",
-  //     company: "Netflix",
-  //     logo: "",
-  //     applicants: "14 Applicants",
-  //     tags: [
-  //       { name: "Expert", color: "bg-purple-100 text-purple-900" },
-  //       { name: "Part-Time", color: "bg-green-100 text-green-900" },
-  //       { name: "Remote", color: "bg-orange-100 text-orange-900" },
-  //     ],
-  //     description:
-  //       "Netflix is one of the world's leading streaming entertainment service with o...",
-  //     salary: "$195",
-  //     postedTime: "5 days ago",
-  //     responsibilities: [
-  //       "Sitemap Analytics Sitemap Analytics. ask Sitemap Analytics Sitemap Analytics",
-  //       "Sitemap Analytics Sitemap Analytics. ask Sitemap Analytics Sitemap Analytics",
-  //       "Sitemap Analytics Sitemap Analytics. ask Sitemap Analytics Sitemap Analytics",
-  //     ],
-  //     overview:
-  //       "To reach millions, we need more people like you: entrepreneurs, builders, owners inside the company who are eager to grow at scale. Join us to empower more businesses with technology.",
-  //     about:
-  //       "Makro PRO is an exciting new digital venture by the iconic Makro. Our proud purpose is to build a technology platform that will help make business possible for restaurant owners, hotels, and independent retailers, and open the door for sellers. Makro PRO brings together the best talent across multi-nationals to transform",
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "Sr. UX Designer",
-  //     company: "Netflix",
-  //     logo: "",
-  //     applicants: "14 Applicants",
-  //     tags: [
-  //       { name: "Expert", color: "bg-purple-100 text-purple-900" },
-  //       { name: "Part-Time", color: "bg-green-100 text-green-900" },
-  //       { name: "Remote", color: "bg-orange-100 text-orange-900" },
-  //     ],
-  //     description:
-  //       "Netflix is one of the world's leading streaming entertainment service with o...",
-  //     salary: "$195",
-  //     postedTime: "5 days ago",
-  //     responsibilities: [
-  //       "Sitemap Analytics Sitemap Analytics. ask Sitemap Analytics Sitemap Analytics",
-  //       "Sitemap Analytics Sitemap Analytics. ask Sitemap Analytics Sitemap Analytics",
-  //       "Sitemap Analytics Sitemap Analytics. ask Sitemap Analytics Sitemap Analytics",
-  //     ],
-  //     overview:
-  //       "To reach millions, we need more people like you: entrepreneurs, builders, owners inside the company who are eager to grow at scale. Join us to empower more businesses with technology.",
-  //     about:
-  //       "Makro PRO is an exciting new digital venture by the iconic Makro. Our proud purpose is to build a technology platform that will help make business possible for restaurant owners, hotels, and independent retailers, and open the door for sellers. Makro PRO brings together the best talent across multi-nationals to transform",
-  //   },
-  //   // Add more job listings as needed
-  // ];
-
   const [loading, setLoading] = useState(false);
   const [jobs, setJobs] = useState<Job[]>([]);
 
   useEffect(() => {
-    getJobs();
-  }, []);
-
-  const getJobs = async () => {
+    const controller = new AbortController();
     setLoading(true);
-    try {
-      const { data } = await axios.get("/api/jobs");
-      if (data.meta.code === "OK") {
-        setJobs(data.result.records);
-      } else {
-        toast.error(data.meta.message || "Failed to get jobs");
-      }
-      setLoading(false);
-    } catch (error: any) {
-      setLoading(false);
-      toast.error(error.response.data.message || "Failed to get jobs");
-    }
-  };
+
+    fetchJobs(controller.signal)
+      .then((data) => {
+        if (!data) {
+          // console.log("No data received from API");
+          setJobs([]);
+          return;
+        }
+        // console.log("Received jobs:", data); // Debug log
+        setJobs(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching jobs:", error); // Debug log
+        toast.error(error.message || "Failed to get jobs");
+        setJobs([]); // Set empty array on error
+      })
+      .finally(() => setLoading(false));
+
+    return () => controller.abort();
+  }, []);
 
   const getJobDetails = async (jobId: number) => {
     setLoadingJobDetails(true);
