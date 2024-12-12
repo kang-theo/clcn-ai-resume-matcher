@@ -330,6 +330,79 @@ const mockJobDescriptions = [
     created_by: "hr1@company.com",
     cultural_keywords: null,
   },
+  {
+    title: "Senior Full Stack Engineer",
+    company: {
+      name: "Innovation Labs",
+      logo: "/company-logos/innovationlabs.png",
+      about:
+        "Innovation Labs is a cutting-edge tech company focused on building scalable enterprise solutions...",
+      size: "201-500 employees",
+      industry: "Technology",
+      website: "https://innovationlabs.example.com",
+      location: "San Francisco, CA",
+    },
+    department: "Engineering",
+    location: "San Francisco, CA",
+    job_type: "Full-time",
+    experience_level: "Senior",
+    skills: "React, Node.js, TypeScript, AWS, Docker, Microservices",
+    required_skills: ["React", "Node.js", "AWS", "TypeScript"],
+    preferred_skills: ["Docker", "Kubernetes", "GraphQL"],
+    salary_range: {
+      min: 150000,
+      max: 190000,
+      currency: "USD",
+    },
+    description:
+      "Join our engineering team to build scalable microservices and lead development initiatives.",
+    responsibilities:
+      "Lead development teams, architect solutions, mentor junior developers, implement best practices",
+    qualifications:
+      "Bachelor's degree in Computer Science or related field, 5+ years of full-stack development experience",
+    status: "Open",
+    industry_sector: "Technology",
+    remote_policy: "Hybrid",
+    created_by: "hr1@company.com",
+    cultural_keywords: null,
+  },
+  {
+    title: "Lead Software Engineer",
+    company: {
+      name: "FutureTech Systems",
+      logo: "/company-logos/futuretech.png",
+      about:
+        "FutureTech Systems specializes in building enterprise-grade cloud solutions with a focus on scalability and innovation...",
+      size: "501-1000 employees",
+      industry: "Technology",
+      website: "https://futuretech.example.com",
+      location: "San Francisco, CA",
+    },
+    department: "Engineering",
+    location: "San Francisco, CA",
+    job_type: "Full-time",
+    experience_level: "Senior",
+    skills:
+      "React, Node.js, TypeScript, AWS, Microservices Architecture, Team Leadership",
+    required_skills: ["React", "Node.js", "AWS", "Team Leadership"],
+    preferred_skills: ["TypeScript", "Docker", "System Design"],
+    salary_range: {
+      min: 160000,
+      max: 200000,
+      currency: "USD",
+    },
+    description:
+      "Looking for an experienced technical leader to drive our core platform development and mentor our engineering team.",
+    responsibilities:
+      "Lead a team of full-stack developers, architect cloud-native solutions, establish technical standards, and drive innovation",
+    qualifications:
+      "BS in Computer Science or related field, 7+ years of full-stack development, proven leadership experience",
+    status: "Open",
+    industry_sector: "Technology",
+    remote_policy: "Hybrid",
+    created_by: "hr1@company.com",
+    cultural_keywords: null,
+  },
   // ... other job descriptions
 ];
 
