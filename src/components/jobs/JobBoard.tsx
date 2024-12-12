@@ -42,6 +42,7 @@ import { Badge } from "@/components/ui/badge";
 import { SalaryRangeFilter } from "./SalaryRangeFilter";
 import { Icons } from "../common/Icons";
 import { MatchAnalysisChart } from "./MatchAnalysisChart";
+import { cn } from "@/lib/utils";
 
 interface Job {
   id: number;
@@ -489,7 +490,10 @@ export default function JobBoard() {
                               <React.Fragment key={tag.name}>
                                 {index < 4 && (
                                   <span
-                                    className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${tag.color}`}
+                                    className={cn(
+                                      "rounded-full px-2.5 py-0.5 text-xs font-medium",
+                                      tag.color
+                                    )}
                                   >
                                     {tag.name}
                                   </span>
@@ -598,7 +602,10 @@ export default function JobBoard() {
                     {selectedJob.tags.map((tag) => (
                       <span
                         key={tag.name}
-                        className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${tag.color}`}
+                        className={cn(
+                          "rounded-full px-2.5 py-0.5 text-xs font-medium",
+                          tag.color.split(" ").join(" ")
+                        )}
                       >
                         {tag.name}
                       </span>
