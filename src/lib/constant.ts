@@ -28,7 +28,6 @@ export const TAG_COLORS: { [key: string]: string } = {
   // Industry
   Tech: "bg-amber-100 text-amber-900",
   Healthcare: "bg-lime-100 text-lime-900",
-  Finance: "bg-teal-100 text-teal-900",
 
   // Company size
   Startup: "bg-fuchsia-100 text-fuchsia-900",
