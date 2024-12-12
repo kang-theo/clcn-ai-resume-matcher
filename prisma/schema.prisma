@@ -474,6 +474,8 @@ model Applications {
   created_at          DateTime          @default(now())
   last_modifier       String?
   updated_at          DateTime          @updatedAt
+  job_match           JobMatch?         @relation(fields: [job_match_id], references: [id])
+  job_match_id        String?           @unique
 }
 
 model JobDescriptionAnalysis {
@@ -513,6 +515,8 @@ model JobMatch {
   // Metadata
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  application Applications?
 
   @@index([job_description_id])
   @@index([online_resume_id])

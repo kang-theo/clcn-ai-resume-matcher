@@ -289,6 +289,8 @@ Table Applications {
   created_at DateTime [default: `now()`, not null]
   last_modifier String
   updated_at DateTime [not null]
+  job_match JobMatch
+  job_match_id String [unique]
 }
 
 Table JobDescriptionAnalysis {
@@ -319,6 +321,7 @@ Table JobMatch {
   recommendations String
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
+  application Applications
 }
 
 Enum UserState {
@@ -383,6 +386,8 @@ Ref: Applications.job_description_id > JobDescriptions.id
 Ref: Applications.questionaire_id > Questionaires.id
 
 Ref: Applications.resume_id > Resumes.id
+
+Ref: Applications.job_match_id - JobMatch.id
 
 Ref: JobDescriptionAnalysis.job_description_id > JobDescriptions.id
 
