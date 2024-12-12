@@ -240,7 +240,9 @@ export default function JobBoard() {
         toast.error(data.meta.message || "Failed to analyze job");
       }
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to analyze job");
+      toast.error(
+        error.response?.data?.meta.message || "Failed to analyze job"
+      );
     } finally {
       setRequesting(false);
     }
