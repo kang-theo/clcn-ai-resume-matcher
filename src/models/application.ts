@@ -3,33 +3,63 @@ import prisma from "@/lib/prisma";
 import { ITableParams } from "@/lib/interfaces";
 
 export async function listAllApplications({
+  status,
   page,
   pageSize,
   search,
   sortField,
   sortOrder,
-}: ITableParams) {
+  currentUser,
+}: ITableParams & {
+  status: "pending" | "approved" | "rejected";
+  currentUser: { email: string; id: string; roles: string[] };
+}) {
   try {
     const skip = (page - 1) * pageSize;
     const take = pageSize;
+
+    let whereClause: any = status ? { status, ...search } : { ...search };
+
+    const isAdmin = currentUser.roles.includes("Admin");
+    const isHR = currentUser.roles.includes("HR");
+
+    if (!isAdmin) {
+      if (isHR) {
+        // HR can only see applications of they created job descriptions
+        whereClause = {
+          ...whereClause,
+          job_description: {
+            created_by: currentUser.email,
+          },
+        };
+      } else {
+        // normal user only see their applied applications
+        whereClause = {
+          ...whereClause,
+          user_id: currentUser.id,
+        };
+      }
+    }
+
     const records = await prisma.applications.findMany({
-      where: search,
+      where: whereClause,
       select: {
         id: true,
         created_at: true,
         updated_at: true,
         last_modifier: true,
         status: true,
-        scores: true,
         user: {
           select: {
             email: true,
+            name: true,
           },
         },
         online_resume: {
           select: {
             id: true,
-            content: true,
+            title: true,
+            summary: true,
           },
         },
         job_description: {
@@ -41,18 +71,22 @@ export async function listAllApplications({
             status: true,
             created_at: true,
             updated_at: true,
+            salary_range: true,
           },
         },
+        job_match: true,
       },
       orderBy: {
         [sortField]: sortOrder,
       },
-      skip: skip,
-      take: take,
+      skip,
+      take,
     });
 
-    const total = await prisma.applications.count();
-    // const totalPages = Math.ceil(total / pageSize);
+    const total = await prisma.applications.count({
+      where: whereClause,
+    });
+
     return {
       meta: {
         code: "OK",
@@ -60,7 +94,6 @@ export async function listAllApplications({
       data: {
         records,
         total,
-        // totalPages,
         pagination: {
           total,
           pageSize,
@@ -81,31 +114,81 @@ export async function listAllApplications({
  */
 export async function createApplication({
   user_id,
-  online_resume_id,
   job_description_id,
-  scores = 0,
 }: {
   user_id: string;
-  online_resume_id: string;
   job_description_id: string;
-  scores?: number;
 }) {
   try {
-    const newApplication = await prisma.applications.create({
-      data: { user_id, online_resume_id, job_description_id, scores },
+    // Check if user has already applied
+    const existingApplication = await prisma.applications.findFirst({
+      where: {
+        job_description_id,
+        user_id,
+      },
     });
 
-    if (newApplication) {
+    if (existingApplication) {
+      return {
+        meta: {
+          code: "ERROR",
+          message: "You have already applied for this job",
+        },
+      };
+    }
+
+    // Find user's first online resume
+    const userResume = await prisma.onlineResumes.findFirst({
+      where: {
+        user_id,
+      },
+      orderBy: {
+        created_at: "desc",
+      },
+    });
+
+    if (!userResume) {
+      return {
+        meta: {
+          code: "ERROR",
+          message: "No resume found. Please create a resume first.",
+        },
+      };
+    }
+
+    // Get job match record if exists
+    const jobMatch = await prisma.jobMatch.findFirst({
+      where: {
+        job_description_id,
+        online_resume_id: userResume.id,
+      },
+    });
+
+    // Create new application
+    const application = await prisma.applications.create({
+      data: {
+        user_id,
+        job_description_id,
+        online_resume_id: userResume.id,
+        scores: jobMatch?.overall_match_score ?? 0,
+        status: "pending",
+        job_match_id: jobMatch?.id,
+      },
+    });
+
+    if (application) {
       return {
         meta: {
           code: "OK",
+          message: "Application submitted successfully",
         },
-        data: newApplication,
+        data: application,
       };
     } else {
       return {
         meta: {
-          code: "400",
+          code: "ERROR",
+          message: "Failed to apply this job. Please contact the support.",
         },
       };
     }

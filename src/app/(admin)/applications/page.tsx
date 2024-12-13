@@ -18,42 +18,44 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-// Mock data
-const mockApplications = [
-  {
-    id: "1",
-    jobTitle: "Senior Frontend Developer",
-    company: "Tech Corp",
-    appliedDate: "2024-03-15",
-    status: "pending",
-    matchScore: {
-      overall: 85,
-      skills: 90,
-      experience: 82,
-      education: 88,
-    },
-    location: "Remote",
-    salary: "$120k - $150k",
-  },
-  {
-    id: "2",
-    jobTitle: "Full Stack Engineer",
-    company: "StartUp Inc",
-    appliedDate: "2024-03-14",
-    status: "approved",
-    matchScore: {
-      overall: 78,
-      skills: 75,
-      experience: 80,
-      education: 85,
-    },
-    location: "New York, NY",
-    salary: "$100k - $130k",
-  },
-  // Add more mock applications...
-];
+// Remove mockApplications array and add interface
+interface Application {
+  id: string;
+  status: string;
+  online_resume: {
+    title: string;
+    summary: string;
+  };
+  job_description: {
+    title: string;
+    company: {
+      name: string;
+      location: string;
+    };
+    created_at: string;
+    salary_range: {
+      min: number;
+      max: number;
+      currency: string;
+    } | null;
+  };
+  job_match?: {
+    id: string;
+    job_description_id: string;
+    online_resume_id: string;
+    overall_match_score: number;
+    skill_match_score: number;
+    experience_match_score: number;
+    education_match_score: number;
+    matching_skills: string[];
+    missing_skills: string[];
+    recommendations: string;
+    created_at: string;
+    updated_at: string;
+  } | null;
+}
 
 const statusColors = {
   pending: "bg-yellow-100 text-yellow-800",
@@ -62,16 +64,37 @@ const statusColors = {
 };
 
 export default function ApplicationsPage() {
+  const [applications, setApplications] = useState<Application[]>([]);
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
 
-  const filteredApplications = mockApplications
-    .filter((app) => app.matchScore.overall >= 60) // Basic score filter
+  useEffect(() => {
+    const fetchApplications = async () => {
+      try {
+        const response = await fetch("/api/applications");
+        const data = await response.json();
+        if (data.meta.code === "OK") {
+          setApplications(data.result.records);
+        }
+      } catch (error) {
+        console.error("Failed to fetch applications:", error);
+      }
+    };
+
+    fetchApplications();
+  }, []);
+
+  const filteredApplications = applications
+    // .filter((app) => app.job_match?.overall_match_score >= 60 || true)
     .filter((app) => filter === "all" || app.status === filter)
     .filter(
       (app) =>
-        app.jobTitle.toLowerCase().includes(search.toLowerCase()) ||
-        app.company.toLowerCase().includes(search.toLowerCase())
+        app.job_description.title
+          .toLowerCase()
+          .includes(search.toLowerCase()) ||
+        app.job_description.company.name
+          .toLowerCase()
+          .includes(search.toLowerCase())
     );
 
   return (
@@ -116,41 +139,56 @@ export default function ApplicationsPage() {
             {filteredApplications.map((application) => (
               <TableRow key={application.id} className='hover:bg-gray-50'>
                 <TableCell className='font-medium'>
-                  {application.jobTitle}
-                </TableCell>
-                <TableCell>{application.company}</TableCell>
-                <TableCell>
-                  {new Date(application.appliedDate).toLocaleDateString()}
+                  {application.job_description.title}
                 </TableCell>
                 <TableCell>
-                  <div className='space-y-1'>
-                    <div className='flex items-center gap-2'>
-                      <div className='w-24 bg-gray-100 rounded-full h-2'>
-                        <div
-                          className='h-2 rounded-full transition-all'
-                          style={{
-                            width: `${application.matchScore.overall}%`,
-                            backgroundColor:
-                              application.matchScore.overall >= 80
-                                ? "#22c55e"
-                                : application.matchScore.overall >= 70
-                                ? "#3b82f6"
-                                : "#eab308",
-                          }}
-                        />
+                  {application.job_description.company.name}
+                </TableCell>
+                <TableCell>
+                  {new Date(
+                    application.job_description.created_at
+                  ).toLocaleDateString()}
+                </TableCell>
+                <TableCell>
+                  {application.job_match ? (
+                    <div className='space-y-1'>
+                      <div className='flex items-center gap-2'>
+                        <div className='w-24 bg-gray-100 rounded-full h-2'>
+                          <div
+                            className='h-2 rounded-full transition-all'
+                            style={{
+                              width: `${application.job_match.overall_match_score}%`,
+                              backgroundColor:
+                                application.job_match.overall_match_score >= 80
+                                  ? "#22c55e"
+                                  : application.job_match.overall_match_score >=
+                                    70
+                                  ? "#3b82f6"
+                                  : "#eab308",
+                            }}
+                          />
+                        </div>
+                        <span className='text-sm font-medium'>
+                          {application.job_match.overall_match_score}%
+                        </span>
                       </div>
-                      <span className='text-sm font-medium'>
-                        {application.matchScore.overall}%
-                      </span>
+                      <div className='flex gap-2 text-xs text-gray-500'>
+                        <span>
+                          Skills: {application.job_match.skill_match_score}%
+                        </span>
+                        <span>•</span>
+                        <span>
+                          Exp: {application.job_match.experience_match_score}%
+                        </span>
+                        <span>•</span>
+                        <span>
+                          Edu: {application.job_match.education_match_score}%
+                        </span>
+                      </div>
                     </div>
-                    <div className='flex gap-2 text-xs text-gray-500'>
-                      <span>Skills: {application.matchScore.skills}%</span>
-                      <span>•</span>
-                      <span>Exp: {application.matchScore.experience}%</span>
-                      <span>•</span>
-                      <span>Edu: {application.matchScore.education}%</span>
-                    </div>
-                  </div>
+                  ) : (
+                    <span className='text-gray-400'>No match data</span>
+                  )}
                 </TableCell>
                 <TableCell>
                   <Badge
@@ -164,8 +202,22 @@ export default function ApplicationsPage() {
                     {application.status}
                   </Badge>
                 </TableCell>
-                <TableCell>{application.location}</TableCell>
-                <TableCell>{application.salary}</TableCell>
+                <TableCell>
+                  {application.job_description.company.location}
+                </TableCell>
+                <TableCell>
+                  {application.job_description.salary_range
+                    ? `${
+                        application.job_description.salary_range.currency
+                      } ${Math.floor(
+                        application.job_description.salary_range.min / 1000
+                      )}K - ${
+                        application.job_description.salary_range.currency
+                      } ${Math.floor(
+                        application.job_description.salary_range.max / 1000
+                      )}K`
+                    : "N/A"}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
