@@ -15,7 +15,7 @@ export async function GET() {
       where: { user_id: userId },
       include: {
         job_description: true,
-        // JobMatch: true,
+        JobMatch: true,
       },
       orderBy: { created_at: "desc" },
       take: 10,
@@ -54,9 +54,9 @@ export async function GET() {
 
   // Process the data
   return Response.json({
-    // recentApplications: processApplicationHistory(applications),
-    // skillMatchAnalysis: calculateSkillAnalysis(matchAnalysis),
-    // topMatchedJobs: processTopMatches(topMatches),
-    // applicationStatus: calculateApplicationStatus(applications),
+    recentApplications: processApplicationHistory(applications),
+    skillMatchAnalysis: calculateSkillAnalysis(matchAnalysis),
+    topMatchedJobs: processTopMatches(topMatches),
+    applicationStatus: calculateApplicationStatus(applications),
   });
 }

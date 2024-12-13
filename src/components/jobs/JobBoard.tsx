@@ -185,7 +185,9 @@ export default function JobBoard() {
       recommendations: string;
       analysis_summary: string;
     } | null;
-  }>();
+  }>(null);
+
+  const [applying, setApplying] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -231,7 +233,7 @@ export default function JobBoard() {
   const handleAnalyze = async () => {
     try {
       setRequesting(true);
-      // setAnalysisRes(null);
+      setAnalysisRes(null);
       const { data } = await axios.post(`/api/jobs/${selectedJob!.id}/analyze`);
 
       if (data.meta.code === "OK") {
@@ -252,6 +254,33 @@ export default function JobBoard() {
   const handleShowDetails = async (job: Job) => {
     setSheetOpen(true);
     await getJobDetails(job.id);
+  };
+
+  const handleApply = async () => {
+    if (!selectedJob) {
+      toast.error("Please select available job and then apply it.");
+      return;
+    }
+
+    try {
+      setApplying(true);
+      const { data } = await axios.post(`/api/applications`, {
+        job_id: selectedJob.id,
+      });
+
+      if (data.meta.code === "OK") {
+        toast.success("Application submitted successfully");
+        setSheetOpen(false);
+      } else {
+        toast.error(data.meta.message || "Failed to submit application");
+      }
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.meta?.message || "Failed to submit application"
+      );
+    } finally {
+      setApplying(false);
+    }
   };
 
   const JobFilterPanel = () => {
@@ -590,9 +619,17 @@ export default function JobBoard() {
                           </>
                         )}
                       </Button>
-                      <Button className='rounded-full gap-2'>
-                        <Send className='h-4 w-4' strokeWidth={1} />
-                        Apply Now
+                      <Button
+                        className='rounded-full gap-2'
+                        onClick={handleApply}
+                        disabled={applying}
+                      >
+                        {applying ? (
+                          <Icons.Spinner className='mr-2 h-4 w-4 animate-spin' />
+                        ) : (
+                          <Send className='h-4 w-4' strokeWidth={1} />
+                        )}
+                        {applying ? "Applying..." : "Apply Now"}
                       </Button>
                     </div>
                   </div>
