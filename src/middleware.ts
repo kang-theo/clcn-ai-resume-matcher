@@ -10,6 +10,7 @@ import {
   authRoutes,
   publicRoutes,
   DEFAULT_ADMIN_URL,
+  protectedAPICallbacks,
 } from "@/lib/routes";
 
 // const protectedRoutes = [
@@ -74,16 +75,27 @@ export default async function middleware(req: NextRequest) {
   // logged out and access not a public route
   // redirect to sign in page
   if (!token && !isPublicRoute) {
-    let callbackUrl = pathname;
-    if (nextUrl.search) {
-      callbackUrl += nextUrl.search;
+    if (protectedAPICallbacks[pathname]) {
+      return NextResponse.json(
+        {
+          meta: {
+            code: "Unauthorized",
+          },
+        },
+        { status: 401 }
+      );
+    } else {
+      let callbackUrl = pathname;
+      if (nextUrl.search) {
+        callbackUrl += nextUrl.search;
+      }
+
+      const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+
+      return Response.redirect(
+        new URL(`/auth/signin?callbackUrl=${encodedCallbackUrl}`, nextUrl)
+      );
     }
-
-    const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-
-    return Response.redirect(
-      new URL(`/auth/signin?callbackUrl=${encodedCallbackUrl}`, nextUrl)
-    );
   }
 
   // Only redirect if we're on the root path '/'
