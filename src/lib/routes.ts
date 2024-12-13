@@ -13,6 +13,11 @@ export const publicRoutes = [
   "/api/jobs/:id/analyze", // let backend authorize this route
 ];
 
+export const protectedAPICallbacks: Record<string, string> = {
+  "/api/jobs/:id/analyze": "/jobs", // let backend authorize this route
+  "/api/applications": "/jobs", // let backend authorize this route
+};
+
 /**
  * An array of routes that are used for authentication
  * These routes will redirect logged in users to /dashboard
