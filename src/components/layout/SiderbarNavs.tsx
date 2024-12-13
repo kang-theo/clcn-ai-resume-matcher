@@ -122,19 +122,19 @@ const getMenus = (userRole: string[]) => {
           icon: Inbox,
           subItems: [
             {
-              title: "New",
-              url: "/applications/new",
-              icon: Sparkles,
+              title: "Pending",
+              url: "/applications/pending",
+              icon: ChevronsUpDown,
             },
             {
-              title: "In Review",
-              url: "/applications/review",
-              icon: Search,
+              title: "Approved",
+              url: "/applications/approved",
+              icon: BadgeCheck,
             },
             {
-              title: "Scheduled",
-              url: "/applications/scheduled",
-              icon: Calendar,
+              title: "Rejected",
+              url: "/applications/rejected",
+              icon: LogOut,
             },
           ],
         },

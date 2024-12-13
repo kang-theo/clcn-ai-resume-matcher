@@ -15,7 +15,7 @@ export async function GET() {
       where: { user_id: userId },
       include: {
         job_description: true,
-        JobMatch: true,
+        job_match: true,
       },
       orderBy: { created_at: "desc" },
       take: 10,
