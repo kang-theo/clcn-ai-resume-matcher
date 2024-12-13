@@ -256,6 +256,7 @@ export default function JobBoard() {
     await getJobDetails(job.id);
   };
 
+  // Apply the job
   const handleApply = async () => {
     if (!selectedJob) {
       toast.error("Please select available job and then apply it.");
@@ -264,8 +265,8 @@ export default function JobBoard() {
 
     try {
       setApplying(true);
-      const { data } = await axios.post(`/api/applications`, {
-        job_id: selectedJob.id,
+      const { data } = await axios.post("/api/applications", {
+        jobId: selectedJob.id,
       });
 
       if (data.meta.code === "OK") {
