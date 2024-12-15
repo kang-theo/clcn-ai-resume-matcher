@@ -95,10 +95,15 @@ const getMenus = (userRole: string[]) => {
       url: "#",
       subItems: [
         {
-          title: "All Jobs",
+          title: "Jobs",
           url: "/jobs/all",
           icon: GalleryVerticalEnd,
           subItems: [
+            {
+              title: "All Jobs",
+              url: "/jobs/all",
+              icon: GalleryVerticalEnd,
+            },
             {
               title: "Active Jobs",
               url: "/jobs/active",
@@ -213,11 +218,18 @@ const MenuItemContent: React.FC<MenuItemContentProps> = ({ item }) => (
 
 const renderMenuItem = (item: MenuItem, pathname: string) => {
   if (item.subItems) {
+    // Check if current pathname matches any subItem's URL
+    const isAnySubItemActive = item.subItems.some(
+      (subItem) =>
+        pathname === subItem.url ||
+        subItem.subItems?.some((nestedItem) => pathname === nestedItem.url)
+    );
+
     return (
       <Collapsible
         key={item.title}
         className='group/collapsible'
-        defaultOpen={pathname.includes(item.url)}
+        defaultOpen={isAnySubItemActive}
       >
         <CollapsibleTrigger asChild>
           <SidebarMenuButton>
