@@ -27,7 +27,7 @@ export function BreadcrumbWrapper() {
           const title = path.charAt(0).toUpperCase() + path.slice(1);
 
           return (
-            <div key={path}>
+            <div key={path} className='flex items-center gap-2'>
               <BreadcrumbItem>
                 {isLast ? (
                   <BreadcrumbPage>{title}</BreadcrumbPage>
