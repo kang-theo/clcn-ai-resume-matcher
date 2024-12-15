@@ -257,7 +257,7 @@ const renderMenuItem = (item: MenuItem, pathname: string) => {
 };
 
 export function SiderbarNavs({
-  userRole = ["User"],
+  userRole = [],
 }: {
   userRole?: string[]; //"User" | "HR" | "Admin";
 }) {
