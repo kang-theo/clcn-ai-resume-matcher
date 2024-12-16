@@ -4,26 +4,40 @@ import {
 } from "@/lib/utils";
 import { auth } from "@/lib/auth";
 import { Session } from "next-auth";
-import { createJob, listAllJobs, deleteJobs } from "@/models/job";
+import {
+  createJob,
+  listAllJobs,
+  deleteJobs,
+  listAllJobsByStatus,
+} from "@/models/job";
 import { NextRequest, NextResponse } from "next/server";
 import { newJobSchema } from "@/lib/schema";
 
 export async function GET(req: NextRequest) {
+  const session: Session | null = await auth();
   const searchParams = req.nextUrl.searchParams,
+    status = searchParams.get("status") || "",
     page = searchParams.get("page") || "1",
     pageSize = searchParams.get("pageSize") || "10",
     sortField = searchParams.get("sortField") || "created_at",
     sortOrder = convertSortParams(searchParams.get("sortOrder")) || "desc",
-    whereClause = convertSearchParamsToWhereClause(searchParams);
+    whereClause = {
+      ...convertSearchParamsToWhereClause(searchParams),
+      ...(status !== "all" && { status }),
+    };
 
   try {
-    const result: API.ModelRes = await listAllJobs({
-      page: parseInt(page, 10),
-      pageSize: parseInt(pageSize, 10),
-      search: whereClause,
-      sortField,
-      sortOrder,
-    });
+    const result: API.ModelRes = await listAllJobsByStatus(
+      {
+        page: parseInt(page, 10),
+        pageSize: parseInt(pageSize, 10),
+        search: whereClause,
+        sortField,
+        sortOrder,
+      },
+      session?.user?.id!,
+      session?.user?.roles.includes("Admin") ?? false
+    );
 
     if (result.meta.code === "OK") {
       return NextResponse.json({

@@ -73,6 +73,74 @@ export async function listAllJobs({
   }
 }
 
+export async function listAllJobsByStatus(
+  { page, pageSize, search, sortField, sortOrder }: ITableParams,
+  userId: string,
+  isAdmin: boolean
+) {
+  try {
+    const skip = (page - 1) * pageSize;
+    const take = pageSize;
+    const records = await prisma.jobDescriptions.findMany({
+      where: search,
+      select: {
+        id: true,
+        title: true,
+        company: true,
+        location: true,
+        job_type: true,
+        description: true,
+        status: true,
+        department: true,
+        created_by: true,
+        last_modifier: true,
+        created_at: true,
+        updated_at: true,
+        salary_range: true,
+        tags: {
+          select: {
+            tag: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+        applications: true,
+        // job_matches: true,
+      },
+      orderBy: {
+        [sortField]: sortOrder,
+      },
+      skip: skip,
+      take: take,
+    });
+
+    const total = await prisma.jobDescriptions.count({ where: search });
+    // const totalPages = Math.ceil(total / pageSize);
+    return {
+      meta: {
+        code: "OK",
+      },
+      data: {
+        records,
+        total,
+        // totalPages,
+        pagination: {
+          total,
+          pageSize,
+          page,
+        },
+      },
+    };
+  } catch (err) {
+    return catchORMError("Failed to get job descriptions", err);
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
 // Pick etc
 export async function createJob(payload: Omit<API.Job, "id">) {
   try {
