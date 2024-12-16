@@ -153,7 +153,7 @@ model JobDescriptions {
   keywords        Json? // Extracted key terms for matching
   skill_weights   Json? // Importance weight of each skill
   seniority_level String? // Analyzed seniority requirement
-  JobMatch        JobMatch[]
+  job_matches     JobMatch[]
 
   // Add fields for better matching
   remote_policy    String? // "Remote", "Hybrid", "On-site"

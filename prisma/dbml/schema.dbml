@@ -119,7 +119,7 @@ Table JobDescriptions {
   keywords Json
   skill_weights Json
   seniority_level String
-  JobMatch JobMatch [not null]
+  job_matches JobMatch [not null]
   remote_policy String
   visa_sponsorship Boolean [default: false]
   industry_sector String
