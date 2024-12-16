@@ -1,6 +1,7 @@
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { auth } from "@/lib/auth";
 import { Session } from "next-auth";
+import { redirect } from "next/navigation";
 
 export default async function Layout({
   children,
@@ -9,13 +10,7 @@ export default async function Layout({
 }) {
   const session: Session | null = await auth();
   if (!session) {
-    return (
-      <div className='flex h-screen w-screen items-center justify-center'>
-        <p className='text-2xl font-bold'>
-          Please sign in to access this page.
-        </p>
-      </div>
-    );
+    redirect("/auth/signin");
   }
 
   return <AppSidebar session={session}>{children}</AppSidebar>;
