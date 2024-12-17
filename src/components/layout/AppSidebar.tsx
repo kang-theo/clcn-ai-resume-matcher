@@ -54,6 +54,7 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SiderbarNavs } from "./SiderbarNavs";
 import { Session } from "next-auth";
+import Link from "next/link";
 
 interface AppLayoutProps {
   session: Session | null;
@@ -74,14 +75,14 @@ const MemoizedSidebarContent = memo(function MemoizedSidebarContent({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size='lg' asChild>
-              <a href='/dashboard'>
+              <Link href='/'>
                 <div className='flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground'>
                   <GalleryVerticalEnd className='size-4' />
                 </div>
                 <div className='flex flex-col gap-0.5 leading-none'>
                   <span className='font-semibold'>AI Resume Matcher</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
