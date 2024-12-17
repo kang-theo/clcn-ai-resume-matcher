@@ -192,10 +192,18 @@ export function calculateTimeDifference(updatedTime: string): string {
   }
 }
 
-export const formatCurrency = (amount: number, currency = "USD") => {
+export const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency,
+    style: "decimal",
+    minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount);
+};
+
+export const formatDate = (date: string) => {
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 };
