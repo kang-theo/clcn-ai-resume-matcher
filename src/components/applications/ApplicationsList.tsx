@@ -262,7 +262,7 @@ export function ApplicationsList({ status }: ApplicationsListProps) {
 
       {/* Table View (≥ 768px) */}
       {isTablet && (
-        <Card>
+        <>
           <Table>
             <TableHeader>
               <TableRow>
@@ -447,7 +447,7 @@ export function ApplicationsList({ status }: ApplicationsListProps) {
               Next
             </button>
           </div>
-        </Card>
+        </>
       )}
     </div>
   );
