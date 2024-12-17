@@ -15,6 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
 
 enum JobStatus {
   Draft = "Draft",
@@ -68,6 +69,7 @@ export function JobsList({ status }: JobsListProps) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const router = useRouter();
 
   const columns: ColumnDef<Job>[] = [
     {
@@ -249,38 +251,34 @@ export function JobsList({ status }: JobsListProps) {
             onChange={(e) => setSearch(e.target.value)}
             className='w-full sm:w-64'
           />
-          <Button onClick={() => (window.location.href = "/jobs/create")}>
-            Create Job
-          </Button>
+          <Button onClick={() => router.push("/jobs/new")}>Create Job</Button>
         </div>
       </div>
 
-      <Card>
-        <DataTable columns={columns} data={jobs} />
+      <DataTable columns={columns} data={jobs} />
 
-        {/* Pagination */}
-        <div className='mt-4 flex flex-col sm:flex-row justify-center items-center gap-2 p-4'>
-          <Button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            variant='outline'
-            className='w-full sm:w-auto'
-          >
-            Previous
-          </Button>
-          <span className='px-4 py-2'>
-            Page {page} of {totalPages}
-          </span>
-          <Button
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages}
-            variant='outline'
-            className='w-full sm:w-auto'
-          >
-            Next
-          </Button>
-        </div>
-      </Card>
+      {/* Pagination */}
+      <div className='mt-4 flex flex-col sm:flex-row justify-center items-center gap-2 p-4'>
+        <Button
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+          disabled={page === 1}
+          variant='outline'
+          className='w-full sm:w-auto'
+        >
+          Previous
+        </Button>
+        <span className='px-4 py-2'>
+          Page {page} of {totalPages}
+        </span>
+        <Button
+          onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+          disabled={page === totalPages}
+          variant='outline'
+          className='w-full sm:w-auto'
+        >
+          Next
+        </Button>
+      </div>
     </div>
   );
 }
