@@ -142,29 +142,51 @@ export async function listAllJobsByStatus(
 }
 
 // Pick etc
-export async function createJob(payload: Omit<API.Job, "id">) {
+export async function createJob(data: API.JobPayload): Promise<API.ModelRes> {
   try {
     const job = await prisma.jobDescriptions.create({
-      data: payload,
+      data: {
+        title: data.title,
+        description: data.description,
+        job_type: data.job_type,
+        experience_level: data.experience_level,
+        remote_policy: data.remote_policy,
+        created_by: data.created_by,
+        // Company details nested
+        company: data.company,
+        // company_name: data.company.name,
+        // company_location: data.company.location,
+        // company_website: data.company.website,
+        // company_about: data.company.about,
+        // company_size: data.company.size,
+        // company_industry: data.company.industry,
+        // Salary range nested
+        salary_range: data.salary_range,
+        // salary_min: data.salary_range.min,
+        // salary_max: data.salary_range.max,
+        // salary_currency: data.salary_range.currency,
+        // Additional fields
+        responsibilities: data.responsibilities,
+        qualifications: data.qualifications,
+        required_skills: data.required_skills,
+        preferred_skills: data.preferred_skills,
+        skills: data.skills,
+        industry_sector: data.industry_sector,
+        status: "Draft", // Default status
+      },
     });
 
-    if (job) {
-      return {
-        meta: {
-          code: "OK",
-        },
-        data: job,
-      };
-    }
+    return {
+      meta: { code: "OK" },
+      data: job,
+    };
+  } catch (error: any) {
     return {
       meta: {
         code: "ERROR",
+        message: error.message,
       },
     };
-  } catch (err) {
-    return catchORMError("Failed to create job description", err);
-  } finally {
-    await prisma.$disconnect();
   }
 }
 

@@ -27,6 +27,8 @@ import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
+import axios from "@/lib/axios";
+import toast from "react-hot-toast";
 
 const companySchema = z.object({
   name: z.string().min(2, "Company name is required"),
@@ -97,7 +99,15 @@ export function JobForm() {
   const onSubmit = async (data: JobFormData) => {
     setIsSubmitting(true);
     try {
-      await console.log(data); // Replace with actual API call
+      const response = await axios.post("/api/admin/jobs", data);
+      if (response.data.meta.code === "OK") {
+        toast.success("Job created successfully");
+      } else {
+        toast.error(response.data.meta.message);
+      }
+    } catch (error: any) {
+      console.error("Failed to create job:", error);
+      toast.error(error.response.data.meta.message);
     } finally {
       setIsSubmitting(false);
     }

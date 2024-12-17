@@ -71,10 +71,28 @@ export const newQuestionaireSchema = z.object({
 });
 
 export const newJobSchema = z.object({
-  title: z.string(),
+  title: z.string().min(1),
+  company_name: z.string().min(1),
+  company_about: z.string(),
+  company_size: z.string(),
+  company_industry: z.string(),
+  company_website: z.string().url(),
+  company_location: z.string(),
+  job_type: z.string(),
+  experience_level: z.string(),
+  salary_min: z.number().min(0),
+  salary_max: z.number().min(0),
+  salary_currency: z.string(),
   description: z.string(),
-  status: z.string().optional(),
+  responsibilities: z.string(),
+  qualifications: z.string(),
+  required_skills: z.string(),
+  preferred_skills: z.string(),
+  remote_policy: z.string(),
+  skills: z.string(),
+  industry_sector: z.string(),
   created_by: z.string(),
+  status: z.string(),
 });
 
 export const deleteItemsSchema = z.object({

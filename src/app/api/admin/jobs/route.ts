@@ -60,12 +60,31 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const payload = await req.json();
+    const payload = (await req.json()) as API.JobPayload;
     const session: Session | null = await auth();
+
+    if (!session?.user?.username) {
+      return NextResponse.json(
+        { meta: { code: "E401", message: "Unauthorized" } },
+        { status: 401 }
+      );
+    }
 
     const validation = newJobSchema.safeParse({
       ...payload,
-      created_by: session?.user.username!,
+      created_by: session.user.username,
+      status: "Draft",
+      company_name: payload.company.name,
+      company_location: payload.company.location,
+      company_website: payload.company.website,
+      company_about: payload.company.about,
+      company_size: payload.company.size,
+      company_industry: payload.company.industry,
+      salary_min: payload.salary_range.min,
+      salary_max: payload.salary_range.max,
+      salary_currency: payload.salary_range.currency,
+      required_skills: payload.required_skills.join(","),
+      preferred_skills: payload.preferred_skills.join(","),
     });
 
     if (!validation.success) {
@@ -77,8 +96,9 @@ export async function POST(req: NextRequest) {
 
     const result: API.ModelRes = await createJob({
       ...payload,
-      created_by: session?.user.username!,
+      created_by: session.user.username,
     });
+
     if (result.meta.code === "OK") {
       return NextResponse.json({
         meta: { code: "OK" },

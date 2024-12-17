@@ -119,7 +119,7 @@ declare namespace API {
     questionaire_item_ids?: string[];
   };
 
-  export interface Tag {
+  interface Tag {
     id: number;
     name: string;
     description?: string;
@@ -127,14 +127,63 @@ declare namespace API {
     createdAt: string;
     updatedAt: string;
   }
-}
 
-type OnlineResume = {
-  fullName: string;
-  email: string;
-  phone: string;
-  summary: any;
-  experience: any;
-  education: any;
-  skills: any;
-};
+  type OnlineResume = {
+    fullName: string;
+    email: string;
+    phone: string;
+    summary: any;
+    experience: any;
+    education: any;
+    skills: any;
+  };
+
+  type JobPayload = {
+    title: string;
+    created_by: string;
+    company: {
+      name: string;
+      about: string;
+      size: string;
+      industry: string;
+      website: string;
+      location: string;
+    };
+    job_type: string;
+    experience_level: string;
+    salary_range: {
+      min: number;
+      max: number;
+      currency: string;
+    };
+    description: string;
+    responsibilities: string;
+    qualifications: string;
+    required_skills: string[];
+    preferred_skills: string[];
+    remote_policy: string;
+    skills: string;
+    industry_sector: string;
+  };
+
+  interface JobInput {
+    title: string;
+    description: string;
+    status: string;
+    job_type: string;
+    experience_level: string;
+    location_type: string;
+    created_by: string;
+    company_name: string;
+    company_location: string;
+    company_website: string;
+    company_about: string;
+    company_size: string;
+    company_industry: string;
+    salary_min: number;
+    salary_max: number;
+    salary_currency: string;
+    required_skills: string;
+    preferred_skills: string;
+  }
+}
