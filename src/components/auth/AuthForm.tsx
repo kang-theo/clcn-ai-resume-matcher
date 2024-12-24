@@ -229,25 +229,17 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             );
         }
       } else {
-        // If sign-in is successful, fetch the session
-        // const session = await getSession();
-        // if (
-        //   session?.user.roles.includes("Admin") ||
-        //   session?.user.roles.includes("HR")
-        // ) {
-        //   // callback
-        //   router.push("/admin/dashboard");
-        // } else {
-        //   // callback
-        //   router.push("/dashboard");
-        // }
-        // redirect to dashboard and dashboard backend will check user roles
-        router.push("/dashboard");
-        // SSO and crendentails -> redirect to profile
-        // router.push(`${adminUrl}/admin/dashboard`);
-        // Authentication succeeded, result contains session object
-        // alert("Authentication successful: " + JSON.stringify(result));
-        // Redirect or perform other actions
+        const session = await getSession();
+        if (callbackUrl) {
+          router.push(callbackUrl);
+        } else if (
+          session?.user.roles?.includes("Admin") ||
+          session?.user.roles?.includes("HR")
+        ) {
+          router.push("/jobs/all");
+        } else {
+          router.push("/dashboard");
+        }
       }
       setIsLoading(false);
       // console.log("Authentication successful");
