@@ -46,6 +46,7 @@
     "dompurify": "^3.2.0",
     "echarts": "^5.5.1",
     "echarts-for-react": "^3.0.2",
+    "framer-motion": "^11.13.5",
     "html-to-text": "^9.0.5",
     "lodash": "^4.17.21",
     "lucide-react": "^0.436.0",
