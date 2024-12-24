@@ -154,6 +154,7 @@ export async function createJob(data: API.JobPayload): Promise<API.ModelRes> {
         created_by: data.created_by,
         // Company details nested
         company: data.company,
+        location: data.company.location,
         // company_name: data.company.name,
         // company_location: data.company.location,
         // company_website: data.company.website,
