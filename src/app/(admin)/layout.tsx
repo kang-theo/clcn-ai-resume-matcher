@@ -1,3 +1,4 @@
+import { SessionChecker } from "@/components/auth/SessionChecker";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { auth } from "@/lib/auth";
 import { Session } from "next-auth";
@@ -11,7 +12,16 @@ export default async function Layout({
   const session: Session | null = await auth();
   if (!session) {
     redirect("/auth/signin");
+    // const currentPath = new URL(headers().get("x-url") || "").pathname;
+    // redirect(`/auth/signin?callbackUrl=${encodeURIComponent(currentPath)}`);
+    // const headersList = headers();
+    // const currentPath = headersList.get("x-invoke-path") || "";
+    // redirect(`/auth/signin?callbackUrl=${encodeURIComponent(currentPath)}`);
   }
 
-  return <AppSidebar session={session}>{children}</AppSidebar>;
+  return (
+    <SessionChecker>
+      <AppSidebar session={session}>{children}</AppSidebar>
+    </SessionChecker>
+  );
 }
