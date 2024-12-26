@@ -9,6 +9,8 @@ const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "", // Set your API base URL
 });
 
+const NEXT_PUBLIC_BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH;
+
 // Request interceptor to add JWT token to headers
 apiClient.interceptors.request.use(
   (config) => {
@@ -42,7 +44,7 @@ apiClient.interceptors.response.use(
 
     if (error.response.status === 401) {
       // Handle unauthorized error, optionally redirect to sign-in
-      window.location.href = "/auth/signin";
+      window.location.href = NEXT_PUBLIC_BASE_PATH + "/auth/signin";
       // Return a promise that never resolves to stop further execution
       return new Promise(() => {});
     } else {
