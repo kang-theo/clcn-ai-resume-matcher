@@ -15,8 +15,8 @@ export function SessionChecker({ children }: { children: React.ReactNode }) {
       }
     };
 
-    // Check every minute
-    const interval = setInterval(checkSession, 6000);
+    // Check every 30 seconds
+    const interval = setInterval(checkSession, 30000);
     return () => clearInterval(interval);
   }, []);
 
