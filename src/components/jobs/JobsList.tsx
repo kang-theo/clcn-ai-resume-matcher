@@ -16,7 +16,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
-import CommonSkeleton from "../common/Skeleton";
+import CommonSkeleton from "@/components/common/Skeleton";
+import NextPagination from "@/components/common/NextPagination";
 
 enum JobStatus {
   Draft = "Draft",
@@ -193,7 +194,10 @@ export function JobsList({ status }: JobsListProps) {
       });
 
       setJobs(data.result.records);
-      setTotalPages(Math.ceil(data.result.total / data.result.pageSize));
+      setPage(data.result.pagination.page);
+      setTotalPages(
+        Math.ceil(data.result.total / data.result.pagination.pageSize)
+      );
     } catch (error) {
       console.error("Failed to fetch jobs:", error);
       setJobs([]);
@@ -237,12 +241,16 @@ export function JobsList({ status }: JobsListProps) {
     fetchJobs(page);
   }, [page, status, search]);
 
+  const handlePageChange = (page: number) => {
+    setPage(page);
+  };
+
   if (loading) {
     return <CommonSkeleton />;
   }
 
   return (
-    <div className='p-6 space-y-6'>
+    <div className='p-4 space-y-6'>
       <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4'>
         <h1 className='text-2xl font-bold capitalize'>{status} Jobs</h1>
         <div className='w-full sm:w-auto flex gap-4'>
@@ -259,7 +267,17 @@ export function JobsList({ status }: JobsListProps) {
       <DataTable columns={columns} data={jobs} />
 
       {/* Pagination */}
-      <div className='mt-4 flex flex-col sm:flex-row justify-center items-center gap-2 p-4'>
+      {jobs.length > 0 && totalPages > 1 && (
+        <div className='mt-auto flex justify-center items-center'>
+          <NextPagination
+            currPage={page}
+            total={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      )}
+
+      {/* <div className='mt-4 flex flex-col sm:flex-row justify-center items-center gap-2 p-4'>
         <Button
           onClick={() => setPage((p) => Math.max(1, p - 1))}
           disabled={page === 1}
@@ -279,7 +297,7 @@ export function JobsList({ status }: JobsListProps) {
         >
           Next
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 }
