@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
+import CommonSkeleton from "../common/Skeleton";
 
 enum JobStatus {
   Draft = "Draft",
@@ -237,7 +238,7 @@ export function JobsList({ status }: JobsListProps) {
   }, [page, status, search]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <CommonSkeleton />;
   }
 
   return (
