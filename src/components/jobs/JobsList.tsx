@@ -191,7 +191,7 @@ export function JobsList({ status }: JobsListProps) {
         params: {
           status,
           page: pageNumber,
-          search,
+          q: search,
         },
       });
 

@@ -3,6 +3,8 @@ export interface ITableParams {
   page: number;
   pageSize: number;
   search?: Record<string, any>;
+  // full text search
+  q?: string;
   sortField: string;
   sortOrder: string;
 }

@@ -74,15 +74,42 @@ export async function listAllJobs({
 }
 
 export async function listAllJobsByStatus(
-  { page, pageSize, search, sortField, sortOrder }: ITableParams,
+  { page, pageSize, search, q, sortField, sortOrder }: ITableParams,
   userId: string,
   isAdmin: boolean
 ) {
   try {
     const skip = (page - 1) * pageSize;
     const take = pageSize;
+
+    const searchCondition = {
+      AND: [
+        ...(search ? [search] : []),
+        ...(q
+          ? [
+              {
+                OR: [
+                  { title: { contains: q } },
+                  {
+                    description: { contains: q },
+                  },
+                  { location: { contains: q } },
+                  // For PostgreSQL JSON search
+                  {
+                    company: {
+                      path: "$.name",
+                      string_contains: q,
+                    },
+                  },
+                ],
+              },
+            ]
+          : []),
+      ].filter((condition) => Object.keys(condition).length > 0), // Remove empty objects
+    };
+
     const records = await prisma.jobDescriptions.findMany({
-      where: search,
+      where: searchCondition,
       select: {
         id: true,
         title: true,
@@ -117,7 +144,9 @@ export async function listAllJobsByStatus(
       take: take,
     });
 
-    const total = await prisma.jobDescriptions.count({ where: search });
+    const total = await prisma.jobDescriptions.count({
+      where: searchCondition,
+    });
     // const totalPages = Math.ceil(total / pageSize);
     return {
       meta: {

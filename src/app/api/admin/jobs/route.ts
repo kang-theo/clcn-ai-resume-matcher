@@ -21,6 +21,7 @@ export async function GET(req: NextRequest) {
     pageSize = searchParams.get("pageSize") || "10",
     sortField = searchParams.get("sortField") || "created_at",
     sortOrder = convertSortParams(searchParams.get("sortOrder")) || "desc",
+    q = searchParams.get("q") || "",
     whereClause = {
       ...convertSearchParamsToWhereClause(searchParams),
       ...(status !== "all" && { status }),
@@ -32,6 +33,7 @@ export async function GET(req: NextRequest) {
         page: parseInt(page, 10),
         pageSize: parseInt(pageSize, 10),
         search: whereClause,
+        q,
         sortField,
         sortOrder,
       },
