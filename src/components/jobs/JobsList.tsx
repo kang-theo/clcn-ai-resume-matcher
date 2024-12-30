@@ -18,6 +18,7 @@ import {
 import { useRouter } from "next/navigation";
 import CommonSkeleton from "@/components/common/Skeleton";
 import NextPagination from "@/components/common/NextPagination";
+import { useDebounce } from "@/hooks/useDebounce";
 
 enum JobStatus {
   Draft = "Draft",
@@ -69,6 +70,7 @@ export function JobsList({ status }: JobsListProps) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 500);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const router = useRouter();
@@ -239,15 +241,15 @@ export function JobsList({ status }: JobsListProps) {
 
   useEffect(() => {
     fetchJobs(page);
-  }, [page, status, search]);
+  }, [page, status, debouncedSearch]);
 
   const handlePageChange = (page: number) => {
     setPage(page);
   };
 
-  if (loading) {
-    return <CommonSkeleton />;
-  }
+  // if (loading) {
+  //   return <CommonSkeleton />;
+  // }
 
   return (
     <div className='p-4 space-y-6'>
@@ -264,7 +266,15 @@ export function JobsList({ status }: JobsListProps) {
         </div>
       </div>
 
-      <DataTable columns={columns} data={jobs} />
+      {/* DataTable */}
+      <div className='relative'>
+        {loading && (
+          <div className='absolute inset-0 bg-white/50 z-10 flex items-center justify-center'>
+            <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900' />
+          </div>
+        )}
+        <DataTable columns={columns} data={jobs} />
+      </div>
 
       {/* Pagination */}
       {jobs.length > 0 && totalPages > 1 && (
