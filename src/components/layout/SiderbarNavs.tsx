@@ -105,18 +105,18 @@ const getMenus = (userRole: string[]) => {
               icon: GalleryVerticalEnd,
             },
             {
-              title: "Active Jobs",
-              url: "/jobs/active",
+              title: "Open Jobs",
+              url: "/jobs/Open",
               icon: BadgeCheck,
             },
             {
               title: "Draft Jobs",
-              url: "/jobs/draft",
+              url: "/jobs/Draft",
               icon: ChevronsUpDown,
             },
             {
               title: "Closed Jobs",
-              url: "/jobs/closed",
+              url: "/jobs/Closed",
               icon: LogOut,
             },
           ],
