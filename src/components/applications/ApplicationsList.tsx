@@ -22,6 +22,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import NextPagination from "@/components/common/NextPagination";
+import CommonSkeleton from "@/components/common/Skeleton";
 
 interface ApplicationsListProps {
   status: "pending" | "approved" | "rejected";
@@ -78,7 +80,10 @@ export function ApplicationsList({ status }: ApplicationsListProps) {
       });
 
       setApplications(data.result.records);
-      setTotalPages(data.result.total);
+      setPage(data.result.pagination.page);
+      setTotalPages(
+        Math.ceil(data.result.total / data.result.pagination.pageSize)
+      );
     } catch (error) {
       console.error("Failed to fetch applications:", error);
       setApplications([]);
@@ -115,8 +120,12 @@ export function ApplicationsList({ status }: ApplicationsListProps) {
     }
   };
 
+  const handlePageChange = (page: number) => {
+    setPage(page);
+  };
+
   if (loading) {
-    return <div>Loading...</div>;
+    return <CommonSkeleton />;
   }
 
   return (
@@ -428,25 +437,15 @@ export function ApplicationsList({ status }: ApplicationsListProps) {
           </Table>
 
           {/* Pagination - Make it responsive */}
-          <div className='mt-4 flex flex-col sm:flex-row justify-center items-center gap-2 p-4'>
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className='px-4 py-2 border rounded disabled:opacity-50 w-full sm:w-auto'
-            >
-              Previous
-            </button>
-            <span className='px-4 py-2'>
-              Page {page} of {totalPages}
-            </span>
-            <button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className='px-4 py-2 border rounded disabled:opacity-50 w-full sm:w-auto'
-            >
-              Next
-            </button>
-          </div>
+          {applications.length > 0 && totalPages > 1 && (
+            <div className='mt-auto flex justify-center items-center'>
+              <NextPagination
+                currPage={page}
+                total={totalPages}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          )}
         </>
       )}
     </div>
