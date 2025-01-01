@@ -149,39 +149,52 @@ export default function OnlineResumesList() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className='space-y-2'>
-                <p className='flex items-center text-sm text-muted-foreground'>
-                  <Briefcase className='mr-2 h-4 w-4' />
-                  {resume.headline || "No headline"}
-                </p>
-                <p className='text-sm text-muted-foreground'>
-                  Status: {resume.current_status}
-                </p>
-                <p className='text-sm text-muted-foreground'>
-                  Location: {resume.location}{" "}
-                  {resume.relocation ? "(Open to relocation)" : ""}
-                </p>
-                <p className='text-sm text-muted-foreground'>
-                  Work Type: {resume.remote_preference}
-                </p>
-                <div className='text-sm space-y-1'>
-                  <p className='text-muted-foreground'>Skills:</p>
-                  <div className='flex flex-wrap gap-1'>
+              <div className='space-y-4'>
+                {/* Primary Info Section */}
+                <div className='flex items-start gap-3 border-b pb-3'>
+                  <div className='flex-1 space-y-2'>
+                    <p className='flex items-center text-sm font-medium'>
+                      <Briefcase className='mr-2 h-4 w-4 text-muted-foreground' />
+                      {resume.headline || "No headline"}
+                    </p>
+                    <div className='grid gap-1.5 text-sm text-muted-foreground'>
+                      <p>Status: {resume.current_status}</p>
+                      <p className='flex items-center gap-1'>
+                        Location: {resume.location}
+                        {resume.relocation && (
+                          <span className='text-green-600'>
+                            (Open to relocation)
+                          </span>
+                        )}
+                      </p>
+                      <p>Work Type: {resume.remote_preference}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Skills Section */}
+                <div>
+                  <p className='text-sm font-medium mb-2'>Skills:</p>
+                  <div className='flex flex-wrap gap-1.5'>
                     {(resume.technical_skills || [])
                       .slice(0, 3)
                       .map(({ skill }, index) => (
                         <Badge
                           key={index}
                           variant='secondary'
-                          className='text-xs'
+                          className='px-2 py-0.5 text-xs font-medium'
                         >
                           {skill}
                         </Badge>
                       ))}
                     {(resume.technical_skills || []).length > 3 && (
-                      <Badge variant='secondary' className='text-xs'>
+                      <Button
+                        variant='ghost'
+                        className='h-5 text-xs px-2 hover:bg-secondary/80'
+                        title='View all skills'
+                      >
                         +{resume.technical_skills.length - 3} more
-                      </Badge>
+                      </Button>
                     )}
                   </div>
                 </div>
