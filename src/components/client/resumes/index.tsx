@@ -26,18 +26,41 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Icons } from "@/components/common/Icons";
+import { Badge } from "@/components/ui/badge";
 
 // This type represents the structure of a resume
 type Resume = {
   id: string;
-  content: any;
+  user_id: string;
+  title: string;
+  summary: string;
+  headline: string;
+  current_status: string;
+  location: string;
+  relocation: boolean;
+  remote_preference: string;
+  experiences: Array<any>;
+  technical_skills: {
+    skill: string;
+  }[];
+  soft_skills: {
+    skill: string;
+  }[];
+  education: Array<any>;
+  certifications: Array<any>;
+  job_preferences: any;
+  projects: Array<any>;
+  languages: string[];
+  ai_analysis: any;
+  visibility: string;
+  completeness: number;
+  last_updated: string;
   created_at: string;
-  updated_at: string;
-  // id: string;
-  // title: string;
-  // lastUpdated: string;
-  // jobTitle: string;
-  // experience: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
 };
 
 export default function OnlineResumesList() {
@@ -115,63 +138,99 @@ export default function OnlineResumesList() {
             <CardHeader>
               <CardTitle className='flex items-center'>
                 <FileText className='mr-2' />
-                {resume.content?.title}
+                {resume.title || "Untitled Resume"}
               </CardTitle>
-              <CardDescription>
-                Last updated: {resume.updated_at}
+              <CardDescription className='space-y-1'>
+                <p>
+                  Updated: {new Date(resume.last_updated).toLocaleDateString()}
+                </p>
+                <p>Completeness: {resume.completeness}%</p>
+                <p>Visibility: {resume.visibility}</p>
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className='flex items-center'>
-                <Briefcase className='mr-2' />
-                {resume.content?.jobTitle}
-              </p>
-              <p>Experience: {resume.content?.experienceYears} years</p>
+              <div className='space-y-2'>
+                <p className='flex items-center text-sm text-muted-foreground'>
+                  <Briefcase className='mr-2 h-4 w-4' />
+                  {resume.headline || "No headline"}
+                </p>
+                <p className='text-sm text-muted-foreground'>
+                  Status: {resume.current_status}
+                </p>
+                <p className='text-sm text-muted-foreground'>
+                  Location: {resume.location}{" "}
+                  {resume.relocation ? "(Open to relocation)" : ""}
+                </p>
+                <p className='text-sm text-muted-foreground'>
+                  Work Type: {resume.remote_preference}
+                </p>
+                <div className='text-sm space-y-1'>
+                  <p className='text-muted-foreground'>Skills:</p>
+                  <div className='flex flex-wrap gap-1'>
+                    {(resume.technical_skills || [])
+                      .slice(0, 3)
+                      .map(({ skill }, index) => (
+                        <Badge
+                          key={index}
+                          variant='secondary'
+                          className='text-xs'
+                        >
+                          {skill}
+                        </Badge>
+                      ))}
+                    {(resume.technical_skills || []).length > 3 && (
+                      <Badge variant='secondary' className='text-xs'>
+                        +{resume.technical_skills.length - 3} more
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </div>
             </CardContent>
-            <CardFooter className='mt-auto'>
-              <Link href={`/settings/resumes/${resume.id}`}>
-                <Button variant='outline' className='mr-2'>
-                  <Edit className='mr-2 h-4 w-4' /> Edit
+            <CardFooter className='mt-auto flex gap-2'>
+              <Link href={`/settings/resumes/${resume.id}`} className='flex-1'>
+                <Button variant='ghost' className='w-full'>
+                  <Edit className='mr-2 h-4 w-4' />
                 </Button>
               </Link>
               <Button
-                className='text-red-500'
-                variant='outline'
+                variant='ghost'
+                className='flex-1 text-destructive hover:text-destructive'
                 onClick={() => handleDeleteResume(resume.id)}
               >
-                <Trash2 /> Delete
+                <Trash2 className='mr-2 h-4 w-4' />
               </Button>
-              <AlertDialog
-                open={confirmDialogVisible}
-                onOpenChange={setConfirmDialogVisible}
-              >
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      {confirmDialog?.title ?? "Are you absolutely sure?"}
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      {confirmDialog?.message}
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel onClick={confirmDialog?.onCancel}>
-                      Cancel
-                    </AlertDialogCancel>
-                    <AlertDialogAction onClick={confirmDialog?.handler}>
-                      {requesting ? (
-                        <Icons.Spinner className='mr-2 h-4 w-4 animate-spin' />
-                      ) : (
-                        "Continue"
-                      )}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
             </CardFooter>
           </Card>
         ))}
       </div>
+      <AlertDialog
+        open={confirmDialogVisible}
+        onOpenChange={setConfirmDialogVisible}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirmDialog?.title ?? "Are you absolutely sure?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmDialog?.message}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={confirmDialog?.onCancel}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDialog?.handler}>
+              {requesting ? (
+                <Icons.Spinner className='mr-2 h-4 w-4 animate-spin' />
+              ) : (
+                "Continue"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
