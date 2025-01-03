@@ -43,6 +43,7 @@ import { SalaryRangeFilter } from "./SalaryRangeFilter";
 import { Icons } from "../common/Icons";
 import { MatchAnalysisChart } from "./MatchAnalysisChart";
 import { cn } from "@/lib/utils";
+import NextPagination from "../common/NextPagination";
 
 interface Job {
   id: number;
@@ -142,28 +143,6 @@ interface JobPreferences {
   notice_period: string;
 }
 
-const fetchJobs = async (
-  signal?: AbortSignal,
-  params?: Record<string, any>
-) => {
-  try {
-    const { data } = await axios.get("/api/jobs", {
-      signal,
-      params,
-    });
-
-    if (data.meta.code === "OK") {
-      return data.result.records;
-    } else {
-      return [];
-    }
-  } catch (error: any) {
-    if (!isCancel(error)) {
-      throw error;
-    }
-  }
-};
-
 export default function JobBoard() {
   const [salaryRange, setSalaryRange] = useState<[number, number]>([0, 200]);
   const [selectedJob, setSelectedJob] = React.useState<Job | null>(null);
@@ -172,6 +151,9 @@ export default function JobBoard() {
 
   const [loading, setLoading] = useState(false);
   const [jobs, setJobs] = useState<Job[]>([]);
+  // Add these state variables at the top of the component
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const [requesting, setRequesting] = useState(false);
   const [analysisRes, setAnalysisRes] = useState<{
@@ -184,10 +166,40 @@ export default function JobBoard() {
       missing_skills: string[];
       recommendations: string;
       analysis_summary: string;
-    } | null;
-  }>(null);
+    };
+  } | null>(null);
 
   const [applying, setApplying] = useState(false);
+
+  const fetchJobs = async (
+    signal?: AbortSignal,
+    params?: Record<string, any>
+  ) => {
+    try {
+      const { data } = await axios.get("/api/jobs", {
+        signal,
+        params: {
+          ...params,
+          page,
+          pageSize: params?.pageSize || 9,
+        },
+      });
+
+      if (data.meta.code === "OK") {
+        setTotalPages(
+          Math.ceil(data.result.total / data.result.pagination.pageSize)
+        );
+        setPage(data.result.pagination.page);
+        return data.result.records;
+      } else {
+        return [];
+      }
+    } catch (error: any) {
+      if (!isCancel(error)) {
+        throw error;
+      }
+    }
+  };
 
   useEffect(() => {
     const controller = new AbortController();
@@ -211,7 +223,7 @@ export default function JobBoard() {
       .finally(() => setLoading(false));
 
     return () => controller.abort();
-  }, []);
+  }, [page]);
 
   const getJobDetails = async (jobId: number) => {
     setLoadingJobDetails(true);
@@ -282,6 +294,10 @@ export default function JobBoard() {
     } finally {
       setApplying(false);
     }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
   };
 
   const JobFilterPanel = () => {
@@ -440,13 +456,13 @@ export default function JobBoard() {
         </div>
 
         <div className='mx-auto max-w-6xl'>
-          <div className='flex justify-between'>
+          {/* <div className='flex justify-between'>
             <h1 className='text-2xl font-semibold'>Recommended jobs</h1>
             <Button variant='outline' className='gap-2'>
               Most recent
               <ChevronDown className='h-4 w-4' />
             </Button>
-          </div>
+          </div> */}
 
           <div className='mt-6 flex flex-col lg:flex-row gap-6'>
             {/* Filters */}
@@ -567,6 +583,17 @@ export default function JobBoard() {
                     </Card>
                   ))}
                 </div>
+
+                {/* Pagination */}
+                {jobs.length > 0 && totalPages > 1 && (
+                  <div className='mt-6 flex justify-center items-center'>
+                    <NextPagination
+                      currPage={page}
+                      total={totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>

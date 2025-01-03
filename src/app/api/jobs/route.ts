@@ -19,7 +19,7 @@ export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams,
     page = searchParams.get("page") || "1",
-    pageSize = searchParams.get("pageSize") || "10",
+    pageSize = searchParams.get("pageSize") || "9",
     sortField = searchParams.get("sortField") || "created_at",
     sortOrder = convertSortParams(searchParams.get("sortOrder")) || "desc",
     whereClause = convertSearchParamsToWhereClause(searchParams);
