@@ -469,7 +469,7 @@ export default function JobBoard() {
             <JobFilterPanel />
 
             {/* Job Listings */}
-            {loading ? (
+            {loading || !jobs.length ? (
               <div className='flex-1'>
                 <CommonSkeleton />
               </div>
